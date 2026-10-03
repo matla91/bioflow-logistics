@@ -1,7 +1,7 @@
-# Team Manux
+# Current Affairs
 
 Challenge 4: From a Rhine Signal to Action: Manufacturing in the BioValley.
-Repository: https://github.com/cfpramod/teambaselhack
+Repository: https://github.com/cfpramod/current-affairs
 
 ## People and ownership
 

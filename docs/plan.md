@@ -1,4 +1,4 @@
-# Team Manux C4 plan
+# Current Affairs C4 plan
 
 ## ML priorities
 

@@ -1,4 +1,4 @@
-# Team Manux C4 design
+# Current Affairs C4 design
 
 ## Concept and persona
 

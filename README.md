@@ -1,4 +1,4 @@
-# Team Manux · from a Rhine signal to a factory-floor decision
+# Current Affairs · from a Rhine signal to a factory-floor decision
 
 Hack am Rhein 2026, Challenge 4: *From a Rhine Signal to Action: Manufacturing in the BioValley*.
 
