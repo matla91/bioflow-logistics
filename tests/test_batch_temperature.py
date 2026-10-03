@@ -116,13 +116,33 @@ def test_missing_readings_never_report_zero_excursion(arrival, unobserved):
     assert not evidence.qa_release_authorized
 
 
-def test_one_outside_sample_is_a_temperature_fact_without_duration():
-    evidence = product_temperature(shipment([(0, 9, 250)]), material(), 60)
+@pytest.mark.parametrize("arrival", [None, 0, 60])
+def test_one_outside_sample_is_a_temperature_fact_without_duration(arrival):
+    evidence = product_temperature(
+        shipment([(0, 9, 250)], arrival=arrival), material(), 60
+    )
     assert evidence.last_product_outside_range
-    assert evidence.observed_excursion_min == 0
+    assert evidence.observed_excursion_min is None
+    assert evidence.status == "UNAVAILABLE"
     assert evidence.reported_excursion_min == 250
     assert not evidence.complete_journey
     assert any("One sample" in note for note in evidence.limitations)
+
+
+@pytest.mark.parametrize("temperature", [5, 11])
+def test_only_skipped_intervals_have_unknown_excursion(temperature):
+    evidence = product_temperature(
+        shipment([(0, temperature, 20), (120, temperature, 100)], arrival=120),
+        material(),
+        60,
+    )
+    assert evidence.status == "UNAVAILABLE"
+    assert evidence.observed_excursion_min is None
+    assert evidence.reported_excursion_min == 100
+    assert evidence.reading_count == 2
+    assert evidence.last_product_c == temperature
+    assert evidence.unobserved_interval_min == 120
+    assert not evidence.complete_journey
 
 
 @pytest.mark.parametrize("gap", [0, -1, float("nan"), float("inf")])

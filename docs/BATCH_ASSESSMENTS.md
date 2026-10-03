@@ -20,6 +20,11 @@ coefficients. Analysis then consumes only SQLite. Changed settings require a new
 immutable profile ID. CLI options include `--database`, `--profile-id`, `--known-at`.
 Scheduling stays outside HTTP through worker invocations with explicit cutoffs.
 
+The corrected calculation version is `batch-stored-evidence-v2`. Re-run batch
+analysis to append v2 records; deployment does not rewrite existing v1 assessments.
+Exact record IDs still retrieve their original version and evidence. The canonical
+fields and generated contracts are unchanged.
+
 Canonical models live in [interfaces.py](../pipeline/baselhack/interfaces.py).
 The generator produces [the schema](../schemas/stored-batch-assessment.schema.json)
 and both existing TypeScript outputs; generated contracts are never hand-edited.
@@ -46,14 +51,16 @@ external sources, persisted assumptions and limitations.
 4. Supported departed shipments reuse features, paired Monte Carlo and transparent
    deterministic recommendations. Remaining journey is planned duration minus
    elapsed time since actual departure. Recorded arrival needs no forward model.
-   Stale/missing weather, future departures, unsupported corridors, past deadlines
+   Stale/missing weather, future departures, unsupported corridors, reached deadlines
    and exhausted planned duration produce unavailable timing. Baseline arrival
    probability and ETA percentiles use identical seeded draws; ambient exposure
    remains a separate proxy.
 5. Actual `product_c` samples are compared with material limits using explicitly
    assumed linear interpolation. Long gaps are skipped; no temperature is
    extrapolated. Supplied cumulative excursion stays separately visible. Missing
-   readings mean null excursion. Sampled within-budget status cannot establish
+   readings, a single sample or exclusively over-limit gaps mean null excursion
+   duration and unavailable status; individual temperatures and reported totals
+   remain visible. Sampled within-budget status cannot establish
    whole-journey compliance, pharmaceutical quality or release.
 6. Results and exact inputs are appended to `batch_assessments`. Input identity
    includes profile/cutoff/observations/model version; assessment identity also
@@ -61,8 +68,16 @@ external sources, persisted assumptions and limitations.
    replacement; persistence checks evidence hashes and collisions. Calculation
    changes require a model-version bump.
 
-BUFFER requires sufficient released reservations. Single-shipment comparisons
-reuse the existing policy; multiple dependent shipments have no aggregate action
+When `planned_charge_at <= as_of`, the assessment is retrospective: action is
+null, forward alternatives are empty, and no forward logistics simulation runs.
+Recorded arrivals, stock quantities and sampled product temperatures are retained.
+Snapshot reservation/QA state and an availability timestamp do not prove the
+reservation or QA state at the exact historical charge time; that history cannot
+be reconstructed. Quantity sufficiency describes the persisted snapshot.
+
+Before the charge deadline, BUFFER requires sufficient released reservations.
+Single-shipment comparisons reuse the existing policy; multiple dependent shipments
+have no aggregate action
 comparison. Logistics approves transport interventions; operators approve BUFFER.
 `qa_review_required` separately preserves incoming review. Release authorization
 always remains false; ambient proxies never trigger automatic quarantine.
@@ -74,10 +89,14 @@ operations and provider cache. Each batch demands 50 kg.
 
 | Batch suffix | Released reserved kg | Shortfall / dependency kg | Incoming evidence | Sampled excursion min | Recommendation |
 | --- | ---: | ---: | --- | ---: | --- |
-| batch-001 | 50 | 0 / 0 | Arrived Oct 2 06:00; exact on-time indicator 1 | 99.496664, below 120 | BUFFER; approval required |
-| batch-002 | 30 | 20 / 20 | Planned Oct 3 18:00 after 16:00 charge; model unavailable | 147.698443, exceeds 120 | Review; QA required |
-| batch-003 | 0 | 50 / 50 | Planned Oct 3 18:00 before 22:00 charge; model unavailable | 0 in sampled intervals; incomplete | Review; QA required |
-| batch-004 | 0 | 50 / 50 | Future departure Oct 4 12:00 after 04:00 charge; no model | Unavailable, null | Review; QA evidence missing |
+| batch-001 | 50 | 0 / 0 | Arrived Oct 2 06:00; exact on-time indicator 1 | 99.496664, below 120 | null; retrospective, QA review required |
+| batch-002 | 30 | 20 / 20 | Planned Oct 3 18:00 after 16:00 charge; model unavailable | 147.698443, exceeds 120 | null; review, QA required |
+| batch-003 | 0 | 50 / 50 | Planned Oct 3 18:00 before 22:00 charge; model unavailable | 0 in sampled intervals; incomplete | null; review, QA required |
+| batch-004 | 0 | 50 / 50 | Future departure Oct 4 12:00 after 04:00 charge; no model | Unavailable, null | null; review, QA evidence missing |
+
+Batch 001's 10:00 UTC charge precedes the 12:00 UTC cutoff. Its 50 kg reservation
+is a snapshot fact, not proof of historical reservation/QA state at 10:00, and
+cannot support a new forward BUFFER recommendation.
 
 Real cached measurements end September 30 12:00: 4,320 minutes stale at cutoff.
 Existing weather safeguards prevent probabilities for batches 002–003. Batch 003's
@@ -88,7 +107,7 @@ synthetic data, without shifting or relabelling the real cache.
 Sample totals differ slightly from supplied cumulative values (99.769820 and
 147.784928 minutes): the fixture used physical thermal integration; this calculation
 interpolates sample points. Batch 001's last temperature exceeds the band despite
-total sampled excursion below budget, keeping incoming QA separate from BUFFER.
+total sampled excursion below budget, retaining the requirement for human QA review.
 
 ## Read API and Laravel handoff
 
@@ -120,3 +139,9 @@ Run `pytest -q tests -m 'not verification'`, scoped Ruff, and
 `python -m baselhack.generate --check`. Tests cover joins, quantities, competition,
 QA, cutoffs/future exclusions, missing samples, lateness, deterministic probabilities,
 immutable evidence and read APIs with provider fetches blocked.
+
+The correction checkpoint passes 319 regression tests with seven verification
+gates deselected and unresolved. Scoped Ruff passes for batch and integration
+files; repository-wide Ruff reports 20 pre-existing diagnostics in unchanged
+ingestion/simulation/output files and logistics tests. Full Python formatting,
+generated-contract verification, strict doc checks and whitespace checks pass.

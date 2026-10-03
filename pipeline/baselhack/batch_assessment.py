@@ -17,26 +17,26 @@ from baselhack.interfaces import (
 from baselhack.logistics import evaluate
 from baselhack.simulation.delay import delay_penalties, journey_durations
 
-MODEL_VERSION = "batch-stored-evidence-v1"
+MODEL_VERSION = "batch-stored-evidence-v2"
 DEFAULT_PROFILE_ID = "batch-default-v1"
 
 
 def _incoming(shipment, plan, dependency, snapshot, profile, observations, sufficient):
-    values = dict(
-        shipment_id=shipment.id,
-        planned_quantity_kg=plan.quantity_kg,
-        dependency_quantity_kg=dependency,
-        planned_arrival_at=shipment.planned_arrival_at,
-        actual_arrival_at=shipment.actual_arrival_at,
-        scheduled_after_charge=shipment.planned_arrival_at
+    values = {
+        "shipment_id": shipment.id,
+        "planned_quantity_kg": plan.quantity_kg,
+        "dependency_quantity_kg": dependency,
+        "planned_arrival_at": shipment.planned_arrival_at,
+        "actual_arrival_at": shipment.actual_arrival_at,
+        "scheduled_after_charge": shipment.planned_arrival_at
         > snapshot.batch.planned_charge_at,
-        status="UNAVAILABLE",
-        on_time_arrival_probability=None,
-        eta_p50=None,
-        eta_p90=None,
-        cold_chain_exposure_proxy_risk=None,
-        logistics=None,
-    )
+        "status": "UNAVAILABLE",
+        "on_time_arrival_probability": None,
+        "eta_p50": None,
+        "eta_p90": None,
+        "cold_chain_exposure_proxy_risk": None,
+        "logistics": None,
+    }
     if snapshot.reference_at > snapshot.as_of:
         return IncomingShipmentResult(
             **values,
@@ -119,20 +119,37 @@ def _unavailable_reason(shipment, snapshot, profile, observations):
         return "Stored route is outside the configured model corridor."
     if shipment.actual_departure_at is None:
         return "No actual departure at cutoff; this in-transit model does not simulate future departure waits. Planned milestones remain visible."
-    if snapshot.batch.planned_charge_at < snapshot.as_of:
-        return "Charge deadline precedes cutoff; forward action simulation cannot recover historical readiness."
+    if snapshot.batch.planned_charge_at <= snapshot.as_of:
+        return "Charge deadline has been reached at cutoff; forward action simulation cannot recover historical readiness."
     if observations is None:
         return "No stored external observations applicable at cutoff/knowledge time."
     return None
 
 
-def _recommendation(readiness, incoming, temperature):
+def _recommendation(readiness, incoming, temperature, as_of):
     qa_review = any(
         t.status != "OBSERVED_WITHIN_BUDGET"
         or not t.complete_journey
         or t.last_product_outside_range
         for t in temperature
     )
+    if readiness.planned_charge_at <= as_of:
+        reason = (
+            "Retrospective assessment: the charge deadline has already been reached "
+            "at the assessment cutoff, so no new forward logistics action is "
+            "recommended. Stock, shipment arrival and sampled product-temperature "
+            "facts are retained. Historical reservation/QA state at the exact charge "
+            "time cannot be reconstructed from the current operational snapshot."
+        )
+        if qa_review:
+            reason += " Human QA review is required; no automatic quarantine or release is inferred."
+        return BatchRecommendation(
+            action=None,
+            reason=reason,
+            requires_approval_by="logistics",
+            qa_review_required=bool(qa_review),
+            alternatives=[],
+        )
     dependencies = [item for item in incoming if item.dependency_quantity_kg > 0]
     action, alternatives = None, []
     reason = "No supported aggregate action comparison is available; review quantities, incoming timing and QA evidence."
@@ -235,19 +252,19 @@ def analyze_batch(
         "known_at": utc(known_at) if known_at else None,
         "model_version": model_version,
     }
-    body = dict(
-        dataset_id=dataset_id,
-        batch_id=batch_id,
-        shipment_ids=[s.id for s in snapshot.shipments],
-        as_of=as_of,
-        known_at=known_at,
-        input_sha256=digest(inputs),
-        model_version=model_version,
-        production_readiness=readiness,
-        incoming_shipments=incoming,
-        product_temperature=temperature,
-        recommendation=_recommendation(readiness, incoming, temperature),
-        provenance=[
+    body = {
+        "dataset_id": dataset_id,
+        "batch_id": batch_id,
+        "shipment_ids": [s.id for s in snapshot.shipments],
+        "as_of": as_of,
+        "known_at": known_at,
+        "input_sha256": digest(inputs),
+        "model_version": model_version,
+        "production_readiness": readiness,
+        "incoming_shipments": incoming,
+        "product_temperature": temperature,
+        "recommendation": _recommendation(readiness, incoming, temperature, as_of),
+        "provenance": [
             ProvenanceSummary(
                 kind="SIMULATED",
                 observed_at=snapshot.reference_at,
@@ -268,10 +285,10 @@ def analyze_batch(
                 detail=f"Immutable persisted configuration {profile.profile_id}; uncalibrated coefficients and sparse product-temperature interpolation.",
             ),
         ],
-        real_data_sources=observations.sources if observations else [],
-        assumptions=profile,
-        limitations=list(dict.fromkeys(limitations)),
-    )
+        "real_data_sources": observations.sources if observations else [],
+        "assumptions": profile,
+        "limitations": list(dict.fromkeys(limitations)),
+    }
     provisional = StoredBatchAssessment(assessment_id="0" * 64, **body)
     identity = provisional.model_dump(mode="json", exclude={"assessment_id"})
     record = provisional.model_copy(update={"assessment_id": digest(identity)})

@@ -38,16 +38,24 @@ def product_temperature(
         raise ValueError("Product readings must fall within known actual milestones")
 
     limitations = [
-        f"Product-temperature excursion uses piecewise-linear interpolation only "
-        f"between samples at most {max_gap_min:g} minutes apart; this sampling "
-        "assumption does not infer a physical thermal response.",
-        "No product temperature is extrapolated before the first or after the last "
-        "reading. Unsampled intervals may contain additional excursion.",
-        "Reported cumulative excursion is source evidence retained separately; "
-        "it is not treated as a directly measured duration or used for this status.",
-        "Material range and excursion budget are demonstration assumptions, not "
-        "validated pharmaceutical QA release criteria. Human QA review is required "
-        "for release; this assessment never authorizes it.",
+        (
+            f"Product-temperature excursion uses piecewise-linear interpolation only "
+            f"between samples at most {max_gap_min:g} minutes apart; this sampling "
+            "assumption does not infer a physical thermal response."
+        ),
+        (
+            "No product temperature is extrapolated before the first or after the last "
+            "reading. Unsampled intervals may contain additional excursion."
+        ),
+        (
+            "Reported cumulative excursion is source evidence retained separately; "
+            "it is not treated as a directly measured duration or used for this status."
+        ),
+        (
+            "Material range and excursion budget are demonstration assumptions, not "
+            "validated pharmaceutical QA release criteria. Human QA review is required "
+            "for release; this assessment never authorizes it."
+        ),
     ]
     common = {
         "shipment_id": shipment.id,
@@ -74,20 +82,23 @@ def product_temperature(
             unobserved_interval_min=unobserved,
             complete_journey=False,
             limitations=[
-                "No product-temperature readings are available; excursion is unknown, "
-                "not zero. Unobserved minutes include only intervals bounded by "
-                "known actual milestones.",
+                (
+                    "No product-temperature readings are available; excursion is unknown, "
+                    "not zero. Unobserved minutes include only intervals bounded by "
+                    "known actual milestones."
+                ),
                 *limitations,
             ],
         )
 
-    excursion, unobserved, skipped = 0.0, 0.0, 0
+    excursion, unobserved, skipped, usable = 0.0, 0.0, 0, 0
     for first, last in pairwise(readings):
         duration = _minutes(first.at, last.at)
         if duration > max_gap_min:
             unobserved += duration
             skipped += 1
         else:
+            usable += 1
             excursion += _outside_minutes(
                 first.product_c, last.product_c, duration, material.range_c
             )
@@ -101,6 +112,7 @@ def product_temperature(
         and shipment.actual_arrival_at
         and first.at == shipment.actual_departure_at
         and last.at == shipment.actual_arrival_at
+        and usable
         and not skipped
     )
     if skipped:
@@ -119,16 +131,24 @@ def product_temperature(
             "One sample establishes a temperature at one instant; no duration "
             "can be estimated from it."
         )
+    if not usable:
+        limitations.append(
+            "No usable sampled interval is available; observed excursion duration "
+            "is unknown, not zero. Individual temperatures and reported cumulative "
+            "excursion remain source evidence."
+        )
     return ProductTemperatureEvidence(
         **common,
-        status="OBSERVED_BUDGET_EXCEEDED"
+        status="UNAVAILABLE"
+        if not usable
+        else "OBSERVED_BUDGET_EXCEEDED"
         if excursion > material.budget_min
         else "OBSERVED_WITHIN_BUDGET",
         first_reading_at=first.at,
         last_reading_at=last.at,
         last_product_c=last.product_c,
         last_product_outside_range=_outside(last.product_c, material.range_c),
-        observed_excursion_min=excursion,
+        observed_excursion_min=excursion if usable else None,
         reported_excursion_min=last.excursion_min,
         unobserved_interval_min=unobserved,
         complete_journey=complete,

@@ -40,6 +40,13 @@ def production_readiness(snapshot):
             )
         elif not own:
             reason = "Stock is unreserved or reserved to another batch; no coverage credited."
+        if eligible and snapshot.batch.planned_charge_at <= snapshot.as_of:
+            reason = (
+                "The current operational snapshot contains released stock reserved "
+                "to this batch, with an availability timestamp at or before charge. "
+                "Historical reservation/QA state at the exact charge time cannot "
+                "be reconstructed from this snapshot."
+            )
         eligible_by_lot[lot.id] = eligible
         evidence.append(
             BatchStockEvidence(

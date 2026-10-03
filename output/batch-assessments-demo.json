@@ -1,7 +1,7 @@
 [
   {
     "as_of": "2026-10-03T12:00:00Z",
-    "assessment_id": "5fa2929895d1e4a15b420d3f951073733698e5f63cf072add1e73bbbf71bc2f7",
+    "assessment_id": "9f13b9ca0e9f703cc19fd7caf06958b56f42f4a799055ad8705c522d98a83067",
     "assumptions": {
       "destination": "Basel production site",
       "expedite_available": true,
@@ -80,7 +80,7 @@
         "status": "ARRIVED"
       }
     ],
-    "input_sha256": "cbd8520a1bc595b71fb426e41c6afe5caf6d2ca1d98ef612e32f2e2076b625f1",
+    "input_sha256": "29b9e91dcee73cfbd2c09815c702da820701431d82c39c6b7ac22d71618df16d",
     "known_at": null,
     "limitations": [
       "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
@@ -93,7 +93,7 @@
       "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
       "Seven existing domain/licence verification gates remain open."
     ],
-    "model_version": "batch-stored-evidence-v1",
+    "model_version": "batch-stored-evidence-v2",
     "product_temperature": [
       {
         "budget_min": 120.0,
@@ -179,7 +179,7 @@
           "inventory_lot_id": "operations-demo-v1-stock-released",
           "qa_status": "released",
           "quantity_kg": 80.0,
-          "reason": "Released stock reserved to this batch is available by the charge time.",
+          "reason": "The current operational snapshot contains released stock reserved to this batch, with an availability timestamp at or before charge. Historical reservation/QA state at the exact charge time cannot be reconstructed from this snapshot.",
           "reserved_for_batch_kg": 50.0,
           "reserved_for_others_kg": 30.0,
           "unreserved_quantity_kg": 0.0
@@ -244,12 +244,12 @@
       }
     ],
     "recommendation": {
-      "action": "BUFFER",
+      "action": null,
       "alternatives": [],
       "qa_release_authorized": false,
       "qa_review_required": true,
-      "reason": "Released reserved stock covers the recorded batch demand by charge time; incoming timing and product evidence remain separate. Human QA review is required; no automatic quarantine or release is inferred.",
-      "requires_approval_by": "operator"
+      "reason": "Retrospective assessment: the charge deadline has already been reached at the assessment cutoff, so no new forward logistics action is recommended. Stock, shipment arrival and sampled product-temperature facts are retained. Historical reservation/QA state at the exact charge time cannot be reconstructed from the current operational snapshot. Human QA review is required; no automatic quarantine or release is inferred.",
+      "requires_approval_by": "logistics"
     },
     "shipment_ids": [
       "operations-demo-v1-shipment-001"
@@ -257,7 +257,7 @@
   },
   {
     "as_of": "2026-10-03T12:00:00Z",
-    "assessment_id": "718c0c2d3166436b1ef2b326856d4dc18c8b2419abe333facbe8ce7dc0432f38",
+    "assessment_id": "55536dd64ac0df078c2c83241d7906a9bf7e6a519257bd2471d3c2753a455058",
     "assumptions": {
       "destination": "Basel production site",
       "expedite_available": true,
@@ -336,7 +336,7 @@
         "status": "UNAVAILABLE"
       }
     ],
-    "input_sha256": "d56cffacd132120a2ae46f0cc3b5251eda2b95f752aa711413a5e80a27fe3e03",
+    "input_sha256": "46a631080b65e42b75b7b0bf9c78e133c9de70e8d0b4977ad29a0378386f996e",
     "known_at": null,
     "limitations": [
       "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
@@ -349,7 +349,7 @@
       "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
       "Seven existing domain/licence verification gates remain open."
     ],
-    "model_version": "batch-stored-evidence-v1",
+    "model_version": "batch-stored-evidence-v2",
     "product_temperature": [
       {
         "budget_min": 120.0,
@@ -514,7 +514,7 @@
   },
   {
     "as_of": "2026-10-03T12:00:00Z",
-    "assessment_id": "65cc4f0a64c38d627b0bd322daf3cd01a0b6a62c6a885a2ab4f2f7200615b279",
+    "assessment_id": "eb4637b61e860397ac4e466398758db6709ee3ba6d71484070a6f522c4b20424",
     "assumptions": {
       "destination": "Basel production site",
       "expedite_available": true,
@@ -593,7 +593,7 @@
         "status": "UNAVAILABLE"
       }
     ],
-    "input_sha256": "b855aaadb52eee59683f37891fa58b235933e377d11194389eb5c811a3b2132e",
+    "input_sha256": "e55a59c58fd4cf04ff7f24c538b13fab1690bf8735791c32b3a2bf5d815e6b53",
     "known_at": null,
     "limitations": [
       "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
@@ -606,7 +606,7 @@
       "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
       "Seven existing domain/licence verification gates remain open."
     ],
-    "model_version": "batch-stored-evidence-v1",
+    "model_version": "batch-stored-evidence-v2",
     "product_temperature": [
       {
         "budget_min": 120.0,
@@ -771,7 +771,7 @@
   },
   {
     "as_of": "2026-10-03T12:00:00Z",
-    "assessment_id": "fa31fab3f8797e16fb75fd13e984dd0b9f9e6284c29965ca384e16beb0b94263",
+    "assessment_id": "8b714763f008b332b22090dc870ae5fea08d26d7a25125b3fae855703cdede70",
     "assumptions": {
       "destination": "Basel production site",
       "expedite_available": true,
@@ -850,7 +850,7 @@
         "status": "UNAVAILABLE"
       }
     ],
-    "input_sha256": "bbd889c789358a74db8f75c80c9a63700d7174169949cbc47859440284801402",
+    "input_sha256": "5886e908965f4aa0714b4b777df3869968021ceb61c9429230f46ff2abf5a91e",
     "known_at": null,
     "limitations": [
       "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
@@ -863,7 +863,7 @@
       "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
       "Seven existing domain/licence verification gates remain open."
     ],
-    "model_version": "batch-stored-evidence-v1",
+    "model_version": "batch-stored-evidence-v2",
     "product_temperature": [
       {
         "budget_min": 120.0,

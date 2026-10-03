@@ -20,6 +20,7 @@ Read [BUILD_INTEGRATION.md](BUILD_INTEGRATION.md) and [LOCAL_APP.md](LOCAL_APP.m
 - Named logistics scenarios are not operational batch assessments. Never attach them by guessed IDs.
 - Ambient exposure proxy risk is not product-temperature excursion probability; do not insert it into `p_excursion` or authorize QA release from it.
 - Supply plans are prospective coverage, not released inventory. Pending-QA stock and released stock reserved to another batch cannot cover this batch.
+- Display retrospective assessments explicitly, preserving null action and the limitation on historical reservation/QA state. A sufficient snapshot quantity does not establish readiness at a past charge time. Null sampled excursion with retained readings means no usable interpolation interval, not zero excursion.
 
 ## Acceptance cases
 
@@ -27,7 +28,7 @@ Use the reference time 2026-10-03 12:00 UTC. IDs have prefix `operations-demo-v1
 
 | Batch | Screen evidence |
 | --- | --- |
-| batch-001 | Normal arrived shipment; 50 kg released reservation against 50 kg demand |
+| batch-001 | Arrived shipment and 50 kg snapshot reservation; charge at 10:00 precedes cutoff, so retrospective assessment with null action |
 | batch-002 | Heat-exposed shipment; 30 kg reservation and 20 kg shortfall |
 | batch-003 | Delayed shipment, no released reservation |
 | batch-004 | Future planned shipment, no actual milestones/readings |

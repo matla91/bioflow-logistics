@@ -208,7 +208,7 @@ def test_competing_stock_reservations_are_batch_specific(database, demo):
     ]
     assert first.production_readiness.released_reserved_quantity_kg == 50
     assert first.production_readiness.status == "RESERVED_STOCK_SUFFICIENT"
-    assert first.recommendation.action == "BUFFER"
+    assert first.recommendation.action is None
     assert second.production_readiness.released_reserved_quantity_kg == 30
     assert second.production_readiness.reservation_shortfall_kg == 20
     assert second.production_readiness.incoming_dependency_kg == 20
@@ -229,6 +229,88 @@ def test_competing_stock_reservations_are_batch_specific(database, demo):
         )
         == 80
     )
+
+
+@pytest.mark.parametrize("offset_seconds", [-1, 0, 1])
+def test_released_reservations_only_recommend_buffer_before_charge(
+    database, offset_seconds
+):
+    dataset = operations(charge=AT + timedelta(seconds=offset_seconds))
+    body = dataset.model_dump(mode="python")
+    body["inventory"] = [
+        {
+            "id": "reserved-stock",
+            "material_id": "material-case",
+            "quantity_kg": 50,
+            "available_at": AT - timedelta(days=1),
+            "qa_status": "released",
+        }
+    ]
+    body["reservations"] = [
+        {
+            "batch_id": "batch-case",
+            "inventory_lot_id": "reserved-stock",
+            "quantity_kg": 50,
+        }
+    ]
+    dataset = OperationalDataset.model_validate(body)
+    database.store_operations(dataset)
+    record = assess(database, dataset)
+    assert record.production_readiness.released_reserved_quantity_kg == 50
+    assert record.production_readiness.reservation_shortfall_kg == 0
+    assert record.recommendation.qa_release_authorized is False
+    if offset_seconds > 0:
+        assert record.recommendation.action == "BUFFER"
+        assert record.recommendation.requires_approval_by == "operator"
+    else:
+        assert record.recommendation.action is None
+        assert record.recommendation.alternatives == []
+        assert "retrospective" in record.recommendation.reason.lower()
+        assert "cannot be reconstructed" in record.recommendation.reason
+        assert "cannot be reconstructed" in (
+            record.production_readiness.stock_evidence[0].reason
+        )
+
+
+def test_retrospective_demo_preserves_stock_arrival_and_product_facts(database, demo):
+    record = assess(database, demo)
+    assert record.production_readiness.planned_charge_at < record.as_of
+    assert record.recommendation.action is None
+    assert record.recommendation.qa_review_required
+    assert record.incoming_shipments[0].status == "ARRIVED"
+    assert (
+        record.incoming_shipments[0].actual_arrival_at
+        == demo.shipments[0].actual_arrival_at
+    )
+    assert record.incoming_shipments[0].on_time_arrival_probability == 1
+    assert record.product_temperature[0].observed_excursion_min == pytest.approx(
+        99.496664
+    )
+    last_reading = max(
+        (r for r in demo.readings if r.shipment_id == record.shipment_ids[0]),
+        key=lambda r: r.at,
+    )
+    assert (
+        record.product_temperature[0].reported_excursion_min
+        == last_reading.excursion_min
+    )
+
+
+@pytest.mark.parametrize("charge", [AT - timedelta(seconds=1), AT])
+def test_passed_charge_never_invokes_forward_logistics(database, monkeypatch, charge):
+    dataset = operations(charge=charge)
+    database.store_operations(dataset)
+    fresh_weather(database)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("No forward simulation at or after charge")
+
+    monkeypatch.setattr("baselhack.batch_assessment.evaluate", forbidden)
+    record = assess(database, dataset)
+    assert record.recommendation.action is None
+    assert record.recommendation.alternatives == []
+    assert record.incoming_shipments[0].logistics is None
+    assert record.incoming_shipments[0].on_time_arrival_probability is None
 
 
 @pytest.mark.parametrize("qa_status", ["pending", "quarantined"])
@@ -358,6 +440,13 @@ def test_delay_case_label_does_not_invent_late_arrival(database, demo):
     assert any(
         "weather" in value.lower() for value in [incoming.reason, *record.limitations]
     )
+    temperature = record.product_temperature[0]
+    assert temperature.observed_excursion_min == 0
+    assert temperature.status == "OBSERVED_WITHIN_BUDGET"
+    assert not temperature.complete_journey
+    assert record.recommendation.qa_review_required
+    assert record.recommendation.action != "QUARANTINE"
+    assert any("whole-journey compliance" in note for note in temperature.limitations)
 
 
 def test_actual_late_arrival_is_preserved_without_weather_model(database):
@@ -481,7 +570,8 @@ def test_sparse_product_history_reports_gap_without_inventing_excursion(database
     assert evidence.reading_count == 2
     assert evidence.unobserved_interval_min >= 120
     assert evidence.complete_journey is False
-    assert evidence.observed_excursion_min in (None, 0)
+    assert evidence.observed_excursion_min is None
+    assert evidence.status == "UNAVAILABLE"
     assert evidence.limitations
 
 
@@ -599,6 +689,20 @@ def test_results_are_deterministic_immutable_and_hash_their_evidence(database, d
             connection.execute("UPDATE batch_assessments SET payload_json='{}'")
         with pytest.raises(sqlite3.IntegrityError, match="immutable"):
             connection.execute("DELETE FROM batch_assessments")
+
+
+def test_model_version_change_appends_without_rewriting_previous_assessment(
+    database, demo
+):
+    previous = assess(database, demo, model_version="previous-test-model")
+    current = assess(database, demo)
+    assert current.model_version == "batch-stored-evidence-v2"
+    assert previous.input_sha256 != current.input_sha256
+    assert previous.assessment_id != current.assessment_id
+    assert database.batch_assessment(previous.assessment_id) == previous
+    assert database.batch_assessment(current.assessment_id) == current
+    assert database.batch_assessments(demo.dataset_id, current.batch_id)[0] == current
+    assert assess(database, demo) == current
 
 
 def test_equivalent_timezone_offsets_share_the_same_assessment(database, demo):
