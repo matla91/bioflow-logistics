@@ -48,12 +48,15 @@ const selectedAction = computed<FrontendAction | null>(() => {
     const action = props.logistics.recommendation.action;
 
     return (
-        props.logistics.actions.find((candidate) => candidate.action === action) ??
-        null
+        props.logistics.actions.find(
+            (candidate) => candidate.action === action,
+        ) ?? null
     );
 });
 
-const traffic = computed(() => props.logistics.external_state.traffic[0] ?? null);
+const traffic = computed(
+    () => props.logistics.external_state.traffic[0] ?? null,
+);
 
 const warnings = computed(() => [
     ...props.logistics.external_state.warnings,
@@ -143,7 +146,9 @@ const formatNumber = (value: number | null, digits = 1) =>
             <div class="font-semibold text-amber-800 dark:text-amber-300">
                 Evidence warnings
             </div>
-            <ul class="mt-1 list-disc pl-5 text-amber-900/80 dark:text-amber-200/80">
+            <ul
+                class="mt-1 list-disc pl-5 text-amber-900/80 dark:text-amber-200/80"
+            >
                 <li v-for="warning in warnings" :key="warning">
                     {{ warning }}
                 </li>
@@ -152,7 +157,9 @@ const formatNumber = (value: number | null, digits = 1) =>
 
         <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <div class="rounded-xl border-2 border-sky-600/60 bg-card p-4">
-                <div class="text-xs font-semibold text-sky-700 uppercase dark:text-sky-400">
+                <div
+                    class="text-xs font-semibold text-sky-700 uppercase dark:text-sky-400"
+                >
                     Recommended action
                 </div>
                 <div class="mt-1 text-3xl font-bold tracking-tight">
@@ -208,9 +215,17 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <h2 class="font-semibold">Basel traffic</h2>
                     <span
                         class="rounded px-1.5 py-0.5 text-xs font-semibold"
-                        :class="evidenceStyles[logistics.data_provenance.traffic_current?.kind ?? 'REAL']"
+                        :class="
+                            evidenceStyles[
+                                logistics.data_provenance.traffic_current
+                                    ?.kind ?? 'REAL'
+                            ]
+                        "
                     >
-                        {{ logistics.data_provenance.traffic_current?.kind ?? 'REAL' }}
+                        {{
+                            logistics.data_provenance.traffic_current?.kind ??
+                            'REAL'
+                        }}
                     </span>
                 </div>
                 <template v-if="traffic">
@@ -236,9 +251,17 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <h2 class="font-semibold">Rhine</h2>
                     <span
                         class="rounded px-1.5 py-0.5 text-xs font-semibold"
-                        :class="evidenceStyles[logistics.data_provenance.rhine_current?.kind ?? 'REAL']"
+                        :class="
+                            evidenceStyles[
+                                logistics.data_provenance.rhine_current?.kind ??
+                                    'REAL'
+                            ]
+                        "
                     >
-                        {{ logistics.data_provenance.rhine_current?.kind ?? 'REAL' }}
+                        {{
+                            logistics.data_provenance.rhine_current?.kind ??
+                            'REAL'
+                        }}
                     </span>
                 </div>
                 <template v-if="logistics.external_state.rhine">
@@ -285,21 +308,34 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <h2 class="font-semibold">Weather</h2>
                     <span
                         class="rounded px-1.5 py-0.5 text-xs font-semibold"
-                        :class="evidenceStyles[logistics.data_provenance.weather_current?.kind ?? 'REAL']"
+                        :class="
+                            evidenceStyles[
+                                logistics.data_provenance.weather_current
+                                    ?.kind ?? 'REAL'
+                            ]
+                        "
                     >
-                        {{ logistics.data_provenance.weather_current?.kind ?? 'REAL' }}
+                        {{
+                            logistics.data_provenance.weather_current?.kind ??
+                            'REAL'
+                        }}
                     </span>
                 </div>
                 <template v-if="logistics.external_state.weather">
                     <div class="mt-3 text-2xl font-bold tabular-nums">
-                        {{ logistics.external_state.weather.air_temperature_c.toFixed(1) }}
+                        {{
+                            logistics.external_state.weather.air_temperature_c.toFixed(
+                                1,
+                            )
+                        }}
                         <span class="text-sm font-normal">°C</span>
                     </div>
                     <div class="text-sm text-muted-foreground">
                         rain
                         {{
                             formatNumber(
-                                logistics.external_state.weather.precipitation_mm,
+                                logistics.external_state.weather
+                                    .precipitation_mm,
                                 1,
                             )
                         }}
@@ -336,7 +372,11 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <h2 class="font-semibold">Navigation</h2>
                     <span
                         class="rounded px-1.5 py-0.5 text-xs font-semibold"
-                        :class="evidenceStyles[logistics.external_state.navigation.kind]"
+                        :class="
+                            evidenceStyles[
+                                logistics.external_state.navigation.kind
+                            ]
+                        "
                     >
                         {{ logistics.external_state.navigation.kind }}
                     </span>
@@ -347,7 +387,8 @@ const formatNumber = (value: number | null, digits = 1) =>
                 <div class="text-sm text-muted-foreground">
                     {{
                         formatMinutes(
-                            logistics.external_state.navigation.delay_penalty_min,
+                            logistics.external_state.navigation
+                                .delay_penalty_min,
                         )
                     }}
                     modeled delay addition
@@ -394,7 +435,10 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <div
-                                v-if="option.action === logistics.recommendation.action"
+                                v-if="
+                                    option.action ===
+                                    logistics.recommendation.action
+                                "
                                 class="text-xs font-semibold text-sky-700 uppercase dark:text-sky-400"
                             >
                                 Recommended
@@ -429,7 +473,11 @@ const formatNumber = (value: number | null, digits = 1) =>
 
                         <dt class="text-muted-foreground">On-time arrival</dt>
                         <dd class="text-right font-semibold tabular-nums">
-                            {{ formatPercent(option.on_time_arrival_probability) }}
+                            {{
+                                formatPercent(
+                                    option.on_time_arrival_probability,
+                                )
+                            }}
                         </dd>
 
                         <dt class="text-muted-foreground">
@@ -455,14 +503,18 @@ const formatNumber = (value: number | null, digits = 1) =>
                         </dd>
                     </dl>
 
-                    <p class="mt-auto text-xs leading-relaxed text-muted-foreground">
+                    <p
+                        class="mt-auto text-xs leading-relaxed text-muted-foreground"
+                    >
                         {{ option.assessment }}
                     </p>
                 </article>
             </div>
         </section>
 
-        <section class="grid gap-6 rounded-xl border bg-card p-5 lg:grid-cols-2">
+        <section
+            class="grid gap-6 rounded-xl border bg-card p-5 lg:grid-cols-2"
+        >
             <div>
                 <div
                     class="text-xs font-semibold tracking-wide text-sky-700 uppercase dark:text-sky-400"
@@ -508,7 +560,9 @@ const formatNumber = (value: number | null, digits = 1) =>
                 </div>
 
                 <div class="mt-5">
-                    <h3 class="text-sm font-semibold">Why not the alternatives?</h3>
+                    <h3 class="text-sm font-semibold">
+                        Why not the alternatives?
+                    </h3>
                     <ul class="mt-2 flex flex-col gap-2">
                         <li
                             v-for="row in whyNotRows"
@@ -546,9 +600,9 @@ const formatNumber = (value: number | null, digits = 1) =>
                     </div>
                     <p class="mt-1 text-sm text-muted-foreground">
                         The displayed cold-chain metric is an ambient exposure
-                        proxy. Ambient weather alone does not establish an actual
-                        product-temperature excursion, pharmaceutical quality, or
-                        QA release status.
+                        proxy. Ambient weather alone does not establish an
+                        actual product-temperature excursion, pharmaceutical
+                        quality, or QA release status.
                     </p>
                 </div>
 
@@ -556,7 +610,9 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <summary class="cursor-pointer text-sm font-semibold">
                         Decision policy
                     </summary>
-                    <p class="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    <p
+                        class="mt-2 text-xs leading-relaxed text-muted-foreground"
+                    >
                         {{ logistics.recommendation.policy_detail }}
                     </p>
                 </details>
