@@ -20,7 +20,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.24.1",
-        "larastan/larastan": "^3.12.2",
+        "larastan/larastan": "^3.12",
         "laravel/boost": "^2.10.1",
         "laravel/pail": "^1.2.7",
         "laravel/pao": "^1.1.5",
@@ -28,7 +28,9 @@
         "mockery/mockery": "^1.6.15",
         "nunomaduro/collision": "^8.9.5",
         "pestphp/pest": "^5.3.0",
-        "pestphp/pest-plugin-laravel": "^5.0.1"
+        "pestphp/pest-plugin-laravel": "^5.0.1",
+        "pestphp/pest-plugin-type-coverage": "^5.0",
+        "rector/rector": "^2.6"
     },
     "autoload": {
         "psr-4": {
@@ -55,13 +57,7 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan dev"
         ],
-        "lint": [
-            "pint --parallel"
-        ],
-        "lint:check": [
-            "pint --parallel --test"
-        ],
-        "ci:check": [
+        "check": [
             "Composer\\Config::disableProcessTimeout",
             "npm run check",
             "npm run types:check",
@@ -70,11 +66,35 @@
         "types:check": [
             "phpstan analyse"
         ],
+        "pint": "pint --parallel",
+        "rector": "rector",
+        "refactor": [
+            "@rector",
+            "@pint"
+        ],
+        "pest": "pest --parallel",
+        "test:pint": "pint --test --parallel",
+        "test:rector": "rector --dry-run",
+        "test:types": "phpstan",
+        "test:type-coverage": "pest --type-coverage --compact --min=100",
         "test": [
-            "@php artisan config:clear --ansi",
-            "@lint:check",
-            "@types:check",
-            "@php artisan test"
+            "@test:pint",
+            "@test:rector",
+            "@test:types",
+            "@test:type-coverage",
+            "@pest"
+        ],
+        "agent:pint": "pint --test --parallel --format=agent",
+        "agent:rector": "rector --dry-run --no-progress-bar",
+        "agent:types": "phpstan --memory-limit=512M --error-format=json --no-progress",
+        "agent:type-coverage": "@php -d memory_limit=512M vendor/bin/pest --type-coverage --compact --min=100",
+        "agent:pest": "pest --parallel --compact",
+        "agent:test": [
+            "@agent:pint",
+            "@agent:rector",
+            "@agent:types",
+            "@agent:type-coverage",
+            "@agent:pest"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

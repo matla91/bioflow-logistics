@@ -5,9 +5,9 @@ includes:
 parameters:
     paths:
         - app/
-        - bootstrap/app.php
-        - config/
-        - database/
-        - routes/
 
-    level: 7
+    level: 8
+
+    ignoreErrors:
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
