@@ -935,3 +935,150 @@ class OperationalDataset(Contract):
 
 
 LOGISTICS_MODELS["operational-dataset"] = OperationalDataset
+
+
+class BatchAnalysisProfile(Contract):
+    """Persisted, uncalibrated worker configuration; never inferred from case labels."""
+
+    profile_id: Text
+    logistics: LogisticsAssumptions
+    station_ids: list[Text] = ["402"]
+    origin: Text = "Rotterdam"
+    destination: Text = "Basel production site"
+    handling_min: Nonnegative = 0
+    protection_remaining_min: Nonnegative = 0
+    expedite_available: bool = True
+    reroute_available: bool = False
+    max_reading_gap_min: Positive = 60
+
+
+class BatchShipmentSnapshot(Contract):
+    """Operational timing evidence without generator scenario-family metadata."""
+
+    id: Text
+    material_id: Text
+    lot_id: Text
+    quantity_kg: Positive
+    route_mode: Literal["river", "road"]
+    origin: Text
+    destination: Text
+    planned_departure_at: Timestamp
+    planned_arrival_at: Timestamp
+    actual_departure_at: Timestamp | None
+    actual_arrival_at: Timestamp | None
+    readings: list[ShipmentReading]
+
+
+class BatchOperationalSnapshot(Contract):
+    """Joined SQLite inputs at a cutoff; QA/reservations have snapshot-only history."""
+
+    dataset_id: Text
+    reference_at: Timestamp
+    as_of: Timestamp
+    batch: ProductionBatch
+    material: OperationalMaterial
+    supply_plans: list[BatchSupplyPlan]
+    shipments: list[BatchShipmentSnapshot]
+    inventory: list[InventoryLot]
+    reservations: list[StockReservation]
+
+
+class BatchStockEvidence(Contract):
+    inventory_lot_id: Text
+    quantity_kg: Nonnegative
+    reserved_for_batch_kg: Nonnegative
+    reserved_for_others_kg: Nonnegative
+    unreserved_quantity_kg: Nonnegative
+    eligible_reserved_quantity_kg: Nonnegative
+    qa_status: Literal["released", "pending", "quarantined"]
+    available_at: Timestamp
+    reason: Text
+
+
+class ProductionReadiness(Contract):
+    """Quantity accounting, independent of shipment timing or QA predictions."""
+
+    planned_charge_at: Timestamp
+    required_quantity_kg: Positive
+    released_reserved_quantity_kg: Nonnegative
+    reservation_shortfall_kg: Nonnegative
+    incoming_dependency_kg: Nonnegative
+    uncovered_quantity_kg: Nonnegative
+    status: Literal[
+        "RESERVED_STOCK_SUFFICIENT", "INCOMING_DEPENDENT", "INSUFFICIENT_SUPPLY"
+    ]
+    stock_evidence: list[BatchStockEvidence]
+
+
+class ProductTemperatureEvidence(Contract):
+    """Sampled product evidence; sparse interpolation is not pharmaceutical QA."""
+
+    shipment_id: Text
+    status: Literal["UNAVAILABLE", "OBSERVED_WITHIN_BUDGET", "OBSERVED_BUDGET_EXCEEDED"]
+    reading_count: Annotated[int, Field(ge=0)]
+    range_c: tuple[Finite, Finite]
+    budget_min: Positive
+    first_reading_at: Timestamp | None
+    last_reading_at: Timestamp | None
+    last_product_c: Finite | None
+    last_product_outside_range: bool | None
+    observed_excursion_min: Nonnegative | None
+    reported_excursion_min: Nonnegative | None
+    unobserved_interval_min: Nonnegative
+    complete_journey: bool
+    qa_release_authorized: Literal[False] = False
+    limitations: list[Text]
+
+
+class IncomingShipmentResult(Contract):
+    """Arrival timing and ambient proxy stay separate from measured product evidence."""
+
+    shipment_id: Text
+    planned_quantity_kg: Positive
+    dependency_quantity_kg: Nonnegative
+    planned_arrival_at: Timestamp
+    actual_arrival_at: Timestamp | None
+    scheduled_after_charge: bool
+    status: Literal["ARRIVED", "MODELED", "UNAVAILABLE"]
+    on_time_arrival_probability: Probability | None
+    eta_p50: Timestamp | None
+    eta_p90: Timestamp | None
+    cold_chain_exposure_proxy_risk: Probability | None
+    logistics: LogisticsResult | None
+    reason: Text
+
+
+class BatchRecommendation(Contract):
+    """Human approval is mandatory; no automatic QA disposition or release."""
+
+    action: LogisticsAction | None
+    reason: Text
+    requires_approval_by: Role
+    qa_review_required: bool
+    alternatives: list[LogisticsActionResult]
+    qa_release_authorized: Literal[False] = False
+
+
+class StoredBatchAssessment(Contract):
+    """Immutable batch-linked result with separate stock, timing and product evidence."""
+
+    assessment_id: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    dataset_id: Text
+    batch_id: Text
+    shipment_ids: list[Text]
+    as_of: Timestamp
+    known_at: Timestamp | None
+    input_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    model_version: Text
+    production_readiness: ProductionReadiness
+    incoming_shipments: list[IncomingShipmentResult]
+    product_temperature: list[ProductTemperatureEvidence]
+    recommendation: BatchRecommendation
+    provenance: list[ProvenanceSummary]
+    real_data_sources: list[ObservationSource]
+    assumptions: BatchAnalysisProfile
+    limitations: list[Text]
+
+
+LOGISTICS_MODELS["batch-analysis-profile"] = BatchAnalysisProfile
+LOGISTICS_MODELS["stored-batch-assessment"] = StoredBatchAssessment

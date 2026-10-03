@@ -158,3 +158,52 @@ BEGIN
         OR NEW.quantity_kg + COALESCE((SELECT SUM(quantity_kg) FROM stock_reservations WHERE batch_id=NEW.batch_id AND NOT (batch_id=OLD.batch_id AND inventory_lot_id=OLD.inventory_lot_id)),0) > (SELECT required_quantity_kg FROM batches WHERE id=NEW.batch_id)
         THEN RAISE(ABORT, 'Stock reservation exceeds available released material or batch demand') END;
 END;
+
+-- Additive batch integration storage. Operational fixture tables retain v1.
+CREATE TABLE IF NOT EXISTS batch_analysis_profiles (
+    profile_id TEXT PRIMARY KEY,
+    stored_at TEXT NOT NULL,
+    payload_json TEXT NOT NULL CHECK (json_valid(payload_json))
+);
+CREATE TRIGGER IF NOT EXISTS immutable_batch_analysis_profiles_replace
+BEFORE INSERT ON batch_analysis_profiles
+WHEN EXISTS (SELECT 1 FROM batch_analysis_profiles WHERE profile_id=NEW.profile_id) BEGIN
+    SELECT RAISE(ABORT, 'Batch analysis profile is immutable');
+END;
+CREATE TRIGGER IF NOT EXISTS immutable_batch_analysis_profiles_update
+BEFORE UPDATE ON batch_analysis_profiles BEGIN
+    SELECT RAISE(ABORT, 'Batch analysis profile is immutable');
+END;
+CREATE TRIGGER IF NOT EXISTS immutable_batch_analysis_profiles_delete
+BEFORE DELETE ON batch_analysis_profiles BEGIN
+    SELECT RAISE(ABORT, 'Batch analysis profile is immutable');
+END;
+CREATE TABLE IF NOT EXISTS batch_assessments (
+    assessment_id TEXT PRIMARY KEY,
+    dataset_id TEXT NOT NULL REFERENCES operational_datasets(id),
+    batch_id TEXT NOT NULL REFERENCES batches(id),
+    as_of TEXT NOT NULL,
+    stored_at TEXT NOT NULL,
+    payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+    evidence_json TEXT NOT NULL CHECK (json_valid(evidence_json))
+);
+CREATE INDEX IF NOT EXISTS batch_assessment_lookup
+ON batch_assessments(dataset_id, batch_id, as_of DESC, stored_at DESC, assessment_id DESC);
+CREATE TRIGGER IF NOT EXISTS batch_assessment_dataset_guard
+BEFORE INSERT ON batch_assessments
+WHEN (SELECT dataset_id FROM batches WHERE id=NEW.batch_id) != NEW.dataset_id BEGIN
+    SELECT RAISE(ABORT, 'Assessment batch belongs to a different dataset');
+END;
+CREATE TRIGGER IF NOT EXISTS immutable_batch_assessments_replace
+BEFORE INSERT ON batch_assessments
+WHEN EXISTS (SELECT 1 FROM batch_assessments WHERE assessment_id=NEW.assessment_id) BEGIN
+    SELECT RAISE(ABORT, 'Batch assessment evidence is immutable');
+END;
+CREATE TRIGGER IF NOT EXISTS immutable_batch_assessments_update
+BEFORE UPDATE ON batch_assessments BEGIN
+    SELECT RAISE(ABORT, 'Batch assessment evidence is immutable');
+END;
+CREATE TRIGGER IF NOT EXISTS immutable_batch_assessments_delete
+BEFORE DELETE ON batch_assessments BEGIN
+    SELECT RAISE(ABORT, 'Batch assessment evidence is immutable');
+END;

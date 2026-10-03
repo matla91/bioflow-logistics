@@ -1,0 +1,14 @@
+# Persist this profile before analysis. Coefficients are uncalibrated assumptions.
+profile_id: batch-default-v1
+logistics_config: logistics.yaml
+station_ids: ["402"]
+origin: Rotterdam
+destination: Basel production site
+handling_min: 0
+# Remaining packaging protection is not known from readings. Zero is conservative
+# for the ambient proxy, never a measured product-temperature excursion.
+protection_remaining_min: 0
+expedite_available: true
+# No operational evidence supports a road transfer for these departed shipments.
+reroute_available: false
+max_reading_gap_min: 60

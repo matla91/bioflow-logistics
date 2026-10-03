@@ -10,10 +10,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from baselhack.interfaces import (
+    BatchAnalysisProfile,
+    BatchOperationalSnapshot,
+    BatchShipmentSnapshot,
+    BatchSupplyPlan,
+    InventoryLot,
     ObservationSource,
     OperationalDataset,
+    OperationalMaterial,
+    ProductionBatch,
     RealObservations,
     RhineObservation,
+    ShipmentReading,
+    StockReservation,
+    StoredBatchAssessment,
     TrafficObservation,
     WeatherObservation,
 )
@@ -322,3 +332,334 @@ class Database:
                     ),
                 )
         return True
+
+    def batch_snapshot(self, dataset_id: str, batch_id: str, as_of: datetime):
+        """Join current operational rows and trim observed evidence to the cutoff.
+
+        QA and reservation rows have no change history. The dataset reference
+        time is retained so the worker can avoid treating them as historical QA.
+        """
+        cutoff = utc(as_of)
+        with self.connect() as connection:
+            dataset = connection.execute(
+                "SELECT reference_at FROM operational_datasets WHERE id=?",
+                (dataset_id,),
+            ).fetchone()
+            if dataset is None:
+                raise ValueError("Operational dataset not found")
+            batch = connection.execute(
+                "SELECT b.*,m.dataset_id AS material_dataset_id,m.name,"
+                "m.quantity_unit,m.min_temp_c,m.max_temp_c,m.budget_min "
+                "FROM batches b JOIN materials m ON m.id=b.material_id "
+                "WHERE b.id=? AND b.dataset_id=?",
+                (batch_id, dataset_id),
+            ).fetchone()
+            if batch is None:
+                raise ValueError("Batch not found in operational dataset")
+            if batch["material_dataset_id"] != dataset_id:
+                raise ValueError("Batch material belongs to a different dataset")
+            plans, shipments = self._batch_supply(connection, batch, cutoff)
+            inventory, reservations = self._batch_stock(connection, batch, cutoff)
+        return BatchOperationalSnapshot(
+            dataset_id=dataset_id,
+            reference_at=dataset["reference_at"],
+            as_of=cutoff,
+            batch=ProductionBatch.model_validate(
+                {field: batch[field] for field in ProductionBatch.model_fields}
+            ),
+            material=OperationalMaterial(
+                id=batch["material_id"],
+                name=batch["name"],
+                quantity_unit=batch["quantity_unit"],
+                range_c=(batch["min_temp_c"], batch["max_temp_c"]),
+                budget_min=batch["budget_min"],
+            ),
+            supply_plans=plans,
+            shipments=shipments,
+            inventory=inventory,
+            reservations=reservations,
+        )
+
+    @staticmethod
+    def _batch_supply(connection, batch, cutoff):
+        rows = connection.execute(
+            "SELECT p.quantity_kg AS planned_quantity_kg,s.* FROM batch_supply_plans p "
+            "JOIN shipments s ON s.id=p.shipment_id WHERE p.batch_id=? ORDER BY s.id",
+            (batch["id"],),
+        ).fetchall()
+        if (
+            sum(row["planned_quantity_kg"] for row in rows)
+            > batch["required_quantity_kg"]
+        ):
+            raise ValueError("Planned supply exceeds batch requirement")
+        plans, shipments = [], []
+        for row in rows:
+            if (
+                row["dataset_id"] != batch["dataset_id"]
+                or row["material_id"] != batch["material_id"]
+            ):
+                raise ValueError(
+                    "Planned shipment must match batch material and dataset"
+                )
+            Database._validate_shipment_plans(connection, row)
+            planned_departure = utc(datetime.fromisoformat(row["planned_departure_at"]))
+            planned_arrival = utc(datetime.fromisoformat(row["planned_arrival_at"]))
+            if planned_arrival <= planned_departure:
+                raise ValueError("Planned shipment arrival must follow departure")
+            departure = (
+                utc(datetime.fromisoformat(row["actual_departure_at"]))
+                if row["actual_departure_at"]
+                else None
+            )
+            arrival = (
+                utc(datetime.fromisoformat(row["actual_arrival_at"]))
+                if row["actual_arrival_at"]
+                else None
+            )
+            if arrival and (departure is None or arrival < departure):
+                raise ValueError("Observed shipment arrival requires prior departure")
+            departure = departure if departure and departure <= cutoff else None
+            arrival = arrival if arrival and arrival <= cutoff else None
+            readings = []
+            if departure:
+                reading_rows = connection.execute(
+                    "SELECT shipment_id,observed_at AS at,product_c,ambient_c,"
+                    "refrigerated,excursion_min FROM shipment_readings "
+                    "WHERE shipment_id=? AND observed_at>=? AND observed_at<=? "
+                    "AND (? IS NULL OR observed_at<=?) ORDER BY observed_at",
+                    (row["id"], departure, cutoff, arrival, arrival),
+                ).fetchall()
+                readings = [
+                    ShipmentReading.model_validate(dict(reading))
+                    for reading in reading_rows
+                ]
+            # Route descriptors are immutable attributes held in shipment_json;
+            # live quantities and all observed timing come from normalized rows.
+            route = json.loads(row["shipment_json"])
+            shipments.append(
+                BatchShipmentSnapshot(
+                    id=row["id"],
+                    material_id=row["material_id"],
+                    lot_id=row["lot_id"],
+                    quantity_kg=row["quantity_kg"],
+                    route_mode=route["route_mode"],
+                    origin=route["origin"],
+                    destination=route["destination"],
+                    planned_departure_at=planned_departure,
+                    planned_arrival_at=planned_arrival,
+                    actual_departure_at=departure,
+                    actual_arrival_at=arrival,
+                    readings=readings,
+                )
+            )
+            plans.append(
+                BatchSupplyPlan(
+                    batch_id=batch["id"],
+                    shipment_id=row["id"],
+                    quantity_kg=row["planned_quantity_kg"],
+                )
+            )
+        return plans, shipments
+
+    @staticmethod
+    def _validate_shipment_plans(connection, shipment):
+        """Competing demand must not allocate the same incoming quantity twice."""
+        linked = connection.execute(
+            "SELECT p.quantity_kg,b.dataset_id,b.material_id FROM batch_supply_plans p "
+            "JOIN batches b ON b.id=p.batch_id WHERE p.shipment_id=? ORDER BY b.id",
+            (shipment["id"],),
+        ).fetchall()
+        for plan in linked:
+            if (
+                plan["dataset_id"] != shipment["dataset_id"]
+                or plan["material_id"] != shipment["material_id"]
+            ):
+                raise ValueError(
+                    "Competing supply plan must match shipment material and dataset"
+                )
+        if sum(plan["quantity_kg"] for plan in linked) > shipment["quantity_kg"]:
+            raise ValueError("Planned supply exceeds shipment quantity")
+
+    @staticmethod
+    def _batch_stock(connection, batch, cutoff):
+        rows = connection.execute(
+            "SELECT l.*,s.dataset_id AS shipment_dataset_id,"
+            "s.material_id AS shipment_material_id,s.lot_id AS shipment_lot_id,"
+            "s.quantity_kg AS shipment_quantity_kg,s.actual_arrival_at FROM inventory_lots l "
+            "LEFT JOIN shipments s ON s.id=l.shipment_id "
+            "WHERE l.dataset_id=? AND l.material_id=? ORDER BY l.id",
+            (batch["dataset_id"], batch["material_id"]),
+        ).fetchall()
+        inventory = []
+        for row in rows:
+            if row["shipment_id"]:
+                if (
+                    row["shipment_dataset_id"] != batch["dataset_id"]
+                    or row["shipment_material_id"] != batch["material_id"]
+                    or row["shipment_lot_id"] != row["id"]
+                ):
+                    raise ValueError(
+                        "Incoming inventory must match shipment and dataset"
+                    )
+                if row["quantity_kg"] > row["shipment_quantity_kg"]:
+                    raise ValueError("Incoming inventory exceeds shipment quantity")
+                if row["actual_arrival_at"] and (
+                    utc(datetime.fromisoformat(row["available_at"]))
+                    < utc(datetime.fromisoformat(row["actual_arrival_at"]))
+                ):
+                    raise ValueError(
+                        "Incoming inventory availability precedes shipment arrival"
+                    )
+                if not row["actual_arrival_at"] or row["actual_arrival_at"] > cutoff:
+                    continue
+            inventory.append(
+                InventoryLot.model_validate(
+                    {field: row[field] for field in InventoryLot.model_fields}
+                )
+            )
+        visible_lots = {lot.id for lot in inventory}
+        reservation_rows = connection.execute(
+            "SELECT r.*,b.dataset_id AS batch_dataset_id,"
+            "b.material_id AS batch_material_id,l.dataset_id AS lot_dataset_id,"
+            "l.material_id AS lot_material_id FROM stock_reservations r "
+            "JOIN batches b ON b.id=r.batch_id "
+            "JOIN inventory_lots l ON l.id=r.inventory_lot_id "
+            "WHERE r.batch_id=? OR (l.dataset_id=? AND l.material_id=?) "
+            "ORDER BY r.inventory_lot_id,r.batch_id",
+            (batch["id"], batch["dataset_id"], batch["material_id"]),
+        ).fetchall()
+        reservations = []
+        for row in reservation_rows:
+            if (
+                row["batch_dataset_id"] != batch["dataset_id"]
+                or row["lot_dataset_id"] != batch["dataset_id"]
+                or row["batch_material_id"] != batch["material_id"]
+                or row["lot_material_id"] != batch["material_id"]
+            ):
+                raise ValueError(
+                    "Stock reservation must match batch material and dataset"
+                )
+            if row["inventory_lot_id"] in visible_lots:
+                reservations.append(
+                    StockReservation.model_validate(
+                        {field: row[field] for field in StockReservation.model_fields}
+                    )
+                )
+        return inventory, reservations
+
+    def store_batch_profile(self, profile: BatchAnalysisProfile):
+        """Persist one immutable named worker configuration; identical retry is safe."""
+        profile = BatchAnalysisProfile.model_validate(profile.model_dump())
+        payload = canonical(profile.model_dump(mode="json"))
+        with self.connect() as connection:
+            previous = connection.execute(
+                "SELECT payload_json FROM batch_analysis_profiles WHERE profile_id=?",
+                (profile.profile_id,),
+            ).fetchone()
+            if previous:
+                if canonical(json.loads(previous[0])) != payload:
+                    raise ValueError("Profile ID already exists with different inputs")
+                return False
+            connection.execute(
+                "INSERT INTO batch_analysis_profiles(profile_id,stored_at,payload_json) "
+                "VALUES (?,?,?)",
+                (profile.profile_id, utc(datetime.now(timezone.utc)), payload),
+            )
+        return True
+
+    def batch_profile(self, profile_id: str):
+        """Read persisted assumptions, without consulting scenario files."""
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT payload_json FROM batch_analysis_profiles WHERE profile_id=?",
+                (profile_id,),
+            ).fetchone()
+        if row is None:
+            raise ValueError("Batch analysis profile not found")
+        return BatchAnalysisProfile.model_validate_json(row[0])
+
+    def store_batch_assessment(self, record: StoredBatchAssessment, evidence: dict):
+        """Preserve exact inputs and reject digest mismatches or ID collisions."""
+        record = StoredBatchAssessment.model_validate(record.model_dump())
+        if (
+            "inputs" not in evidence
+            or digest(evidence["inputs"]) != record.input_sha256
+        ):
+            raise ValueError("Assessment input digest does not match stored evidence")
+        payload = canonical(record.model_dump(mode="json"))
+        evidence_payload = canonical(evidence)
+        with self.connect() as connection:
+            previous = connection.execute(
+                "SELECT payload_json,evidence_json FROM batch_assessments "
+                "WHERE assessment_id=?",
+                (record.assessment_id,),
+            ).fetchone()
+            if previous:
+                if (
+                    canonical(json.loads(previous["payload_json"])) != payload
+                    or canonical(json.loads(previous["evidence_json"]))
+                    != evidence_payload
+                ):
+                    raise ValueError(
+                        "Assessment ID already exists with different content"
+                    )
+                return False
+            batch = connection.execute(
+                "SELECT material_id FROM batches WHERE id=? AND dataset_id=?",
+                (record.batch_id, record.dataset_id),
+            ).fetchone()
+            if batch is None:
+                raise ValueError("Assessment batch not found in operational dataset")
+            for shipment_id in record.shipment_ids:
+                shipment = connection.execute(
+                    "SELECT s.material_id FROM shipments s JOIN batch_supply_plans p "
+                    "ON p.shipment_id=s.id WHERE p.batch_id=? AND s.id=? AND s.dataset_id=?",
+                    (record.batch_id, shipment_id, record.dataset_id),
+                ).fetchone()
+                if shipment is None or shipment[0] != batch["material_id"]:
+                    raise ValueError(
+                        "Assessment shipment must belong to batch supply plan"
+                    )
+            connection.execute(
+                "INSERT INTO batch_assessments(assessment_id,dataset_id,batch_id,"
+                "as_of,stored_at,payload_json,evidence_json) VALUES (?,?,?,?,?,?,?)",
+                (
+                    record.assessment_id,
+                    record.dataset_id,
+                    record.batch_id,
+                    utc(record.as_of),
+                    utc(datetime.now(timezone.utc)),
+                    payload,
+                    evidence_payload,
+                ),
+            )
+        return True
+
+    def batch_assessment(self, assessment_id: str):
+        """Return one stored immutable assessment, or None when absent."""
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT payload_json FROM batch_assessments WHERE assessment_id=?",
+                (assessment_id,),
+            ).fetchone()
+        return StoredBatchAssessment.model_validate_json(row[0]) if row else None
+
+    def batch_assessments(self, dataset_id=None, batch_id=None, as_of=None):
+        """Read matching records newest first, with deterministic tie breaking."""
+        filters, params = [], []
+        for field, value in (("dataset_id", dataset_id), ("batch_id", batch_id)):
+            if value is not None:
+                filters.append(f"{field}=?")
+                params.append(value)
+        if as_of is not None:
+            filters.append("as_of<=?")
+            params.append(utc(as_of))
+        where = " WHERE " + " AND ".join(filters) if filters else ""
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT payload_json FROM batch_assessments"
+                + where
+                + " ORDER BY as_of DESC,stored_at DESC,assessment_id DESC",
+                params,
+            ).fetchall()
+        return [StoredBatchAssessment.model_validate_json(row[0]) for row in rows]

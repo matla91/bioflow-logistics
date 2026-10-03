@@ -2,7 +2,7 @@
 
 ## Missing element
 
-Implement **batch-linked assessments from stored operations**. The existing worker evaluates three named retrospective logistics scenarios. It does not assess the 18 operational batches or link recommendations to their shipments, inventory and product-temperature histories.
+Implement **batch-linked assessments from stored operations**. The additive vertical slice is documented in [BATCH_ASSESSMENTS.md](BATCH_ASSESSMENTS.md); the original three named scenarios remain available. The requirements below describe the intended boundary and remaining limitations.
 
 Start from `feat/build-integration` in https://github.com/cfpramod/current-affairs. Read [BUILD_INTEGRATION.md](BUILD_INTEGRATION.md), [DATA_ENGINE.md](DATA_ENGINE.md), [operations examples](../data/examples/operations/README.md) and [the canonical interface](../pipeline/baselhack/interfaces.py). Reuse logistics/thermal/rules code where its assumptions apply. The fetched ML branch contained only the original scaffold at the last check; provide the implementation on a reviewable feature branch.
 

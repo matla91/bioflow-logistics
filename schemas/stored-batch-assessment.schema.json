@@ -1,0 +1,1955 @@
+{
+  "$defs": {
+    "BatchAnalysisProfile": {
+      "additionalProperties": false,
+      "description": "Persisted, uncalibrated worker configuration; never inferred from case labels.",
+      "properties": {
+        "destination": {
+          "default": "Basel production site",
+          "minLength": 1,
+          "title": "Destination",
+          "type": "string"
+        },
+        "expedite_available": {
+          "default": true,
+          "title": "Expedite Available",
+          "type": "boolean"
+        },
+        "handling_min": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Handling Min",
+          "type": "number"
+        },
+        "logistics": {
+          "$ref": "#/$defs/LogisticsAssumptions"
+        },
+        "max_reading_gap_min": {
+          "default": 60,
+          "exclusiveMinimum": 0,
+          "title": "Max Reading Gap Min",
+          "type": "number"
+        },
+        "origin": {
+          "default": "Rotterdam",
+          "minLength": 1,
+          "title": "Origin",
+          "type": "string"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "protection_remaining_min": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Protection Remaining Min",
+          "type": "number"
+        },
+        "reroute_available": {
+          "default": false,
+          "title": "Reroute Available",
+          "type": "boolean"
+        },
+        "station_ids": {
+          "default": [
+            "402"
+          ],
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Station Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "profile_id",
+        "logistics"
+      ],
+      "title": "BatchAnalysisProfile",
+      "type": "object"
+    },
+    "BatchRecommendation": {
+      "additionalProperties": false,
+      "description": "Human approval is mandatory; no automatic QA disposition or release.",
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "enum": [
+                "BUFFER",
+                "EXPEDITE",
+                "REROUTE"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Action"
+        },
+        "alternatives": {
+          "items": {
+            "$ref": "#/$defs/LogisticsActionResult"
+          },
+          "title": "Alternatives",
+          "type": "array"
+        },
+        "qa_release_authorized": {
+          "const": false,
+          "default": false,
+          "title": "Qa Release Authorized",
+          "type": "boolean"
+        },
+        "qa_review_required": {
+          "title": "Qa Review Required",
+          "type": "boolean"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "requires_approval_by": {
+          "enum": [
+            "operator",
+            "logistics",
+            "QA"
+          ],
+          "title": "Requires Approval By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "requires_approval_by",
+        "qa_review_required",
+        "alternatives"
+      ],
+      "title": "BatchRecommendation",
+      "type": "object"
+    },
+    "BatchStockEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "available_at": {
+          "format": "date-time",
+          "title": "Available At",
+          "type": "string"
+        },
+        "eligible_reserved_quantity_kg": {
+          "minimum": 0,
+          "title": "Eligible Reserved Quantity Kg",
+          "type": "number"
+        },
+        "inventory_lot_id": {
+          "minLength": 1,
+          "title": "Inventory Lot Id",
+          "type": "string"
+        },
+        "qa_status": {
+          "enum": [
+            "released",
+            "pending",
+            "quarantined"
+          ],
+          "title": "Qa Status",
+          "type": "string"
+        },
+        "quantity_kg": {
+          "minimum": 0,
+          "title": "Quantity Kg",
+          "type": "number"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reserved_for_batch_kg": {
+          "minimum": 0,
+          "title": "Reserved For Batch Kg",
+          "type": "number"
+        },
+        "reserved_for_others_kg": {
+          "minimum": 0,
+          "title": "Reserved For Others Kg",
+          "type": "number"
+        },
+        "unreserved_quantity_kg": {
+          "minimum": 0,
+          "title": "Unreserved Quantity Kg",
+          "type": "number"
+        }
+      },
+      "required": [
+        "inventory_lot_id",
+        "quantity_kg",
+        "reserved_for_batch_kg",
+        "reserved_for_others_kg",
+        "unreserved_quantity_kg",
+        "eligible_reserved_quantity_kg",
+        "qa_status",
+        "available_at",
+        "reason"
+      ],
+      "title": "BatchStockEvidence",
+      "type": "object"
+    },
+    "IncomingShipmentResult": {
+      "additionalProperties": false,
+      "description": "Arrival timing and ambient proxy stay separate from measured product evidence.",
+      "properties": {
+        "actual_arrival_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Actual Arrival At"
+        },
+        "cold_chain_exposure_proxy_risk": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cold Chain Exposure Proxy Risk"
+        },
+        "dependency_quantity_kg": {
+          "minimum": 0,
+          "title": "Dependency Quantity Kg",
+          "type": "number"
+        },
+        "eta_p50": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Eta P50"
+        },
+        "eta_p90": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Eta P90"
+        },
+        "logistics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LogisticsResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "on_time_arrival_probability": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "On Time Arrival Probability"
+        },
+        "planned_arrival_at": {
+          "format": "date-time",
+          "title": "Planned Arrival At",
+          "type": "string"
+        },
+        "planned_quantity_kg": {
+          "exclusiveMinimum": 0,
+          "title": "Planned Quantity Kg",
+          "type": "number"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "scheduled_after_charge": {
+          "title": "Scheduled After Charge",
+          "type": "boolean"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ARRIVED",
+            "MODELED",
+            "UNAVAILABLE"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "shipment_id",
+        "planned_quantity_kg",
+        "dependency_quantity_kg",
+        "planned_arrival_at",
+        "actual_arrival_at",
+        "scheduled_after_charge",
+        "status",
+        "on_time_arrival_probability",
+        "eta_p50",
+        "eta_p90",
+        "cold_chain_exposure_proxy_risk",
+        "logistics",
+        "reason"
+      ],
+      "title": "IncomingShipmentResult",
+      "type": "object"
+    },
+    "LogisticsActionResult": {
+      "additionalProperties": false,
+      "description": "Separate production timing, shipment timing and ambient exposure outcomes.\n\nArrival and production continuity use the exact deadline, without the legacy\ndelay tolerance. Factory timing is independent of ambient proxy exceedance;\nno pharmaceutical usability or QA release is inferred. BUFFER may cover the\nfactory while incoming arrival/exposure remain poor.",
+      "properties": {
+        "action": {
+          "enum": [
+            "BUFFER",
+            "EXPEDITE",
+            "REROUTE"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "assessment": {
+          "minLength": 1,
+          "title": "Assessment",
+          "type": "string"
+        },
+        "cold_chain_exposure_proxy_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Cold Chain Exposure Proxy Risk",
+          "type": "number"
+        },
+        "delay_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delay Risk",
+          "type": "number"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "on_time_arrival_probability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "On Time Arrival Probability",
+          "type": "number"
+        },
+        "predicted_arrival_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Arrival Delay Min",
+          "type": "number"
+        },
+        "predicted_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Delay Min",
+          "type": "number"
+        },
+        "production_continuity_probability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Production Continuity Probability",
+          "type": "number"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "success_probability": {
+          "deprecated": true,
+          "description": "DEPRECATED: BUFFER stock coverage, otherwise joint factory lateness <= tolerance and ambient proxy <= budget. Not comparable across actions; never used for recommendations.",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Success Probability",
+          "type": "number"
+        }
+      },
+      "required": [
+        "action",
+        "eligible",
+        "production_continuity_probability",
+        "on_time_arrival_probability",
+        "cold_chain_exposure_proxy_risk",
+        "predicted_delay_min",
+        "predicted_arrival_delay_min",
+        "delay_risk",
+        "assessment",
+        "reason",
+        "success_probability"
+      ],
+      "title": "LogisticsActionResult",
+      "type": "object"
+    },
+    "LogisticsAssumptions": {
+      "additionalProperties": false,
+      "description": "Uncalibrated scenario coefficients, never provider facts or QA limits.",
+      "properties": {
+        "ambient_reference_band_c": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Ambient Reference Band C",
+          "type": "array"
+        },
+        "assumed": {
+          "const": true,
+          "default": true,
+          "title": "Assumed",
+          "type": "boolean"
+        },
+        "baseline_min_samples": {
+          "minimum": 2,
+          "title": "Baseline Min Samples",
+          "type": "integer"
+        },
+        "delay_threshold_min": {
+          "minimum": 0,
+          "title": "Delay Threshold Min",
+          "type": "number"
+        },
+        "expedite_handling_factor": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Expedite Handling Factor",
+          "type": "number"
+        },
+        "expedite_transport_factor": {
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Expedite Transport Factor",
+          "type": "number"
+        },
+        "exposure_budget_degree_min": {
+          "exclusiveMinimum": 0,
+          "title": "Exposure Budget Degree Min",
+          "type": "number"
+        },
+        "falling_discharge_min_per_m3_s_hour": {
+          "minimum": 0,
+          "title": "Falling Discharge Min Per M3 S Hour",
+          "type": "number"
+        },
+        "falling_level_min_per_cm_hour": {
+          "minimum": 0,
+          "title": "Falling Level Min Per Cm Hour",
+          "type": "number"
+        },
+        "handling_sd_min": {
+          "minimum": 0,
+          "title": "Handling Sd Min",
+          "type": "number"
+        },
+        "max_rhine_age_min": {
+          "exclusiveMinimum": 0,
+          "title": "Max Rhine Age Min",
+          "type": "number"
+        },
+        "max_traffic_age_min": {
+          "exclusiveMinimum": 0,
+          "title": "Max Traffic Age Min",
+          "type": "number"
+        },
+        "max_weather_age_min": {
+          "exclusiveMinimum": 0,
+          "title": "Max Weather Age Min",
+          "type": "number"
+        },
+        "n_runs": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "N Runs",
+          "type": "integer"
+        },
+        "navigation_restricted_penalty_min": {
+          "default": 30,
+          "exclusiveMinimum": 0,
+          "title": "Navigation Restricted Penalty Min",
+          "type": "number"
+        },
+        "navigation_severe_penalty_min": {
+          "default": 60,
+          "exclusiveMinimum": 0,
+          "title": "Navigation Severe Penalty Min",
+          "type": "number"
+        },
+        "rain_min_per_mm": {
+          "minimum": 0,
+          "title": "Rain Min Per Mm",
+          "type": "number"
+        },
+        "recommendation_policy": {
+          "$ref": "#/$defs/RecommendationPolicy"
+        },
+        "reroute_extra_handling_min": {
+          "minimum": 0,
+          "title": "Reroute Extra Handling Min",
+          "type": "number"
+        },
+        "reroute_traffic_factor": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Reroute Traffic Factor",
+          "type": "number"
+        },
+        "reroute_transport_min": {
+          "exclusiveMinimum": 0,
+          "title": "Reroute Transport Min",
+          "type": "number"
+        },
+        "reroute_transport_sd_min": {
+          "minimum": 0,
+          "title": "Reroute Transport Sd Min",
+          "type": "number"
+        },
+        "river_penalty_cap_min": {
+          "minimum": 0,
+          "title": "River Penalty Cap Min",
+          "type": "number"
+        },
+        "route_block_delay_min": {
+          "default": 1440,
+          "exclusiveMinimum": 0,
+          "title": "Route Block Delay Min",
+          "type": "number"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "traffic_min_per_positive_z": {
+          "minimum": 0,
+          "title": "Traffic Min Per Positive Z",
+          "type": "number"
+        },
+        "traffic_z_cap": {
+          "exclusiveMinimum": 0,
+          "title": "Traffic Z Cap",
+          "type": "number"
+        },
+        "transport_sd_min": {
+          "minimum": 0,
+          "title": "Transport Sd Min",
+          "type": "number"
+        },
+        "trend_min_span_min": {
+          "exclusiveMinimum": 0,
+          "title": "Trend Min Span Min",
+          "type": "number"
+        },
+        "trend_window_min": {
+          "exclusiveMinimum": 0,
+          "title": "Trend Window Min",
+          "type": "number"
+        },
+        "wind_min_per_m_s": {
+          "minimum": 0,
+          "title": "Wind Min Per M S",
+          "type": "number"
+        },
+        "wind_threshold_m_s": {
+          "minimum": 0,
+          "title": "Wind Threshold M S",
+          "type": "number"
+        }
+      },
+      "required": [
+        "n_runs",
+        "seed",
+        "transport_sd_min",
+        "handling_sd_min",
+        "traffic_min_per_positive_z",
+        "traffic_z_cap",
+        "falling_level_min_per_cm_hour",
+        "falling_discharge_min_per_m3_s_hour",
+        "river_penalty_cap_min",
+        "rain_min_per_mm",
+        "wind_threshold_m_s",
+        "wind_min_per_m_s",
+        "delay_threshold_min",
+        "ambient_reference_band_c",
+        "exposure_budget_degree_min",
+        "expedite_transport_factor",
+        "expedite_handling_factor",
+        "reroute_transport_min",
+        "reroute_transport_sd_min",
+        "reroute_extra_handling_min",
+        "reroute_traffic_factor",
+        "max_traffic_age_min",
+        "max_rhine_age_min",
+        "max_weather_age_min",
+        "trend_window_min",
+        "trend_min_span_min",
+        "baseline_min_samples"
+      ],
+      "title": "LogisticsAssumptions",
+      "type": "object"
+    },
+    "LogisticsFeatures": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "official_navigation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OfficialNavigationSignal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rhine": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RhineFeatures"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traffic": {
+          "items": {
+            "$ref": "#/$defs/TrafficFeature"
+          },
+          "title": "Traffic",
+          "type": "array"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "weather": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WeatherFeatures"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "as_of",
+        "traffic",
+        "rhine",
+        "weather",
+        "warnings"
+      ],
+      "title": "LogisticsFeatures",
+      "type": "object"
+    },
+    "LogisticsResult": {
+      "additionalProperties": false,
+      "description": "Probabilities are Monte Carlo frequencies under assumptions, not calibration.\n\npredicted_delay_min is mean lateness beyond the simulated deadline. delay_risk\nuses delay_threshold_min. Proxy risk is P(ambient degree-minute proxy exceeds\nits assumed budget), with no claim of actual product-temperature excursions.\nSuccess means factory lateness <= threshold AND exposure proxy <= budget;\nBUFFER instead needs sufficient stock, independent of the incoming lot's proxy.",
+      "properties": {
+        "action_success_probabilities": {
+          "additionalProperties": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "deprecated": true,
+          "description": "DEPRECATED: action-specific legacy success events; do not compare or use for recommendations.",
+          "propertyNames": {
+            "enum": [
+              "BUFFER",
+              "EXPEDITE",
+              "REROUTE"
+            ]
+          },
+          "title": "Action Success Probabilities",
+          "type": "object"
+        },
+        "actions": {
+          "items": {
+            "$ref": "#/$defs/LogisticsActionResult"
+          },
+          "title": "Actions",
+          "type": "array"
+        },
+        "as_of": {
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "assumptions": {
+          "$ref": "#/$defs/LogisticsAssumptions"
+        },
+        "cold_chain_exposure_proxy_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Cold Chain Exposure Proxy Risk",
+          "type": "number"
+        },
+        "data_provenance": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ProvenanceSummary"
+          },
+          "title": "Data Provenance",
+          "type": "object"
+        },
+        "delay_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delay Risk",
+          "type": "number"
+        },
+        "features": {
+          "$ref": "#/$defs/LogisticsFeatures"
+        },
+        "limitations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "main_risk_drivers": {
+          "items": {
+            "$ref": "#/$defs/RiskDriver"
+          },
+          "title": "Main Risk Drivers",
+          "type": "array"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "navigation": {
+          "$ref": "#/$defs/NavigationAssessment"
+        },
+        "predicted_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Delay Min",
+          "type": "number"
+        },
+        "real_data_sources": {
+          "items": {
+            "$ref": "#/$defs/ObservationSource"
+          },
+          "minItems": 1,
+          "title": "Real Data Sources",
+          "type": "array"
+        },
+        "recommendation": {
+          "$ref": "#/$defs/Recommendation"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        },
+        "simulated_shipment": {
+          "$ref": "#/$defs/ShipmentState"
+        }
+      },
+      "required": [
+        "shipment_id",
+        "as_of",
+        "predicted_delay_min",
+        "delay_risk",
+        "cold_chain_exposure_proxy_risk",
+        "action_success_probabilities",
+        "actions",
+        "navigation",
+        "recommendation",
+        "data_provenance",
+        "main_risk_drivers",
+        "features",
+        "simulated_shipment",
+        "assumptions",
+        "real_data_sources",
+        "limitations",
+        "model"
+      ],
+      "title": "LogisticsResult",
+      "type": "object"
+    },
+    "NavigationAssessment": {
+      "additionalProperties": false,
+      "description": "Official state if supplied and valid; otherwise an ASSUMED trend scenario.\n\nDelay provenance is independent of status provenance. No state implies an\nofficial hydrological threshold or navigation restriction without an adapter.",
+      "properties": {
+        "delay_kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Delay Kind",
+          "type": "string"
+        },
+        "delay_penalty_min": {
+          "minimum": 0,
+          "title": "Delay Penalty Min",
+          "type": "number"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "normal_route_eligible": {
+          "title": "Normal Route Eligible",
+          "type": "boolean"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reported_delay_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reported Delay Min"
+        },
+        "state": {
+          "enum": [
+            "NORMAL",
+            "WATCH",
+            "RESTRICTED",
+            "SEVERE",
+            "UNKNOWN"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "state",
+        "kind",
+        "normal_route_eligible",
+        "delay_penalty_min",
+        "delay_kind",
+        "reason"
+      ],
+      "title": "NavigationAssessment",
+      "type": "object"
+    },
+    "ObservationSource": {
+      "additionalProperties": false,
+      "description": "Provenance for observed external data, never shipment/factory assumptions.",
+      "properties": {
+        "dataset": {
+          "minLength": 1,
+          "title": "Dataset",
+          "type": "string"
+        },
+        "licence": {
+          "minLength": 1,
+          "title": "Licence",
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "real_data": {
+          "const": true,
+          "default": true,
+          "title": "Real Data",
+          "type": "boolean"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "url": {
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "dataset",
+        "url",
+        "retrieved_at",
+        "licence"
+      ],
+      "title": "ObservationSource",
+      "type": "object"
+    },
+    "OfficialNavigationSignal": {
+      "additionalProperties": false,
+      "description": "Future adapter input; no official feed is integrated by the current demo.\n\nState/route eligibility must come from the identified official source. A\nmissing delay estimate remains missing and uses a labelled assumed fallback.",
+      "properties": {
+        "expected_delay_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Delay Min"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "normal_route_eligible": {
+          "title": "Normal Route Eligible",
+          "type": "boolean"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "source_url": {
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "NORMAL",
+            "WATCH",
+            "RESTRICTED",
+            "SEVERE"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "valid_from": {
+          "format": "date-time",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "valid_until": {
+          "format": "date-time",
+          "title": "Valid Until",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "state",
+        "provider",
+        "source_url",
+        "issued_at",
+        "valid_from",
+        "valid_until",
+        "normal_route_eligible"
+      ],
+      "title": "OfficialNavigationSignal",
+      "type": "object"
+    },
+    "ProductTemperatureEvidence": {
+      "additionalProperties": false,
+      "description": "Sampled product evidence; sparse interpolation is not pharmaceutical QA.",
+      "properties": {
+        "budget_min": {
+          "exclusiveMinimum": 0,
+          "title": "Budget Min",
+          "type": "number"
+        },
+        "complete_journey": {
+          "title": "Complete Journey",
+          "type": "boolean"
+        },
+        "first_reading_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Reading At"
+        },
+        "last_product_c": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Product C"
+        },
+        "last_product_outside_range": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Product Outside Range"
+        },
+        "last_reading_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Reading At"
+        },
+        "limitations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "observed_excursion_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed Excursion Min"
+        },
+        "qa_release_authorized": {
+          "const": false,
+          "default": false,
+          "title": "Qa Release Authorized",
+          "type": "boolean"
+        },
+        "range_c": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Range C",
+          "type": "array"
+        },
+        "reading_count": {
+          "minimum": 0,
+          "title": "Reading Count",
+          "type": "integer"
+        },
+        "reported_excursion_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reported Excursion Min"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "UNAVAILABLE",
+            "OBSERVED_WITHIN_BUDGET",
+            "OBSERVED_BUDGET_EXCEEDED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "unobserved_interval_min": {
+          "minimum": 0,
+          "title": "Unobserved Interval Min",
+          "type": "number"
+        }
+      },
+      "required": [
+        "shipment_id",
+        "status",
+        "reading_count",
+        "range_c",
+        "budget_min",
+        "first_reading_at",
+        "last_reading_at",
+        "last_product_c",
+        "last_product_outside_range",
+        "observed_excursion_min",
+        "reported_excursion_min",
+        "unobserved_interval_min",
+        "complete_journey",
+        "limitations"
+      ],
+      "title": "ProductTemperatureEvidence",
+      "type": "object"
+    },
+    "ProductionReadiness": {
+      "additionalProperties": false,
+      "description": "Quantity accounting, independent of shipment timing or QA predictions.",
+      "properties": {
+        "incoming_dependency_kg": {
+          "minimum": 0,
+          "title": "Incoming Dependency Kg",
+          "type": "number"
+        },
+        "planned_charge_at": {
+          "format": "date-time",
+          "title": "Planned Charge At",
+          "type": "string"
+        },
+        "released_reserved_quantity_kg": {
+          "minimum": 0,
+          "title": "Released Reserved Quantity Kg",
+          "type": "number"
+        },
+        "required_quantity_kg": {
+          "exclusiveMinimum": 0,
+          "title": "Required Quantity Kg",
+          "type": "number"
+        },
+        "reservation_shortfall_kg": {
+          "minimum": 0,
+          "title": "Reservation Shortfall Kg",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "RESERVED_STOCK_SUFFICIENT",
+            "INCOMING_DEPENDENT",
+            "INSUFFICIENT_SUPPLY"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "stock_evidence": {
+          "items": {
+            "$ref": "#/$defs/BatchStockEvidence"
+          },
+          "title": "Stock Evidence",
+          "type": "array"
+        },
+        "uncovered_quantity_kg": {
+          "minimum": 0,
+          "title": "Uncovered Quantity Kg",
+          "type": "number"
+        }
+      },
+      "required": [
+        "planned_charge_at",
+        "required_quantity_kg",
+        "released_reserved_quantity_kg",
+        "reservation_shortfall_kg",
+        "incoming_dependency_kg",
+        "uncovered_quantity_kg",
+        "status",
+        "stock_evidence"
+      ],
+      "title": "ProductionReadiness",
+      "type": "object"
+    },
+    "ProvenanceSummary": {
+      "additionalProperties": false,
+      "description": "Indices refer to full detailed-output source metadata; no repeated URLs.",
+      "properties": {
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "source_indices": {
+          "default": [],
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "title": "Source Indices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "title": "ProvenanceSummary",
+      "type": "object"
+    },
+    "Recommendation": {
+      "additionalProperties": false,
+      "description": "Deterministic scenario recommendation; confidence describes evidence quality.",
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "enum": [
+                "BUFFER",
+                "EXPEDITE",
+                "REROUTE"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Action"
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "policy_detail": {
+          "minLength": 1,
+          "title": "Policy Detail",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "why_not": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "BUFFER",
+              "EXPEDITE",
+              "REROUTE"
+            ]
+          },
+          "title": "Why Not",
+          "type": "object"
+        },
+        "would_change_if": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Would Change If",
+          "type": "array"
+        }
+      },
+      "required": [
+        "action",
+        "confidence",
+        "reason",
+        "why_not",
+        "would_change_if",
+        "policy_detail"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "RecommendationPolicy": {
+      "additionalProperties": false,
+      "description": "Assumed service targets for deterministic decisions, not calibrated limits.",
+      "properties": {
+        "max_exposure_proxy_risk": {
+          "default": 0.1,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Max Exposure Proxy Risk",
+          "type": "number"
+        },
+        "sensitivity_factors": {
+          "default": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "items": {
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "title": "Sensitivity Factors",
+          "type": "array"
+        },
+        "target_on_time_arrival": {
+          "default": 0.9,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target On Time Arrival",
+          "type": "number"
+        },
+        "target_production_continuity": {
+          "default": 0.95,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target Production Continuity",
+          "type": "number"
+        }
+      },
+      "title": "RecommendationPolicy",
+      "type": "object"
+    },
+    "RhineFeatures": {
+      "additionalProperties": false,
+      "properties": {
+        "discharge_m3_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Discharge M3 S"
+        },
+        "discharge_trend_m3_s_per_hour": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Discharge Trend M3 S Per Hour"
+        },
+        "level_masl": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Level Masl"
+        },
+        "level_trend_cm_per_hour": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Level Trend Cm Per Hour"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "sample_count": {
+          "minimum": 1,
+          "title": "Sample Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "observed_at",
+        "level_masl",
+        "discharge_m3_s",
+        "level_trend_cm_per_hour",
+        "discharge_trend_m3_s_per_hour",
+        "sample_count"
+      ],
+      "title": "RhineFeatures",
+      "type": "object"
+    },
+    "RiskDriver": {
+      "additionalProperties": false,
+      "properties": {
+        "estimated_delay_contribution_min": {
+          "minimum": 0,
+          "title": "Estimated Delay Contribution Min",
+          "type": "number"
+        },
+        "evidence_kind": {
+          "enum": [
+            "observed",
+            "official_forecast",
+            "model",
+            "simulated",
+            "assumed"
+          ],
+          "title": "Evidence Kind",
+          "type": "string"
+        },
+        "explanation": {
+          "minLength": 1,
+          "title": "Explanation",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "unit": {
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "estimated_delay_contribution_min",
+        "explanation",
+        "evidence_kind"
+      ],
+      "title": "RiskDriver",
+      "type": "object"
+    },
+    "ShipmentState": {
+      "additionalProperties": false,
+      "description": "All fields are SIMULATED. Transport minutes exclude handling minutes.\n\nProtection autonomy is remaining whole-journey time until packaging protection\nis assumed to expire. BUFFER covers the factory deadline from assumed stock.",
+      "properties": {
+        "as_of": {
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "deadline_at": {
+          "format": "date-time",
+          "title": "Deadline At",
+          "type": "string"
+        },
+        "expedite_available": {
+          "default": true,
+          "title": "Expedite Available",
+          "type": "boolean"
+        },
+        "handling_min": {
+          "minimum": 0,
+          "title": "Handling Min",
+          "type": "number"
+        },
+        "planned_remaining_min": {
+          "exclusiveMinimum": 0,
+          "title": "Planned Remaining Min",
+          "type": "number"
+        },
+        "prior_exposure_degree_min": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Prior Exposure Degree Min",
+          "type": "number"
+        },
+        "protection_remaining_min": {
+          "minimum": 0,
+          "title": "Protection Remaining Min",
+          "type": "number"
+        },
+        "reroute_available": {
+          "default": true,
+          "title": "Reroute Available",
+          "type": "boolean"
+        },
+        "route_mode": {
+          "enum": [
+            "river",
+            "road"
+          ],
+          "title": "Route Mode",
+          "type": "string"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        },
+        "simulated": {
+          "const": true,
+          "default": true,
+          "title": "Simulated",
+          "type": "boolean"
+        },
+        "stock_available": {
+          "minimum": 0,
+          "title": "Stock Available",
+          "type": "integer"
+        },
+        "stock_required": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Stock Required",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "shipment_id",
+        "as_of",
+        "deadline_at",
+        "route_mode",
+        "planned_remaining_min",
+        "handling_min",
+        "protection_remaining_min",
+        "stock_available"
+      ],
+      "title": "ShipmentState",
+      "type": "object"
+    },
+    "TrafficFeature": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_mean": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Baseline Mean"
+        },
+        "baseline_sample_count": {
+          "minimum": 0,
+          "title": "Baseline Sample Count",
+          "type": "integer"
+        },
+        "baseline_sd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Baseline Sd"
+        },
+        "interval_end": {
+          "format": "date-time",
+          "title": "Interval End",
+          "type": "string"
+        },
+        "observed_count": {
+          "minimum": 0,
+          "title": "Observed Count",
+          "type": "number"
+        },
+        "station_id": {
+          "minLength": 1,
+          "title": "Station Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "missing_baseline",
+            "zero_variance"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "z_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Z Score"
+        }
+      },
+      "required": [
+        "station_id",
+        "interval_end",
+        "observed_count",
+        "baseline_mean",
+        "baseline_sd",
+        "baseline_sample_count",
+        "z_score",
+        "status"
+      ],
+      "title": "TrafficFeature",
+      "type": "object"
+    },
+    "WeatherFeatures": {
+      "additionalProperties": false,
+      "properties": {
+        "air_temperature_c": {
+          "title": "Air Temperature C",
+          "type": "number"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "precipitation_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Precipitation Mm"
+        },
+        "relative_humidity_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Relative Humidity Pct"
+        },
+        "temperature_trend_c_per_hour": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Temperature Trend C Per Hour"
+        },
+        "wind_speed_m_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Wind Speed M S"
+        }
+      },
+      "required": [
+        "observed_at",
+        "air_temperature_c",
+        "precipitation_mm",
+        "wind_speed_m_s",
+        "relative_humidity_pct",
+        "temperature_trend_c_per_hour"
+      ],
+      "title": "WeatherFeatures",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Immutable batch-linked result with separate stock, timing and product evidence.",
+  "properties": {
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "assessment_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Assessment Id",
+      "type": "string"
+    },
+    "assumptions": {
+      "$ref": "#/$defs/BatchAnalysisProfile"
+    },
+    "batch_id": {
+      "minLength": 1,
+      "title": "Batch Id",
+      "type": "string"
+    },
+    "dataset_id": {
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "incoming_shipments": {
+      "items": {
+        "$ref": "#/$defs/IncomingShipmentResult"
+      },
+      "title": "Incoming Shipments",
+      "type": "array"
+    },
+    "input_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Sha256",
+      "type": "string"
+    },
+    "known_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Known At"
+    },
+    "limitations": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "model_version": {
+      "minLength": 1,
+      "title": "Model Version",
+      "type": "string"
+    },
+    "product_temperature": {
+      "items": {
+        "$ref": "#/$defs/ProductTemperatureEvidence"
+      },
+      "title": "Product Temperature",
+      "type": "array"
+    },
+    "production_readiness": {
+      "$ref": "#/$defs/ProductionReadiness"
+    },
+    "provenance": {
+      "items": {
+        "$ref": "#/$defs/ProvenanceSummary"
+      },
+      "title": "Provenance",
+      "type": "array"
+    },
+    "real_data_sources": {
+      "items": {
+        "$ref": "#/$defs/ObservationSource"
+      },
+      "title": "Real Data Sources",
+      "type": "array"
+    },
+    "recommendation": {
+      "$ref": "#/$defs/BatchRecommendation"
+    },
+    "shipment_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Shipment Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "assessment_id",
+    "dataset_id",
+    "batch_id",
+    "shipment_ids",
+    "as_of",
+    "known_at",
+    "input_sha256",
+    "model_version",
+    "production_readiness",
+    "incoming_shipments",
+    "product_temperature",
+    "recommendation",
+    "provenance",
+    "real_data_sources",
+    "assumptions",
+    "limitations"
+  ],
+  "title": "StoredBatchAssessment",
+  "type": "object"
+}

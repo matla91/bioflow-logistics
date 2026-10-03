@@ -20,7 +20,7 @@ The API listens on localhost port 8002. The dashboard now has a project-local Pi
 
 The read API exposes `/api/integration/operations`, `/api/integration/assessments` and `/api/integration/assessments/{assessment_id}`. Contracts are generated from [interfaces.py](../pipeline/baselhack/interfaces.py), including [the assessment schema](../schemas/stored-logistics-assessment.schema.json). The worker preserves full normalized observations, scenario, assumptions, station selection, model version and detailed result in immutable evidence. Repeated identical analysis is idempotent; new inputs produce a new assessment ID. Bump the model version when calculation behavior changes.
 
-These are the three retrospective named logistics scenarios, not assessments of the 18 operational batches. They remain probabilities under simulation assumptions. Ambient exposure is not a measured product-temperature excursion. Do not map it into the shipment console's `p_excursion` field or authorize QA release from it. The model has missing-data/proxy warnings and seven existing verification gates remain open.
+The three named retrospective logistics scenarios remain available. The additive [batch worker and read API](BATCH_ASSESSMENTS.md) now join stored operations and expose stock, timing and product evidence separately. They remain probabilities under simulation assumptions. Ambient exposure is not a measured product-temperature excursion. Do not map it into the shipment console's `p_excursion` field or authorize QA release from it. The model has missing-data/proxy warnings and seven existing verification gates remain open.
 
 ## Builder implementation briefs
 

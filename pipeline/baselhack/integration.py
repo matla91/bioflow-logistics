@@ -7,10 +7,18 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import yaml
 from fastapi import FastAPI, HTTPException
 
+from baselhack.batch_assessment import DEFAULT_PROFILE_ID, analyze_batch
 from baselhack.data_engine.database import Database, digest, utc
-from baselhack.interfaces import OperationalDataset, StoredLogisticsAssessment
+from baselhack.interfaces import (
+    BatchAnalysisProfile,
+    OperationalDataset,
+    StoredBatchAssessment,
+    StoredLogisticsAssessment,
+    Timestamp,
+)
 from baselhack.logistics import evaluate, load_demo
 from baselhack.output import to_frontend
 from baselhack.storage import ROOT, canonical
@@ -94,23 +102,93 @@ def create_app(database):
             raise HTTPException(404, "Assessment not found")
         return StoredLogisticsAssessment.model_validate_json(row[0])
 
+    @app.get(
+        "/api/integration/batch-assessments", response_model=list[StoredBatchAssessment]
+    )
+    def batch_assessments(
+        dataset_id: str | None = None,
+        batch_id: str | None = None,
+        as_of: Timestamp | None = None,
+    ):
+        return database.batch_assessments(dataset_id, batch_id, as_of)
+
+    @app.get(
+        "/api/integration/batch-assessments/{assessment_id}",
+        response_model=StoredBatchAssessment,
+    )
+    def batch_assessment(assessment_id: str):
+        record = database.batch_assessment(assessment_id)
+        if record is None:
+            raise HTTPException(404, "Batch assessment not found")
+        return record
+
+    @app.get(
+        "/api/integration/batches/{batch_id}/assessments/latest",
+        response_model=StoredBatchAssessment,
+    )
+    def latest_batch_assessment(
+        batch_id: str, dataset_id: str | None = None, as_of: Timestamp | None = None
+    ):
+        records = database.batch_assessments(dataset_id, batch_id, as_of)
+        if not records:
+            raise HTTPException(404, "No applicable batch assessment found")
+        return records[0]
+
     return app
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["analyze", "watch", "serve"])
+    parser.add_argument(
+        "command",
+        choices=["analyze", "watch", "serve", "configure-batches", "analyze-batch"],
+    )
     parser.add_argument(
         "--database", type=Path, default=ROOT / ".runtime/current-affairs.sqlite3"
     )
     parser.add_argument("--interval-min", type=float, default=60)
     parser.add_argument("--cycles", type=int)
     parser.add_argument("--port", type=int, default=8002)
+    parser.add_argument("--dataset-id")
+    parser.add_argument("--batch-id")
+    parser.add_argument("--as-of", type=datetime.fromisoformat)
+    parser.add_argument("--known-at", type=datetime.fromisoformat)
+    parser.add_argument("--profile-id", default=DEFAULT_PROFILE_ID)
+    parser.add_argument(
+        "--profile", type=Path, default=ROOT / "config/batch_assessment.yaml"
+    )
     args = parser.parse_args(argv)
     if args.interval_min <= 0 or args.cycles is not None and args.cycles < 1:
         parser.error("Interval and cycle count must be positive")
     database = Database(args.database)
     database.initialize()
+    if args.command == "configure-batches":
+        settings = yaml.safe_load(args.profile.read_text())
+        logistics_path = args.profile.parent / settings.pop("logistics_config")
+        profile = BatchAnalysisProfile.model_validate(
+            {**settings, "logistics": yaml.safe_load(logistics_path.read_text())}
+        )
+        database.store_batch_profile(profile)
+        print(profile.profile_id)
+        return 0
+    if args.command == "analyze-batch":
+        if not all((args.dataset_id, args.batch_id, args.as_of)):
+            parser.error(
+                "analyze-batch requires --dataset-id, --batch-id and explicit --as-of"
+            )
+        try:
+            record = analyze_batch(
+                database,
+                args.dataset_id,
+                args.batch_id,
+                args.as_of,
+                args.profile_id,
+                args.known_at,
+            )
+        except ValueError as error:
+            parser.error(str(error))
+        print(record.model_dump_json(indent=2))
+        return 0
     if args.command == "serve":
         import uvicorn
 

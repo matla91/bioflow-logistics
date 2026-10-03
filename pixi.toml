@@ -13,6 +13,8 @@ pip = "*"
 baselhack = { path = "pipeline", editable = true, extras = ["dev", "api"] }
 
 [tasks]
+batch-configure = "python -m baselhack.integration configure-batches"
+batch-analyze = "python -m baselhack.integration analyze-batch"
 ml-batch-data = "python -m baselhack.data_engine.ml_fixtures"
 integration-analyze = "python -m baselhack.integration analyze"
 integration-watch = "python -m baselhack.integration watch"

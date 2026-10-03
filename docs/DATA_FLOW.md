@@ -48,7 +48,7 @@ flowchart LR
     PUBLIC["External signals / offline provider cache"] --> INGEST["Data collection and cache import"]
     FIXTURE["ERP stand-in<br/>Synthetic operations and sensor readings"] --> ENGINE_DB
     INGEST --> ENGINE_DB[("Engine SQLite<br/>Provider observations<br/>Operational records<br/>Immutable assessment JSON and evidence")]
-    ENGINE_DB -->|"Read stored observations"| WORKER["Logistics analysis worker"]
+    ENGINE_DB -->|"Read observations and linked operations at cutoff"| WORKER["Named logistics / batch analysis worker"]
     WORKER -->|"Persist inputs and results"| ENGINE_DB
     ENGINE_DB --> API["FastAPI read service<br/>localhost:8002"]
     API --> APP["Laravel Smartflow app<br/>localhost:8000<br/>Integration view and shipment console"]
@@ -56,6 +56,6 @@ flowchart LR
     APP_DB -->|"Read console and decision history"| APP
 ```
 
-The two SQLite databases are separate physical stores. Laravel reads the engine through HTTP and manages its own tables; its migrations must not target the engine database. The current integration view lists three named logistics scenario assessments and operational dataset counts. It does not yet select a latest batch-linked assessment. The existing shipment console reads Laravel records and writes its decision traces there.
+The two SQLite databases are separate physical stores. Laravel reads the engine through HTTP and manages its own tables; its migrations must not target the engine database. The current integration view lists three named logistics scenario assessments and operational dataset counts. The [batch worker and API](BATCH_ASSESSMENTS.md) now serve linked immutable results; selecting/displaying them remains Laravel work. The existing shipment console reads Laravel records and writes its decision traces there.
 
 The [ML brief](implementation-ml.md) adds batch-linked assessments using stored operational inputs. The [Laravel brief](implementation-laravel.md) adds linked operational imports, batch views, latest applicable assessment display and decisions tied to assessment evidence. These complete the product flow above without combining the databases.

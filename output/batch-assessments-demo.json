@@ -1,0 +1,1029 @@
+[
+  {
+    "as_of": "2026-10-03T12:00:00Z",
+    "assessment_id": "5fa2929895d1e4a15b420d3f951073733698e5f63cf072add1e73bbbf71bc2f7",
+    "assumptions": {
+      "destination": "Basel production site",
+      "expedite_available": true,
+      "handling_min": 0.0,
+      "logistics": {
+        "ambient_reference_band_c": [
+          2.0,
+          8.0
+        ],
+        "assumed": true,
+        "baseline_min_samples": 3,
+        "delay_threshold_min": 15.0,
+        "expedite_handling_factor": 0.5,
+        "expedite_transport_factor": 0.75,
+        "exposure_budget_degree_min": 300.0,
+        "falling_discharge_min_per_m3_s_hour": 1.0,
+        "falling_level_min_per_cm_hour": 8.0,
+        "handling_sd_min": 10.0,
+        "max_rhine_age_min": 30.0,
+        "max_traffic_age_min": 90.0,
+        "max_weather_age_min": 90.0,
+        "n_runs": 10000,
+        "navigation_restricted_penalty_min": 30.0,
+        "navigation_severe_penalty_min": 60.0,
+        "rain_min_per_mm": 4.0,
+        "recommendation_policy": {
+          "max_exposure_proxy_risk": 0.1,
+          "sensitivity_factors": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "target_on_time_arrival": 0.9,
+          "target_production_continuity": 0.95
+        },
+        "reroute_extra_handling_min": 20.0,
+        "reroute_traffic_factor": 0.5,
+        "reroute_transport_min": 95.0,
+        "reroute_transport_sd_min": 20.0,
+        "river_penalty_cap_min": 90.0,
+        "route_block_delay_min": 1440.0,
+        "seed": 20260930,
+        "traffic_min_per_positive_z": 12.0,
+        "traffic_z_cap": 4.0,
+        "transport_sd_min": 25.0,
+        "trend_min_span_min": 60.0,
+        "trend_window_min": 360.0,
+        "wind_min_per_m_s": 3.0,
+        "wind_threshold_m_s": 10.0
+      },
+      "max_reading_gap_min": 60.0,
+      "origin": "Rotterdam",
+      "profile_id": "batch-default-v1",
+      "protection_remaining_min": 0.0,
+      "reroute_available": false,
+      "station_ids": [
+        "402"
+      ]
+    },
+    "batch_id": "operations-demo-v1-batch-001",
+    "dataset_id": "operations-demo-v1",
+    "incoming_shipments": [
+      {
+        "actual_arrival_at": "2026-10-02T06:00:00Z",
+        "cold_chain_exposure_proxy_risk": null,
+        "dependency_quantity_kg": 0.0,
+        "eta_p50": "2026-10-02T06:00:00Z",
+        "eta_p90": "2026-10-02T06:00:00Z",
+        "logistics": null,
+        "on_time_arrival_probability": 1.0,
+        "planned_arrival_at": "2026-10-02T06:00:00Z",
+        "planned_quantity_kg": 50.0,
+        "reason": "Arrival is recorded by cutoff; exact timing is observed, not a model prediction. QA release remains separate.",
+        "scheduled_after_charge": false,
+        "shipment_id": "operations-demo-v1-shipment-001",
+        "status": "ARRIVED"
+      }
+    ],
+    "input_sha256": "cbd8520a1bc595b71fb426e41c6afe5caf6d2ca1d98ef612e32f2e2076b625f1",
+    "known_at": null,
+    "limitations": [
+      "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
+      "QA and reservation state exists only at the operational snapshot reference time. Earlier historical states and the actual production decision at a past charge time cannot be reconstructed.",
+      "Released reservations are credited only when available by both cutoff and charge time. Unreserved stock and competing reservations are not automatically allocated.",
+      "Incoming dependency is prospective quantity coverage; arrivals and acceptable sampled temperatures do not imply QA release or production authorization.",
+      "Default observation selection uses latest stored revisions at the measurement cutoff, not knowledge available then. An explicit known_at filters stored retrieval history; operational capture history is unavailable.",
+      "Forward timing applies only to departed shipments in the configured corridor while planned remaining duration is positive; departure waits and overdue journeys require further evidence.",
+      "Timing/ambient Monte Carlo uses uncalibrated persisted assumptions. Protection autonomy is configured, not inferred from temperature samples; measured product exposure stays separate.",
+      "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
+      "Seven existing domain/licence verification gates remain open."
+    ],
+    "model_version": "batch-stored-evidence-v1",
+    "product_temperature": [
+      {
+        "budget_min": 120.0,
+        "complete_journey": true,
+        "first_reading_at": "2026-10-01T12:00:00Z",
+        "last_product_c": 10.904605,
+        "last_product_outside_range": true,
+        "last_reading_at": "2026-10-02T06:00:00Z",
+        "limitations": [
+          "Product-temperature excursion uses piecewise-linear interpolation only between samples at most 60 minutes apart; this sampling assumption does not infer a physical thermal response.",
+          "No product temperature is extrapolated before the first or after the last reading. Unsampled intervals may contain additional excursion.",
+          "Reported cumulative excursion is source evidence retained separately; it is not treated as a directly measured duration or used for this status.",
+          "Material range and excursion budget are demonstration assumptions, not validated pharmaceutical QA release criteria. Human QA review is required for release; this assessment never authorizes it."
+        ],
+        "observed_excursion_min": 99.49666380275252,
+        "qa_release_authorized": false,
+        "range_c": [
+          2.0,
+          8.0
+        ],
+        "reading_count": 37,
+        "reported_excursion_min": 99.76982,
+        "shipment_id": "operations-demo-v1-shipment-001",
+        "status": "OBSERVED_WITHIN_BUDGET",
+        "unobserved_interval_min": 0.0
+      }
+    ],
+    "production_readiness": {
+      "incoming_dependency_kg": 0.0,
+      "planned_charge_at": "2026-10-03T10:00:00Z",
+      "released_reserved_quantity_kg": 50.0,
+      "required_quantity_kg": 50.0,
+      "reservation_shortfall_kg": 0.0,
+      "status": "RESERVED_STOCK_SUFFICIENT",
+      "stock_evidence": [
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-001",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-005",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-009",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T12:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-stock-pending",
+          "qa_status": "pending",
+          "quantity_kg": 100.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 100.0
+        },
+        {
+          "available_at": "2026-09-26T12:00:00Z",
+          "eligible_reserved_quantity_kg": 50.0,
+          "inventory_lot_id": "operations-demo-v1-stock-released",
+          "qa_status": "released",
+          "quantity_kg": 80.0,
+          "reason": "Released stock reserved to this batch is available by the charge time.",
+          "reserved_for_batch_kg": 50.0,
+          "reserved_for_others_kg": 30.0,
+          "unreserved_quantity_kg": 0.0
+        }
+      ],
+      "uncovered_quantity_kg": 0.0
+    },
+    "provenance": [
+      {
+        "detail": "Persisted operational snapshot and shipment product readings; no generator labels used.",
+        "kind": "SIMULATED",
+        "observed_at": "2026-10-03T12:00:00Z",
+        "provider": null,
+        "source_indices": []
+      },
+      {
+        "detail": "Stored external observations and retrieval metadata; no analysis-worker provider fetch.",
+        "kind": "REAL",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "detail": "Immutable persisted configuration batch-default-v1; uncalibrated coefficients and sparse product-temperature interpolation.",
+        "kind": "ASSUMED",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": []
+      }
+    ],
+    "real_data_sources": [
+      {
+        "dataset": "100089",
+        "licence": "CC0 1.0",
+        "provider": "Bundesamt f\u00fcr Umwelt BAFU via Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.638139Z",
+        "sha256": "78cefb7d1f8a3e796c6aa38f44459f1ee14c28958ec6f8155ef952f05efae22a",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100089/records?limit=100&where=timestamp%3E%3Ddate%272026-09-30T00%3A00%3A00Z%27%20and%20timestamp%3C%3Ddate%272026-09-30T12%3A00%3A00Z%27&order_by=timestamp%20asc"
+      },
+      {
+        "dataset": "100006",
+        "licence": "CC BY 4.0",
+        "provider": "Amt f\u00fcr Mobilit\u00e4t, Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.579139Z",
+        "sha256": "7a742c8823cc644666d49d8dcde499a5bc4a34665116784596d77d0fa97efd71",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100006/records?limit=100&select=zst_id,sitename,datetimefrom,datetimeto,directionname,lanecode,total,valuesapproved,valuesedited,weekday,hourfrom&where=zst_id%3D402%20and%20weekday%3D2%20and%20hourfrom%3D13%20and%20datetimefrom%3E%3Ddate%272026-07-01T00%3A00%3A00Z%27%20and%20datetimefrom%3C%3Ddate%272026-09-30T11%3A00%3A00Z%27&order_by=datetimefrom%20asc,lanecode%20asc"
+      },
+      {
+        "dataset": "SwissMetNet BAS hourly observations",
+        "licence": "CC BY 4.0; Source: MeteoSwiss",
+        "provider": "MeteoSwiss",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:38:04.027057Z",
+        "sha256": "06f651012668482a44055acee54628f30a00957e5758cfe8af28a231b20f2a26",
+        "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/bas/ogd-smn_bas_h_recent.csv"
+      }
+    ],
+    "recommendation": {
+      "action": "BUFFER",
+      "alternatives": [],
+      "qa_release_authorized": false,
+      "qa_review_required": true,
+      "reason": "Released reserved stock covers the recorded batch demand by charge time; incoming timing and product evidence remain separate. Human QA review is required; no automatic quarantine or release is inferred.",
+      "requires_approval_by": "operator"
+    },
+    "shipment_ids": [
+      "operations-demo-v1-shipment-001"
+    ]
+  },
+  {
+    "as_of": "2026-10-03T12:00:00Z",
+    "assessment_id": "718c0c2d3166436b1ef2b326856d4dc18c8b2419abe333facbe8ce7dc0432f38",
+    "assumptions": {
+      "destination": "Basel production site",
+      "expedite_available": true,
+      "handling_min": 0.0,
+      "logistics": {
+        "ambient_reference_band_c": [
+          2.0,
+          8.0
+        ],
+        "assumed": true,
+        "baseline_min_samples": 3,
+        "delay_threshold_min": 15.0,
+        "expedite_handling_factor": 0.5,
+        "expedite_transport_factor": 0.75,
+        "exposure_budget_degree_min": 300.0,
+        "falling_discharge_min_per_m3_s_hour": 1.0,
+        "falling_level_min_per_cm_hour": 8.0,
+        "handling_sd_min": 10.0,
+        "max_rhine_age_min": 30.0,
+        "max_traffic_age_min": 90.0,
+        "max_weather_age_min": 90.0,
+        "n_runs": 10000,
+        "navigation_restricted_penalty_min": 30.0,
+        "navigation_severe_penalty_min": 60.0,
+        "rain_min_per_mm": 4.0,
+        "recommendation_policy": {
+          "max_exposure_proxy_risk": 0.1,
+          "sensitivity_factors": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "target_on_time_arrival": 0.9,
+          "target_production_continuity": 0.95
+        },
+        "reroute_extra_handling_min": 20.0,
+        "reroute_traffic_factor": 0.5,
+        "reroute_transport_min": 95.0,
+        "reroute_transport_sd_min": 20.0,
+        "river_penalty_cap_min": 90.0,
+        "route_block_delay_min": 1440.0,
+        "seed": 20260930,
+        "traffic_min_per_positive_z": 12.0,
+        "traffic_z_cap": 4.0,
+        "transport_sd_min": 25.0,
+        "trend_min_span_min": 60.0,
+        "trend_window_min": 360.0,
+        "wind_min_per_m_s": 3.0,
+        "wind_threshold_m_s": 10.0
+      },
+      "max_reading_gap_min": 60.0,
+      "origin": "Rotterdam",
+      "profile_id": "batch-default-v1",
+      "protection_remaining_min": 0.0,
+      "reroute_available": false,
+      "station_ids": [
+        "402"
+      ]
+    },
+    "batch_id": "operations-demo-v1-batch-002",
+    "dataset_id": "operations-demo-v1",
+    "incoming_shipments": [
+      {
+        "actual_arrival_at": null,
+        "cold_chain_exposure_proxy_risk": null,
+        "dependency_quantity_kg": 20.0,
+        "eta_p50": null,
+        "eta_p90": null,
+        "logistics": null,
+        "on_time_arrival_probability": null,
+        "planned_arrival_at": "2026-10-03T18:00:00Z",
+        "planned_quantity_kg": 50.0,
+        "reason": "Weather is missing; cold-chain exposure proxy risk cannot be estimated",
+        "scheduled_after_charge": true,
+        "shipment_id": "operations-demo-v1-shipment-002",
+        "status": "UNAVAILABLE"
+      }
+    ],
+    "input_sha256": "d56cffacd132120a2ae46f0cc3b5251eda2b95f752aa711413a5e80a27fe3e03",
+    "known_at": null,
+    "limitations": [
+      "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
+      "QA and reservation state exists only at the operational snapshot reference time. Earlier historical states and the actual production decision at a past charge time cannot be reconstructed.",
+      "Released reservations are credited only when available by both cutoff and charge time. Unreserved stock and competing reservations are not automatically allocated.",
+      "Incoming dependency is prospective quantity coverage; arrivals and acceptable sampled temperatures do not imply QA release or production authorization.",
+      "Default observation selection uses latest stored revisions at the measurement cutoff, not knowledge available then. An explicit known_at filters stored retrieval history; operational capture history is unavailable.",
+      "Forward timing applies only to departed shipments in the configured corridor while planned remaining duration is positive; departure waits and overdue journeys require further evidence.",
+      "Timing/ambient Monte Carlo uses uncalibrated persisted assumptions. Protection autonomy is configured, not inferred from temperature samples; measured product exposure stays separate.",
+      "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
+      "Seven existing domain/licence verification gates remain open."
+    ],
+    "model_version": "batch-stored-evidence-v1",
+    "product_temperature": [
+      {
+        "budget_min": 120.0,
+        "complete_journey": false,
+        "first_reading_at": "2026-10-03T00:00:00Z",
+        "last_product_c": 18.774098,
+        "last_product_outside_range": true,
+        "last_reading_at": "2026-10-03T12:00:00Z",
+        "limitations": [
+          "Product-temperature excursion uses piecewise-linear interpolation only between samples at most 60 minutes apart; this sampling assumption does not infer a physical thermal response.",
+          "No product temperature is extrapolated before the first or after the last reading. Unsampled intervals may contain additional excursion.",
+          "Reported cumulative excursion is source evidence retained separately; it is not treated as a directly measured duration or used for this status.",
+          "Material range and excursion budget are demonstration assumptions, not validated pharmaceutical QA release criteria. Human QA review is required for release; this assessment never authorizes it.",
+          "The journey is not completely sampled. Computed excursion covers only usable intervals, a partial lower bound under the interpolation assumption; within-budget status does not establish whole-journey compliance."
+        ],
+        "observed_excursion_min": 147.69844272579311,
+        "qa_release_authorized": false,
+        "range_c": [
+          2.0,
+          8.0
+        ],
+        "reading_count": 25,
+        "reported_excursion_min": 147.784928,
+        "shipment_id": "operations-demo-v1-shipment-002",
+        "status": "OBSERVED_BUDGET_EXCEEDED",
+        "unobserved_interval_min": 0.0
+      }
+    ],
+    "production_readiness": {
+      "incoming_dependency_kg": 20.0,
+      "planned_charge_at": "2026-10-03T16:00:00Z",
+      "released_reserved_quantity_kg": 30.0,
+      "required_quantity_kg": 50.0,
+      "reservation_shortfall_kg": 20.0,
+      "status": "INCOMING_DEPENDENT",
+      "stock_evidence": [
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-001",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-005",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-009",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T12:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-stock-pending",
+          "qa_status": "pending",
+          "quantity_kg": 100.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 100.0
+        },
+        {
+          "available_at": "2026-09-26T12:00:00Z",
+          "eligible_reserved_quantity_kg": 30.0,
+          "inventory_lot_id": "operations-demo-v1-stock-released",
+          "qa_status": "released",
+          "quantity_kg": 80.0,
+          "reason": "Released stock reserved to this batch is available by the charge time.",
+          "reserved_for_batch_kg": 30.0,
+          "reserved_for_others_kg": 50.0,
+          "unreserved_quantity_kg": 0.0
+        }
+      ],
+      "uncovered_quantity_kg": 0.0
+    },
+    "provenance": [
+      {
+        "detail": "Persisted operational snapshot and shipment product readings; no generator labels used.",
+        "kind": "SIMULATED",
+        "observed_at": "2026-10-03T12:00:00Z",
+        "provider": null,
+        "source_indices": []
+      },
+      {
+        "detail": "Stored external observations and retrieval metadata; no analysis-worker provider fetch.",
+        "kind": "REAL",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "detail": "Immutable persisted configuration batch-default-v1; uncalibrated coefficients and sparse product-temperature interpolation.",
+        "kind": "ASSUMED",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": []
+      }
+    ],
+    "real_data_sources": [
+      {
+        "dataset": "100089",
+        "licence": "CC0 1.0",
+        "provider": "Bundesamt f\u00fcr Umwelt BAFU via Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.638139Z",
+        "sha256": "78cefb7d1f8a3e796c6aa38f44459f1ee14c28958ec6f8155ef952f05efae22a",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100089/records?limit=100&where=timestamp%3E%3Ddate%272026-09-30T00%3A00%3A00Z%27%20and%20timestamp%3C%3Ddate%272026-09-30T12%3A00%3A00Z%27&order_by=timestamp%20asc"
+      },
+      {
+        "dataset": "100006",
+        "licence": "CC BY 4.0",
+        "provider": "Amt f\u00fcr Mobilit\u00e4t, Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.579139Z",
+        "sha256": "7a742c8823cc644666d49d8dcde499a5bc4a34665116784596d77d0fa97efd71",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100006/records?limit=100&select=zst_id,sitename,datetimefrom,datetimeto,directionname,lanecode,total,valuesapproved,valuesedited,weekday,hourfrom&where=zst_id%3D402%20and%20weekday%3D2%20and%20hourfrom%3D13%20and%20datetimefrom%3E%3Ddate%272026-07-01T00%3A00%3A00Z%27%20and%20datetimefrom%3C%3Ddate%272026-09-30T11%3A00%3A00Z%27&order_by=datetimefrom%20asc,lanecode%20asc"
+      },
+      {
+        "dataset": "SwissMetNet BAS hourly observations",
+        "licence": "CC BY 4.0; Source: MeteoSwiss",
+        "provider": "MeteoSwiss",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:38:04.027057Z",
+        "sha256": "06f651012668482a44055acee54628f30a00957e5758cfe8af28a231b20f2a26",
+        "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/bas/ogd-smn_bas_h_recent.csv"
+      }
+    ],
+    "recommendation": {
+      "action": null,
+      "alternatives": [],
+      "qa_release_authorized": false,
+      "qa_review_required": true,
+      "reason": "Released reservations leave a quantity shortfall; incoming plans are prospective and require arrival plus human QA release. No supported aggregate action comparison is available; review quantities, incoming timing and QA evidence. Human QA review is required; no automatic quarantine or release is inferred.",
+      "requires_approval_by": "logistics"
+    },
+    "shipment_ids": [
+      "operations-demo-v1-shipment-002"
+    ]
+  },
+  {
+    "as_of": "2026-10-03T12:00:00Z",
+    "assessment_id": "65cc4f0a64c38d627b0bd322daf3cd01a0b6a62c6a885a2ab4f2f7200615b279",
+    "assumptions": {
+      "destination": "Basel production site",
+      "expedite_available": true,
+      "handling_min": 0.0,
+      "logistics": {
+        "ambient_reference_band_c": [
+          2.0,
+          8.0
+        ],
+        "assumed": true,
+        "baseline_min_samples": 3,
+        "delay_threshold_min": 15.0,
+        "expedite_handling_factor": 0.5,
+        "expedite_transport_factor": 0.75,
+        "exposure_budget_degree_min": 300.0,
+        "falling_discharge_min_per_m3_s_hour": 1.0,
+        "falling_level_min_per_cm_hour": 8.0,
+        "handling_sd_min": 10.0,
+        "max_rhine_age_min": 30.0,
+        "max_traffic_age_min": 90.0,
+        "max_weather_age_min": 90.0,
+        "n_runs": 10000,
+        "navigation_restricted_penalty_min": 30.0,
+        "navigation_severe_penalty_min": 60.0,
+        "rain_min_per_mm": 4.0,
+        "recommendation_policy": {
+          "max_exposure_proxy_risk": 0.1,
+          "sensitivity_factors": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "target_on_time_arrival": 0.9,
+          "target_production_continuity": 0.95
+        },
+        "reroute_extra_handling_min": 20.0,
+        "reroute_traffic_factor": 0.5,
+        "reroute_transport_min": 95.0,
+        "reroute_transport_sd_min": 20.0,
+        "river_penalty_cap_min": 90.0,
+        "route_block_delay_min": 1440.0,
+        "seed": 20260930,
+        "traffic_min_per_positive_z": 12.0,
+        "traffic_z_cap": 4.0,
+        "transport_sd_min": 25.0,
+        "trend_min_span_min": 60.0,
+        "trend_window_min": 360.0,
+        "wind_min_per_m_s": 3.0,
+        "wind_threshold_m_s": 10.0
+      },
+      "max_reading_gap_min": 60.0,
+      "origin": "Rotterdam",
+      "profile_id": "batch-default-v1",
+      "protection_remaining_min": 0.0,
+      "reroute_available": false,
+      "station_ids": [
+        "402"
+      ]
+    },
+    "batch_id": "operations-demo-v1-batch-003",
+    "dataset_id": "operations-demo-v1",
+    "incoming_shipments": [
+      {
+        "actual_arrival_at": null,
+        "cold_chain_exposure_proxy_risk": null,
+        "dependency_quantity_kg": 50.0,
+        "eta_p50": null,
+        "eta_p90": null,
+        "logistics": null,
+        "on_time_arrival_probability": null,
+        "planned_arrival_at": "2026-10-03T18:00:00Z",
+        "planned_quantity_kg": 50.0,
+        "reason": "Weather is missing; cold-chain exposure proxy risk cannot be estimated",
+        "scheduled_after_charge": false,
+        "shipment_id": "operations-demo-v1-shipment-003",
+        "status": "UNAVAILABLE"
+      }
+    ],
+    "input_sha256": "b855aaadb52eee59683f37891fa58b235933e377d11194389eb5c811a3b2132e",
+    "known_at": null,
+    "limitations": [
+      "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
+      "QA and reservation state exists only at the operational snapshot reference time. Earlier historical states and the actual production decision at a past charge time cannot be reconstructed.",
+      "Released reservations are credited only when available by both cutoff and charge time. Unreserved stock and competing reservations are not automatically allocated.",
+      "Incoming dependency is prospective quantity coverage; arrivals and acceptable sampled temperatures do not imply QA release or production authorization.",
+      "Default observation selection uses latest stored revisions at the measurement cutoff, not knowledge available then. An explicit known_at filters stored retrieval history; operational capture history is unavailable.",
+      "Forward timing applies only to departed shipments in the configured corridor while planned remaining duration is positive; departure waits and overdue journeys require further evidence.",
+      "Timing/ambient Monte Carlo uses uncalibrated persisted assumptions. Protection autonomy is configured, not inferred from temperature samples; measured product exposure stays separate.",
+      "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
+      "Seven existing domain/licence verification gates remain open."
+    ],
+    "model_version": "batch-stored-evidence-v1",
+    "product_temperature": [
+      {
+        "budget_min": 120.0,
+        "complete_journey": false,
+        "first_reading_at": "2026-10-03T00:00:00Z",
+        "last_product_c": 4.990892,
+        "last_product_outside_range": false,
+        "last_reading_at": "2026-10-03T12:00:00Z",
+        "limitations": [
+          "Product-temperature excursion uses piecewise-linear interpolation only between samples at most 60 minutes apart; this sampling assumption does not infer a physical thermal response.",
+          "No product temperature is extrapolated before the first or after the last reading. Unsampled intervals may contain additional excursion.",
+          "Reported cumulative excursion is source evidence retained separately; it is not treated as a directly measured duration or used for this status.",
+          "Material range and excursion budget are demonstration assumptions, not validated pharmaceutical QA release criteria. Human QA review is required for release; this assessment never authorizes it.",
+          "The journey is not completely sampled. Computed excursion covers only usable intervals, a partial lower bound under the interpolation assumption; within-budget status does not establish whole-journey compliance."
+        ],
+        "observed_excursion_min": 0.0,
+        "qa_release_authorized": false,
+        "range_c": [
+          2.0,
+          8.0
+        ],
+        "reading_count": 25,
+        "reported_excursion_min": 0.0,
+        "shipment_id": "operations-demo-v1-shipment-003",
+        "status": "OBSERVED_WITHIN_BUDGET",
+        "unobserved_interval_min": 0.0
+      }
+    ],
+    "production_readiness": {
+      "incoming_dependency_kg": 50.0,
+      "planned_charge_at": "2026-10-03T22:00:00Z",
+      "released_reserved_quantity_kg": 0.0,
+      "required_quantity_kg": 50.0,
+      "reservation_shortfall_kg": 50.0,
+      "status": "INCOMING_DEPENDENT",
+      "stock_evidence": [
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-001",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-005",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-009",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T12:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-stock-pending",
+          "qa_status": "pending",
+          "quantity_kg": 100.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 100.0
+        },
+        {
+          "available_at": "2026-09-26T12:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-stock-released",
+          "qa_status": "released",
+          "quantity_kg": 80.0,
+          "reason": "Stock is unreserved or reserved to another batch; no coverage credited.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 80.0,
+          "unreserved_quantity_kg": 0.0
+        }
+      ],
+      "uncovered_quantity_kg": 0.0
+    },
+    "provenance": [
+      {
+        "detail": "Persisted operational snapshot and shipment product readings; no generator labels used.",
+        "kind": "SIMULATED",
+        "observed_at": "2026-10-03T12:00:00Z",
+        "provider": null,
+        "source_indices": []
+      },
+      {
+        "detail": "Stored external observations and retrieval metadata; no analysis-worker provider fetch.",
+        "kind": "REAL",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "detail": "Immutable persisted configuration batch-default-v1; uncalibrated coefficients and sparse product-temperature interpolation.",
+        "kind": "ASSUMED",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": []
+      }
+    ],
+    "real_data_sources": [
+      {
+        "dataset": "100089",
+        "licence": "CC0 1.0",
+        "provider": "Bundesamt f\u00fcr Umwelt BAFU via Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.638139Z",
+        "sha256": "78cefb7d1f8a3e796c6aa38f44459f1ee14c28958ec6f8155ef952f05efae22a",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100089/records?limit=100&where=timestamp%3E%3Ddate%272026-09-30T00%3A00%3A00Z%27%20and%20timestamp%3C%3Ddate%272026-09-30T12%3A00%3A00Z%27&order_by=timestamp%20asc"
+      },
+      {
+        "dataset": "100006",
+        "licence": "CC BY 4.0",
+        "provider": "Amt f\u00fcr Mobilit\u00e4t, Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.579139Z",
+        "sha256": "7a742c8823cc644666d49d8dcde499a5bc4a34665116784596d77d0fa97efd71",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100006/records?limit=100&select=zst_id,sitename,datetimefrom,datetimeto,directionname,lanecode,total,valuesapproved,valuesedited,weekday,hourfrom&where=zst_id%3D402%20and%20weekday%3D2%20and%20hourfrom%3D13%20and%20datetimefrom%3E%3Ddate%272026-07-01T00%3A00%3A00Z%27%20and%20datetimefrom%3C%3Ddate%272026-09-30T11%3A00%3A00Z%27&order_by=datetimefrom%20asc,lanecode%20asc"
+      },
+      {
+        "dataset": "SwissMetNet BAS hourly observations",
+        "licence": "CC BY 4.0; Source: MeteoSwiss",
+        "provider": "MeteoSwiss",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:38:04.027057Z",
+        "sha256": "06f651012668482a44055acee54628f30a00957e5758cfe8af28a231b20f2a26",
+        "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/bas/ogd-smn_bas_h_recent.csv"
+      }
+    ],
+    "recommendation": {
+      "action": null,
+      "alternatives": [],
+      "qa_release_authorized": false,
+      "qa_review_required": true,
+      "reason": "Released reservations leave a quantity shortfall; incoming plans are prospective and require arrival plus human QA release. No supported aggregate action comparison is available; review quantities, incoming timing and QA evidence. Human QA review is required; no automatic quarantine or release is inferred.",
+      "requires_approval_by": "logistics"
+    },
+    "shipment_ids": [
+      "operations-demo-v1-shipment-003"
+    ]
+  },
+  {
+    "as_of": "2026-10-03T12:00:00Z",
+    "assessment_id": "fa31fab3f8797e16fb75fd13e984dd0b9f9e6284c29965ca384e16beb0b94263",
+    "assumptions": {
+      "destination": "Basel production site",
+      "expedite_available": true,
+      "handling_min": 0.0,
+      "logistics": {
+        "ambient_reference_band_c": [
+          2.0,
+          8.0
+        ],
+        "assumed": true,
+        "baseline_min_samples": 3,
+        "delay_threshold_min": 15.0,
+        "expedite_handling_factor": 0.5,
+        "expedite_transport_factor": 0.75,
+        "exposure_budget_degree_min": 300.0,
+        "falling_discharge_min_per_m3_s_hour": 1.0,
+        "falling_level_min_per_cm_hour": 8.0,
+        "handling_sd_min": 10.0,
+        "max_rhine_age_min": 30.0,
+        "max_traffic_age_min": 90.0,
+        "max_weather_age_min": 90.0,
+        "n_runs": 10000,
+        "navigation_restricted_penalty_min": 30.0,
+        "navigation_severe_penalty_min": 60.0,
+        "rain_min_per_mm": 4.0,
+        "recommendation_policy": {
+          "max_exposure_proxy_risk": 0.1,
+          "sensitivity_factors": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "target_on_time_arrival": 0.9,
+          "target_production_continuity": 0.95
+        },
+        "reroute_extra_handling_min": 20.0,
+        "reroute_traffic_factor": 0.5,
+        "reroute_transport_min": 95.0,
+        "reroute_transport_sd_min": 20.0,
+        "river_penalty_cap_min": 90.0,
+        "route_block_delay_min": 1440.0,
+        "seed": 20260930,
+        "traffic_min_per_positive_z": 12.0,
+        "traffic_z_cap": 4.0,
+        "transport_sd_min": 25.0,
+        "trend_min_span_min": 60.0,
+        "trend_window_min": 360.0,
+        "wind_min_per_m_s": 3.0,
+        "wind_threshold_m_s": 10.0
+      },
+      "max_reading_gap_min": 60.0,
+      "origin": "Rotterdam",
+      "profile_id": "batch-default-v1",
+      "protection_remaining_min": 0.0,
+      "reroute_available": false,
+      "station_ids": [
+        "402"
+      ]
+    },
+    "batch_id": "operations-demo-v1-batch-004",
+    "dataset_id": "operations-demo-v1",
+    "incoming_shipments": [
+      {
+        "actual_arrival_at": null,
+        "cold_chain_exposure_proxy_risk": null,
+        "dependency_quantity_kg": 50.0,
+        "eta_p50": null,
+        "eta_p90": null,
+        "logistics": null,
+        "on_time_arrival_probability": null,
+        "planned_arrival_at": "2026-10-05T06:00:00Z",
+        "planned_quantity_kg": 50.0,
+        "reason": "No actual departure at cutoff; this in-transit model does not simulate future departure waits. Planned milestones remain visible.",
+        "scheduled_after_charge": true,
+        "shipment_id": "operations-demo-v1-shipment-004",
+        "status": "UNAVAILABLE"
+      }
+    ],
+    "input_sha256": "bbd889c789358a74db8f75c80c9a63700d7174169949cbc47859440284801402",
+    "known_at": null,
+    "limitations": [
+      "Operations and product readings are synthetic demo evidence; material limits are demonstration assumptions, not pharmaceutical release policy.",
+      "QA and reservation state exists only at the operational snapshot reference time. Earlier historical states and the actual production decision at a past charge time cannot be reconstructed.",
+      "Released reservations are credited only when available by both cutoff and charge time. Unreserved stock and competing reservations are not automatically allocated.",
+      "Incoming dependency is prospective quantity coverage; arrivals and acceptable sampled temperatures do not imply QA release or production authorization.",
+      "Default observation selection uses latest stored revisions at the measurement cutoff, not knowledge available then. An explicit known_at filters stored retrieval history; operational capture history is unavailable.",
+      "Forward timing applies only to departed shipments in the configured corridor while planned remaining duration is positive; departure waits and overdue journeys require further evidence.",
+      "Timing/ambient Monte Carlo uses uncalibrated persisted assumptions. Protection autonomy is configured, not inferred from temperature samples; measured product exposure stays separate.",
+      "Action production-continuity probabilities are conditional timing events for one shipment, not batch QA/readiness probabilities. Multiple dependent shipments have no aggregate recommendation.",
+      "Seven existing domain/licence verification gates remain open."
+    ],
+    "model_version": "batch-stored-evidence-v1",
+    "product_temperature": [
+      {
+        "budget_min": 120.0,
+        "complete_journey": false,
+        "first_reading_at": null,
+        "last_product_c": null,
+        "last_product_outside_range": null,
+        "last_reading_at": null,
+        "limitations": [
+          "No product-temperature readings are available; excursion is unknown, not zero. Unobserved minutes include only intervals bounded by known actual milestones.",
+          "Product-temperature excursion uses piecewise-linear interpolation only between samples at most 60 minutes apart; this sampling assumption does not infer a physical thermal response.",
+          "No product temperature is extrapolated before the first or after the last reading. Unsampled intervals may contain additional excursion.",
+          "Reported cumulative excursion is source evidence retained separately; it is not treated as a directly measured duration or used for this status.",
+          "Material range and excursion budget are demonstration assumptions, not validated pharmaceutical QA release criteria. Human QA review is required for release; this assessment never authorizes it."
+        ],
+        "observed_excursion_min": null,
+        "qa_release_authorized": false,
+        "range_c": [
+          2.0,
+          8.0
+        ],
+        "reading_count": 0,
+        "reported_excursion_min": null,
+        "shipment_id": "operations-demo-v1-shipment-004",
+        "status": "UNAVAILABLE",
+        "unobserved_interval_min": 0.0
+      }
+    ],
+    "production_readiness": {
+      "incoming_dependency_kg": 50.0,
+      "planned_charge_at": "2026-10-04T04:00:00Z",
+      "released_reserved_quantity_kg": 0.0,
+      "required_quantity_kg": 50.0,
+      "reservation_shortfall_kg": 50.0,
+      "status": "INCOMING_DEPENDENT",
+      "stock_evidence": [
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-001",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-005",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T06:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-lot-009",
+          "qa_status": "pending",
+          "quantity_kg": 150.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 150.0
+        },
+        {
+          "available_at": "2026-10-02T12:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-stock-pending",
+          "qa_status": "pending",
+          "quantity_kg": 100.0,
+          "reason": "Pending-QA or quarantined stock is not released material.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 0.0,
+          "unreserved_quantity_kg": 100.0
+        },
+        {
+          "available_at": "2026-09-26T12:00:00Z",
+          "eligible_reserved_quantity_kg": 0.0,
+          "inventory_lot_id": "operations-demo-v1-stock-released",
+          "qa_status": "released",
+          "quantity_kg": 80.0,
+          "reason": "Stock is unreserved or reserved to another batch; no coverage credited.",
+          "reserved_for_batch_kg": 0.0,
+          "reserved_for_others_kg": 80.0,
+          "unreserved_quantity_kg": 0.0
+        }
+      ],
+      "uncovered_quantity_kg": 0.0
+    },
+    "provenance": [
+      {
+        "detail": "Persisted operational snapshot and shipment product readings; no generator labels used.",
+        "kind": "SIMULATED",
+        "observed_at": "2026-10-03T12:00:00Z",
+        "provider": null,
+        "source_indices": []
+      },
+      {
+        "detail": "Stored external observations and retrieval metadata; no analysis-worker provider fetch.",
+        "kind": "REAL",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "detail": "Immutable persisted configuration batch-default-v1; uncalibrated coefficients and sparse product-temperature interpolation.",
+        "kind": "ASSUMED",
+        "observed_at": null,
+        "provider": null,
+        "source_indices": []
+      }
+    ],
+    "real_data_sources": [
+      {
+        "dataset": "100089",
+        "licence": "CC0 1.0",
+        "provider": "Bundesamt f\u00fcr Umwelt BAFU via Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.638139Z",
+        "sha256": "78cefb7d1f8a3e796c6aa38f44459f1ee14c28958ec6f8155ef952f05efae22a",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100089/records?limit=100&where=timestamp%3E%3Ddate%272026-09-30T00%3A00%3A00Z%27%20and%20timestamp%3C%3Ddate%272026-09-30T12%3A00%3A00Z%27&order_by=timestamp%20asc"
+      },
+      {
+        "dataset": "100006",
+        "licence": "CC BY 4.0",
+        "provider": "Amt f\u00fcr Mobilit\u00e4t, Open Data Basel-Stadt",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:39:34.579139Z",
+        "sha256": "7a742c8823cc644666d49d8dcde499a5bc4a34665116784596d77d0fa97efd71",
+        "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100006/records?limit=100&select=zst_id,sitename,datetimefrom,datetimeto,directionname,lanecode,total,valuesapproved,valuesedited,weekday,hourfrom&where=zst_id%3D402%20and%20weekday%3D2%20and%20hourfrom%3D13%20and%20datetimefrom%3E%3Ddate%272026-07-01T00%3A00%3A00Z%27%20and%20datetimefrom%3C%3Ddate%272026-09-30T11%3A00%3A00Z%27&order_by=datetimefrom%20asc,lanecode%20asc"
+      },
+      {
+        "dataset": "SwissMetNet BAS hourly observations",
+        "licence": "CC BY 4.0; Source: MeteoSwiss",
+        "provider": "MeteoSwiss",
+        "real_data": true,
+        "retrieved_at": "2026-10-03T10:38:04.027057Z",
+        "sha256": "06f651012668482a44055acee54628f30a00957e5758cfe8af28a231b20f2a26",
+        "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/bas/ogd-smn_bas_h_recent.csv"
+      }
+    ],
+    "recommendation": {
+      "action": null,
+      "alternatives": [],
+      "qa_release_authorized": false,
+      "qa_review_required": true,
+      "reason": "Released reservations leave a quantity shortfall; incoming plans are prospective and require arrival plus human QA release. No supported aggregate action comparison is available; review quantities, incoming timing and QA evidence. Human QA review is required; no automatic quarantine or release is inferred.",
+      "requires_approval_by": "logistics"
+    },
+    "shipment_ids": [
+      "operations-demo-v1-shipment-004"
+    ]
+  }
+]

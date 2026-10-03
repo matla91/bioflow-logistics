@@ -26,7 +26,7 @@ pixi run data-ingest
 pixi run data-watch
 ```
 
-`data-watch` runs one ingestion cycle at a time, then waits 60 minutes by default. Stop it with Ctrl-C. A process lock rejects overlapping CLI collectors for the same database and is released by the OS when a process exits. The worker runs independently of browser requests. Collection scheduling is implemented here. The [integration worker](BUILD_INTEGRATION.md) schedules and stores named logistics scenario results separately. Batch-linked assessments and shared human-decision history remain follow-up work.
+`data-watch` runs one ingestion cycle at a time, then waits 60 minutes by default. Stop it with Ctrl-C. A process lock rejects overlapping CLI collectors for the same database and is released by the OS when a process exits. The worker runs independently of browser requests. Collection scheduling is implemented here. The [integration worker](BUILD_INTEGRATION.md) schedules and stores named logistics scenario results separately. The additive [batch assessment path](BATCH_ASSESSMENTS.md) is available; shared human-decision history remains follow-up work.
 
 The provider window/bootstrap, overlap, retry policy and selected traffic stations are in [config/data_engine.yaml](../config/data_engine.yaml). Default bootstrap is 24 hours, not sufficient to establish multi-week traffic baselines. For earlier weekday/hour history, request an explicit backfill. Basel API requests are chunked to stay within provider limits; MeteoSwiss assets are fetched once for the requested span. Coverage depends on provider availability; ingestion success does not certify complete measurement cadence.
 
@@ -45,6 +45,7 @@ Canonical models are in [interfaces.py](../pipeline/baselhack/interfaces.py). `O
 - `batch_supply_plans`: planned incoming supply, not released-stock reservations.
 - `inventory_lots`, `stock_reservations`, `available_inventory`: QA state and quantity conservation. The view exposes reserved/unreserved amounts; consumers also check QA state and availability time.
 - `shipment_readings`: synthetic product/ambient histories and cumulative excursion minutes, separated from real external observations.
+- `batch_analysis_profiles`, `batch_assessments`: immutable configured assumptions and linked input/result evidence; see [BATCH_ASSESSMENTS.md](BATCH_ASSESSMENTS.md).
 
 Quantities use kg, temperatures °C and durations minutes. Database timestamps use UTC with fixed microsecond precision. IDs include the dataset ID. Re-running the same fixture is a no-op. Reusing its ID with different inputs is rejected to preserve evidence; choose a new dataset ID for another fixture.
 
@@ -70,7 +71,7 @@ pixi run python -m baselhack.data_engine export-observations --as-of 2026-09-30T
 pixi run python -m baselhack.logistics demo --observations .runtime/stored-observations.json --scenario normal
 ```
 
-This consumes SQLite without external calls and preserves the existing ML output contract. Operational fixtures and named ML scenarios currently remain separate inputs. Mapping batch/stock records into each assessment is subsequent integration work.
+This consumes SQLite without external calls and preserves the existing ML output contract. The additive [batch worker](BATCH_ASSESSMENTS.md) joins persisted batches, stock, shipments and readings through a separate immutable contract.
 
 ## SQLite operation and ownership
 
