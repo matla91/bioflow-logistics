@@ -7,7 +7,10 @@ import {
     humanizeAlternativeReason,
     humanizeCounterfactual,
     humanizeRecommendationReason,
+    metricStatus,
+    policyCriteria,
     recommendationSummary,
+    scenarioStatus,
 } from '@/lib/logistics-display';
 import type {
     EvidenceKind,
@@ -54,6 +57,80 @@ const selectedAction = computed<FrontendAction | null>(
 );
 
 const summary = computed(() => recommendationSummary(props.logistics));
+const activeScenario = computed(() => scenarioStatus(props.scenario));
+const scenarioStyles = {
+    neutral: 'border-border bg-muted text-muted-foreground',
+    warning:
+        'border-amber-500/60 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-200',
+    alert: 'border-red-500/60 bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-200',
+};
+const criteria = computed(() =>
+    policyCriteria(props.logistics.recommendation.policy_detail),
+);
+const comparisonRows = computed(() =>
+    props.logistics.actions.map((option) => {
+        const continuityTarget = criteria.value?.productionContinuityTarget;
+        // Incoming targets govern BUFFER sufficiency, not intervention eligibility.
+        const arrivalTarget =
+            option.action === 'BUFFER'
+                ? criteria.value?.bufferOnTimeTarget
+                : undefined;
+        const exposureCap =
+            option.action === 'BUFFER'
+                ? criteria.value?.bufferExposureCap
+                : undefined;
+
+        return {
+            ...option,
+            metrics: [
+                {
+                    label: 'Production continuity',
+                    value: formatPercent(
+                        option.production_continuity_probability,
+                    ),
+                    status: metricStatus(
+                        option.production_continuity_probability,
+                        continuityTarget,
+                        'minimum',
+                    ),
+                    threshold: continuityTarget,
+                },
+                {
+                    label: 'On-time arrival',
+                    value: formatPercent(option.on_time_arrival_probability),
+                    status: metricStatus(
+                        option.on_time_arrival_probability,
+                        arrivalTarget,
+                        'minimum',
+                    ),
+                    threshold: arrivalTarget,
+                },
+                {
+                    label: 'Cold-chain exposure proxy',
+                    value: formatPercent(option.cold_chain_exposure_proxy_risk),
+                    status: metricStatus(
+                        option.cold_chain_exposure_proxy_risk,
+                        exposureCap,
+                        'maximum',
+                    ),
+                    threshold: exposureCap,
+                },
+                {
+                    label: 'Incoming mean delay',
+                    value: formatMinutes(option.predicted_arrival_delay_min),
+                    status: null,
+                    threshold: undefined,
+                },
+                {
+                    label: 'Factory mean delay',
+                    value: formatMinutes(option.predicted_delay_min),
+                    status: null,
+                    threshold: undefined,
+                },
+            ],
+        };
+    }),
+);
 const traffic = computed(
     () => props.logistics.external_state.traffic[0] ?? null,
 );
@@ -110,7 +187,9 @@ const formatNumber = (value: number | null, digits = 1) =>
 </script>
 
 <template>
-    <div class="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 p-4 md:p-6">
+    <div
+        class="logistics-dashboard mx-auto flex w-full max-w-7xl flex-1 flex-col gap-3 p-4 md:p-5"
+    >
         <Head title="BioFlow decision dashboard" />
 
         <header class="flex flex-wrap items-start justify-between gap-3">
@@ -124,8 +203,8 @@ const formatNumber = (value: number | null, digits = 1) =>
                     Manufacturing decision dashboard
                 </h1>
                 <p class="mt-1 text-sm text-muted-foreground">
-                    Observed Basel signals → simulated outcomes → compared
-                    actions → explained recommendation
+                    Observed Basel signals → Monte Carlo simulation →
+                    deterministic decision policy → operator recommendation
                 </p>
             </div>
             <div class="flex flex-col gap-1 text-xs sm:items-end">
@@ -148,7 +227,7 @@ const formatNumber = (value: number | null, digits = 1) =>
             class="flex flex-wrap items-center gap-2"
         >
             <span class="mr-1 text-xs font-semibold text-muted-foreground"
-                >Scenario</span
+                >Simulated scenario</span
             >
             <Link
                 v-for="item in scenarios"
@@ -164,6 +243,13 @@ const formatNumber = (value: number | null, digits = 1) =>
             >
                 {{ item.label }}
             </Link>
+            <span
+                role="status"
+                class="rounded-lg border px-2.5 py-1.5 text-xs font-semibold tracking-wide sm:ml-auto"
+                :class="scenarioStyles[activeScenario.tone]"
+            >
+                {{ activeScenario.label }}
+            </span>
         </nav>
 
         <section
@@ -185,10 +271,10 @@ const formatNumber = (value: number | null, digits = 1) =>
 
         <section
             aria-label="Recommended action outcomes"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
+            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-6"
         >
             <div
-                class="rounded-xl border-2 border-sky-600/60 bg-sky-50/40 p-4 sm:col-span-2 dark:bg-sky-950/20"
+                class="rounded-xl border-2 border-sky-600/60 bg-sky-50/40 p-4 sm:col-span-2 lg:col-span-3 dark:bg-sky-950/20"
             >
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <h2
@@ -199,7 +285,8 @@ const formatNumber = (value: number | null, digits = 1) =>
                     <span
                         class="rounded border bg-card px-2 py-0.5 text-xs text-muted-foreground"
                     >
-                        Evidence {{ logistics.recommendation.confidence }}
+                        Evidence quality:
+                        {{ logistics.recommendation.confidence }} (category)
                     </span>
                 </div>
                 <div class="mt-1 text-4xl font-bold tracking-tight">
@@ -207,7 +294,7 @@ const formatNumber = (value: number | null, digits = 1) =>
                 </div>
                 <p class="mt-2 text-sm leading-relaxed">{{ summary }}</p>
                 <p class="mt-2 text-xs text-muted-foreground">
-                    Evidence quality is categorical, not a probability.
+                    MODEL · backend policy recommendation
                 </p>
             </div>
             <div
@@ -226,10 +313,6 @@ const formatNumber = (value: number | null, digits = 1) =>
                 <p class="mt-2 text-xs text-muted-foreground">
                     {{ kpi.detail }}
                 </p>
-                <span
-                    class="mt-auto pt-3 text-xs font-semibold text-blue-700 dark:text-blue-300"
-                    >MODEL · selected action</span
-                >
             </div>
         </section>
 
@@ -481,12 +564,15 @@ const formatNumber = (value: number | null, digits = 1) =>
             >
                 <h2 class="text-xl font-bold">Compare operational actions</h2>
                 <p class="text-xs text-muted-foreground">
-                    MODEL · seeded simulation frequencies under assumptions
+                    Monte Carlo simulation frequencies · under assumptions
                 </p>
             </div>
+            <p v-if="criteria" class="mb-2 text-xs text-muted-foreground">
+                ✓ meets target / within limit · ↓ below target · ↑ exceeds limit
+            </p>
             <div class="grid gap-3 lg:grid-cols-3">
                 <article
-                    v-for="option in logistics.actions"
+                    v-for="option in comparisonRows"
                     :key="option.action"
                     class="flex flex-col gap-3 rounded-xl border-2 p-3"
                     :class="
@@ -494,7 +580,7 @@ const formatNumber = (value: number | null, digits = 1) =>
                             ? 'border-sky-600 bg-sky-50 dark:bg-sky-950/30'
                             : option.eligible
                               ? 'border-border'
-                              : 'border-dashed opacity-70'
+                              : 'border-dashed'
                     "
                 >
                     <div class="flex items-center justify-between gap-2">
@@ -523,56 +609,43 @@ const formatNumber = (value: number | null, digits = 1) =>
                         >
                     </div>
                     <dl
-                        class="grid grid-cols-2 items-baseline gap-x-3 gap-y-2 text-sm"
+                        class="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-2 gap-y-1.5 text-sm"
                     >
-                        <dt class="text-muted-foreground">
-                            Production continuity
-                        </dt>
-                        <dd
-                            class="text-right text-lg font-semibold tabular-nums"
+                        <template
+                            v-for="metric in option.metrics"
+                            :key="metric.label"
                         >
-                            {{
-                                formatPercent(
-                                    option.production_continuity_probability,
-                                )
-                            }}
-                        </dd>
-                        <dt class="text-muted-foreground">On-time arrival</dt>
-                        <dd
-                            class="text-right text-lg font-semibold tabular-nums"
-                        >
-                            {{
-                                formatPercent(
-                                    option.on_time_arrival_probability,
-                                )
-                            }}
-                        </dd>
-                        <dt class="text-muted-foreground">
-                            Cold-chain exposure proxy
-                        </dt>
-                        <dd class="text-right font-semibold tabular-nums">
-                            {{
-                                formatPercent(
-                                    option.cold_chain_exposure_proxy_risk,
-                                )
-                            }}
-                        </dd>
-                        <dt class="text-muted-foreground">
-                            Incoming mean delay
-                        </dt>
-                        <dd class="text-right font-semibold tabular-nums">
-                            {{
-                                formatMinutes(
-                                    option.predicted_arrival_delay_min,
-                                )
-                            }}
-                        </dd>
-                        <dt class="text-muted-foreground">
-                            Factory mean delay
-                        </dt>
-                        <dd class="text-right font-semibold tabular-nums">
-                            {{ formatMinutes(option.predicted_delay_min) }}
-                        </dd>
+                            <dt class="text-muted-foreground">
+                                {{ metric.label }}
+                            </dt>
+                            <dd
+                                class="flex items-baseline justify-end gap-1.5 text-right text-base font-semibold tabular-nums"
+                            >
+                                <span
+                                    v-if="
+                                        metric.status &&
+                                        metric.threshold !== undefined
+                                    "
+                                    class="text-sm font-medium"
+                                    :title="`${metric.status.label} · ${formatPercent(metric.threshold)}`"
+                                    :class="
+                                        metric.status.tone === 'positive'
+                                            ? 'text-emerald-800 dark:text-emerald-300'
+                                            : 'text-amber-800 dark:text-amber-200'
+                                    "
+                                >
+                                    <span aria-hidden="true">{{
+                                        metric.status.symbol
+                                    }}</span>
+                                    <span class="sr-only">
+                                        {{ metric.status.label }} ·
+                                        {{ formatPercent(metric.threshold) }}
+                                        target:
+                                    </span>
+                                </span>
+                                {{ metric.value }}
+                            </dd>
+                        </template>
                     </dl>
                     <p
                         class="mt-auto text-xs leading-relaxed text-muted-foreground"
@@ -581,6 +654,14 @@ const formatNumber = (value: number | null, digits = 1) =>
                     </p>
                 </article>
             </div>
+            <p v-if="criteria" class="mt-2 text-xs text-muted-foreground">
+                ASSUMED policy targets · continuity
+                {{ formatPercent(criteria.productionContinuityTarget) }}; BUFFER
+                arrival {{ formatPercent(criteria.bufferOnTimeTarget) }} /
+                exposure limit {{ formatPercent(criteria.bufferExposureCap) }}.
+                Eligible interventions meeting continuity are compared by
+                exposure, incoming delay, then on-time arrival.
+            </p>
             <p class="mt-3 text-xs text-muted-foreground">
                 Cold-chain proxy only — ambient conditions do not establish an
                 actual product-temperature excursion, pharmaceutical quality or
@@ -656,7 +737,7 @@ const formatNumber = (value: number | null, digits = 1) =>
             </summary>
             <p class="mt-2 text-sm text-muted-foreground">
                 Observed, modeled, simulated and assumed evidence stays
-                distinct.
+                distinct. Evidence quality is categorical, not a probability.
             </p>
             <div class="mt-3 grid gap-3 lg:grid-cols-2">
                 <article

@@ -162,6 +162,11 @@
     --sidebar: hsl(240 5.9% 10%);
 }
 
+/* Projector-readable secondary text, scoped to the decision dashboard. */
+.dark .logistics-dashboard {
+    --muted-foreground: hsl(0 0% 73%);
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
