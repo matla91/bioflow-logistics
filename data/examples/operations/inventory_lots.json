@@ -1,0 +1,42 @@
+[
+  {
+    "available_at": "2026-09-26T12:00:00Z",
+    "id": "operations-demo-v1-stock-released",
+    "material_id": "operations-demo-v1-material",
+    "qa_status": "released",
+    "quantity_kg": 80.0,
+    "shipment_id": null
+  },
+  {
+    "available_at": "2026-10-02T12:00:00Z",
+    "id": "operations-demo-v1-stock-pending",
+    "material_id": "operations-demo-v1-material",
+    "qa_status": "pending",
+    "quantity_kg": 100.0,
+    "shipment_id": null
+  },
+  {
+    "available_at": "2026-10-02T06:00:00Z",
+    "id": "operations-demo-v1-lot-001",
+    "material_id": "operations-demo-v1-material",
+    "qa_status": "pending",
+    "quantity_kg": 150.0,
+    "shipment_id": "operations-demo-v1-shipment-001"
+  },
+  {
+    "available_at": "2026-10-02T06:00:00Z",
+    "id": "operations-demo-v1-lot-005",
+    "material_id": "operations-demo-v1-material",
+    "qa_status": "pending",
+    "quantity_kg": 150.0,
+    "shipment_id": "operations-demo-v1-shipment-005"
+  },
+  {
+    "available_at": "2026-10-02T06:00:00Z",
+    "id": "operations-demo-v1-lot-009",
+    "material_id": "operations-demo-v1-material",
+    "qa_status": "pending",
+    "quantity_kg": 150.0,
+    "shipment_id": "operations-demo-v1-shipment-009"
+  }
+]

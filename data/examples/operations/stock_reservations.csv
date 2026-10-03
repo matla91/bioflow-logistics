@@ -1,0 +1,3 @@
+batch_id,inventory_lot_id,quantity_kg
+operations-demo-v1-batch-001,operations-demo-v1-stock-released,50.0
+operations-demo-v1-batch-002,operations-demo-v1-stock-released,30.0

@@ -1,0 +1,66 @@
+{
+  "dataset_id": "operations-demo-v1",
+  "simulated": true,
+  "seed": 20261003,
+  "reference_at": "2026-10-03T12:00:00Z",
+  "source": "output/operations-demo.json",
+  "source_sha256": "0d00d27b80a668bcee44668ee4892997d175f85f46806605d8fde19bf71091e4",
+  "files": {
+    "materials.json": {
+      "records": 1,
+      "sha256": "cddcc1606255272a555ef20d07a7e9aa848a3481d907b3b6a4cc7ac951d4ae03"
+    },
+    "materials.csv": {
+      "records": 1,
+      "sha256": "f4f765ef57c646c66da770030cca69233e9188cdc4f90e3d79403dfdf7a2cdbb"
+    },
+    "shipments.json": {
+      "records": 12,
+      "sha256": "5c39fefed2201d77b4007aa3431f445da6cccd60636ce4c982ece8bfb3b1153d"
+    },
+    "shipments.csv": {
+      "records": 12,
+      "sha256": "72a4d1f8d7510d159c981b7739929ded1413322a2e904cd8b22449d8976a2cba"
+    },
+    "batches.json": {
+      "records": 18,
+      "sha256": "37c59ff9c324fa4110e140a06a821cef5a21d6f90de202b577405872a12e4c8d"
+    },
+    "batches.csv": {
+      "records": 18,
+      "sha256": "abf1a7c274ec3ee8560d7eb7bb2656d4454d942b44312e2f56c8c70f62d5304b"
+    },
+    "batch_supply_plans.json": {
+      "records": 18,
+      "sha256": "38b433e55361796e6e61ca1e1fb75b5a740da72fe29be929531d034ef9d0de62"
+    },
+    "batch_supply_plans.csv": {
+      "records": 18,
+      "sha256": "e8bc0bf9f72d5eb9af7ed5b6f0c57f29fa21dba7dd5cb6a661f867bcc73c7fff"
+    },
+    "inventory_lots.json": {
+      "records": 5,
+      "sha256": "9c83519b4425d4d5b4cda14474e3bb2fa0e49a34d74f41d51a978497b703993d"
+    },
+    "inventory_lots.csv": {
+      "records": 5,
+      "sha256": "1b0b6296a036f7f727e0b547ee72da652c9e6bc840585561aa6dd76512d7c1e2"
+    },
+    "stock_reservations.json": {
+      "records": 2,
+      "sha256": "8dd401f56221203177ede488146296addc9387809adbe0fa10d1824aefcbc07f"
+    },
+    "stock_reservations.csv": {
+      "records": 2,
+      "sha256": "c851da1f91bd89b7bd0211c6f7cb31eb3dbdd8222b2d51210926fc34c1b27802"
+    },
+    "shipment_readings.json": {
+      "records": 261,
+      "sha256": "05f8e9d56744e48c2cff26619cf6816060c681161c0b8057394e86ecb25ca471"
+    },
+    "shipment_readings.csv": {
+      "records": 261,
+      "sha256": "231a53ec107da2f5118da92ea22b769e3b819d7a437ac1155411148905304cb3"
+    }
+  }
+}

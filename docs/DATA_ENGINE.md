@@ -17,6 +17,8 @@ pixi run data-engine-test
 
 This creates the ignored local database `.runtime/current-affairs.sqlite3`, imports the existing real provider cache without network access and writes [operations-demo.json](../output/operations-demo.json). The fixture is reproducible with the same [settings](../config/operations_demo.yaml): 12 shipments, 18 batches, five inventory lots and separate incoming supply plans/stock reservations. Future shipments have planned milestones but no actual departures, arrivals or sensor readings. Heat, delayed transport, insufficient released stock, pending-QA inventory and future demand are explicit synthetic cases. Arrived incoming lots enter pending-QA stock, not automatically released stock.
 
+For Laravel seeders, [the example package](../data/examples/operations/README.md) splits this fixture into readable JSON arrays and CSV tables, with relationship/import notes and trial cases. Regenerate those exports with `python scripts/export-operation-examples.py` after regenerating the canonical fixture.
+
 For live collection:
 
 ```sh

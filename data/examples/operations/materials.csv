@@ -1,0 +1,2 @@
+budget_min,id,name,quantity_unit,range_c
+120.0,operations-demo-v1-material,pharmaceutical intermediate,kg,"[2.0,8.0]"

@@ -1,0 +1,12 @@
+[
+  {
+    "budget_min": 120.0,
+    "id": "operations-demo-v1-material",
+    "name": "pharmaceutical intermediate",
+    "quantity_unit": "kg",
+    "range_c": [
+      2.0,
+      8.0
+    ]
+  }
+]

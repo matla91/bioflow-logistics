@@ -1,0 +1,12 @@
+[
+  {
+    "batch_id": "operations-demo-v1-batch-001",
+    "inventory_lot_id": "operations-demo-v1-stock-released",
+    "quantity_kg": 50.0
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-002",
+    "inventory_lot_id": "operations-demo-v1-stock-released",
+    "quantity_kg": 30.0
+  }
+]

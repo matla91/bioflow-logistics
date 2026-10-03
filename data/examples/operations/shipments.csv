@@ -1,0 +1,13 @@
+actual_arrival_at,actual_departure_at,destination,id,lot_id,material_id,origin,planned_arrival_at,planned_departure_at,quantity_kg,route_mode,scenario,status
+2026-10-02T06:00:00Z,2026-10-01T12:00:00Z,Basel production site,operations-demo-v1-shipment-001,operations-demo-v1-lot-001,operations-demo-v1-material,Rotterdam,2026-10-02T06:00:00Z,2026-10-01T12:00:00Z,150.0,river,normal,arrived
+,2026-10-03T00:00:00Z,Basel production site,operations-demo-v1-shipment-002,operations-demo-v1-lot-002,operations-demo-v1-material,Rotterdam,2026-10-03T18:00:00Z,2026-10-03T00:00:00Z,150.0,river,heat,in_transit
+,2026-10-03T00:00:00Z,Basel production site,operations-demo-v1-shipment-003,operations-demo-v1-lot-003,operations-demo-v1-material,Rotterdam,2026-10-03T18:00:00Z,2026-10-03T00:00:00Z,150.0,river,delay,in_transit
+,,Basel production site,operations-demo-v1-shipment-004,operations-demo-v1-lot-004,operations-demo-v1-material,Rotterdam,2026-10-05T06:00:00Z,2026-10-04T12:00:00Z,150.0,river,planned,planned
+2026-10-02T06:00:00Z,2026-10-01T12:00:00Z,Basel production site,operations-demo-v1-shipment-005,operations-demo-v1-lot-005,operations-demo-v1-material,Rotterdam,2026-10-02T06:00:00Z,2026-10-01T12:00:00Z,150.0,river,normal,arrived
+,2026-10-03T00:00:00Z,Basel production site,operations-demo-v1-shipment-006,operations-demo-v1-lot-006,operations-demo-v1-material,Rotterdam,2026-10-03T18:00:00Z,2026-10-03T00:00:00Z,150.0,river,heat,in_transit
+,2026-10-03T00:00:00Z,Basel production site,operations-demo-v1-shipment-007,operations-demo-v1-lot-007,operations-demo-v1-material,Rotterdam,2026-10-03T18:00:00Z,2026-10-03T00:00:00Z,150.0,river,delay,in_transit
+,,Basel production site,operations-demo-v1-shipment-008,operations-demo-v1-lot-008,operations-demo-v1-material,Rotterdam,2026-10-05T06:00:00Z,2026-10-04T12:00:00Z,150.0,river,planned,planned
+2026-10-02T06:00:00Z,2026-10-01T12:00:00Z,Basel production site,operations-demo-v1-shipment-009,operations-demo-v1-lot-009,operations-demo-v1-material,Rotterdam,2026-10-02T06:00:00Z,2026-10-01T12:00:00Z,150.0,river,normal,arrived
+,2026-10-03T00:00:00Z,Basel production site,operations-demo-v1-shipment-010,operations-demo-v1-lot-010,operations-demo-v1-material,Rotterdam,2026-10-03T18:00:00Z,2026-10-03T00:00:00Z,150.0,river,heat,in_transit
+,2026-10-03T00:00:00Z,Basel production site,operations-demo-v1-shipment-011,operations-demo-v1-lot-011,operations-demo-v1-material,Rotterdam,2026-10-03T18:00:00Z,2026-10-03T00:00:00Z,150.0,river,delay,in_transit
+,,Basel production site,operations-demo-v1-shipment-012,operations-demo-v1-lot-012,operations-demo-v1-material,Rotterdam,2026-10-05T06:00:00Z,2026-10-04T12:00:00Z,150.0,river,planned,planned

@@ -1,0 +1,92 @@
+[
+  {
+    "batch_id": "operations-demo-v1-batch-001",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-001"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-002",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-002"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-003",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-003"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-004",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-004"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-005",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-005"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-006",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-006"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-007",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-007"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-008",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-008"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-009",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-009"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-010",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-010"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-011",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-011"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-012",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-012"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-013",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-001"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-014",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-002"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-015",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-003"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-016",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-004"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-017",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-005"
+  },
+  {
+    "batch_id": "operations-demo-v1-batch-018",
+    "quantity_kg": 50.0,
+    "shipment_id": "operations-demo-v1-shipment-006"
+  }
+]
