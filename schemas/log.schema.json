@@ -1,0 +1,127 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "RUN_AS_PLANNED",
+        "EXPEDITE",
+        "BUFFER",
+        "REROUTE",
+        "QUARANTINE"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "LogEntry": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verdict": {
+                "const": "OVERRIDE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "chosen_action": {
+                "not": {
+                  "type": "null"
+                }
+              }
+            },
+            "required": [
+              "chosen_action"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "chosen_action": {
+                "const": "QUARANTINE"
+              }
+            },
+            "required": [
+              "chosen_action"
+            ]
+          },
+          "then": {
+            "properties": {
+              "by": {
+                "const": "QA"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "by": {
+          "enum": [
+            "operator",
+            "logistics",
+            "QA"
+          ],
+          "title": "By",
+          "type": "string"
+        },
+        "chosen_action": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Action"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "decision_id": {
+          "minLength": 1,
+          "title": "Decision Id",
+          "type": "string"
+        },
+        "decision_snapshot_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Decision Snapshot Sha256",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Reason",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "APPROVE",
+            "OVERRIDE"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decision_id",
+        "by",
+        "verdict",
+        "reason",
+        "at",
+        "decision_snapshot_sha256"
+      ],
+      "title": "LogEntry",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "items": {
+    "$ref": "#/$defs/LogEntry"
+  },
+  "title": "Log",
+  "type": "array"
+}

@@ -1,0 +1,13 @@
+scenario_id: s1_normal_2026-05-10
+seed: 20260510
+evidence_date: '2026-05-05'
+evidence_end_date: '2026-05-10'
+# ASSUMED shipment appointments; real ambient is looked up at actual simulated hours.
+start_at: '2026-05-05T09:00:00+00:00'
+basel_unload_at: '2026-05-10T13:00:00+00:00'
+charge_at: '2026-05-11T06:00:00+02:00'
+expected_action: RUN_AS_PLANNED
+cache: s1_normal_2026-05-10.json
+# ASSUMED normal river sensitivity; rolling gauge API has no May/July data.
+simulated_kaub_cm: 150
+overrides: {}

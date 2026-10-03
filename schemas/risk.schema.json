@@ -1,0 +1,224 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "RUN_AS_PLANNED",
+        "EXPEDITE",
+        "BUFFER",
+        "REROUTE",
+        "QUARANTINE"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "ActionRisk": {
+      "additionalProperties": false,
+      "properties": {
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "exp_delay_min": {
+          "minimum": 0,
+          "title": "Exp Delay Min",
+          "type": "number"
+        },
+        "p_excursion": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Excursion",
+          "type": "number"
+        },
+        "p_miss_slot": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Miss Slot",
+          "type": "number"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "stock_after": {
+          "minimum": 0,
+          "title": "Stock After",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "exp_delay_min",
+        "p_miss_slot",
+        "p_excursion",
+        "stock_after",
+        "eligible",
+        "reason"
+      ],
+      "title": "ActionRisk",
+      "type": "object"
+    },
+    "GaugeFlag": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "flag": {
+          "minLength": 1,
+          "title": "Flag",
+          "type": "string"
+        },
+        "station": {
+          "minLength": 1,
+          "title": "Station",
+          "type": "string"
+        },
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        }
+      },
+      "required": [
+        "station",
+        "t",
+        "flag",
+        "detail"
+      ],
+      "title": "GaugeFlag",
+      "type": "object"
+    },
+    "RiverForecastPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "kaub_cm_p50": {
+          "title": "Kaub Cm P50",
+          "type": "number"
+        },
+        "kaub_cm_p90": {
+          "title": "Kaub Cm P90",
+          "type": "number"
+        },
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        }
+      },
+      "required": [
+        "t",
+        "kaub_cm_p50",
+        "kaub_cm_p90"
+      ],
+      "title": "RiverForecastPoint",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "eta_p50": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Eta P50"
+    },
+    "eta_p90": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Eta P90"
+    },
+    "gauge_flags": {
+      "items": {
+        "$ref": "#/$defs/GaugeFlag"
+      },
+      "title": "Gauge Flags",
+      "type": "array"
+    },
+    "model": {
+      "minLength": 1,
+      "title": "Model",
+      "type": "string"
+    },
+    "n_runs": {
+      "minimum": 1,
+      "title": "N Runs",
+      "type": "integer"
+    },
+    "p_excursion": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "P Excursion",
+      "type": "number"
+    },
+    "p_miss_slot": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "P Miss Slot",
+      "type": "number"
+    },
+    "per_action": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ActionRisk"
+      },
+      "maxProperties": 5,
+      "minProperties": 5,
+      "propertyNames": {
+        "$ref": "#/$defs/Action"
+      },
+      "title": "Per Action",
+      "type": "object"
+    },
+    "river_forecast": {
+      "items": {
+        "$ref": "#/$defs/RiverForecastPoint"
+      },
+      "title": "River Forecast",
+      "type": "array"
+    },
+    "scenario_id": {
+      "minLength": 1,
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "sources": {
+      "additionalProperties": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Sources",
+      "type": "object"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "n_runs",
+    "eta_p50",
+    "eta_p90",
+    "p_miss_slot",
+    "p_excursion",
+    "per_action",
+    "gauge_flags",
+    "river_forecast",
+    "model",
+    "sources"
+  ],
+  "title": "Risk",
+  "type": "object"
+}

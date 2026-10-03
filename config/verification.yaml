@@ -1,0 +1,26 @@
+# Required verification gates; do not mark true without evidence.
+checks:
+- id: navigation_bands
+  verified: false
+  detail: 'TODO(verify): obtain Port of Switzerland bands from the challenge pack.'
+- id: basel_high_water
+  verified: false
+  detail: 'TODO(verify): actual Basel high-water navigation stop.'
+- id: traffic_stations
+  verified: false
+  detail: 'TODO(verify): active port/A2 stations and count/speed-to-delay mapping.'
+- id: river_history
+  verified: false
+  detail: 'TODO(verify): long history and persistence comparison, or explicitly omit
+    optional forecast.'
+- id: licence
+  verified: false
+  detail: 'TODO(verify): organiser approval of MIT code licence.'
+- id: data_licences
+  verified: false
+  detail: 'TODO(verify): OpenStreetMap-derived station geometry conditions before
+    publishing those geometries; other provider terms recorded in SOURCES.md.'
+- id: september_start
+  verified: false
+  detail: 'TODO(verify): obtain 1 September Kaub evidence if citing the brief''s 64
+    cm claim for that date; current returned window begins 2 September.'

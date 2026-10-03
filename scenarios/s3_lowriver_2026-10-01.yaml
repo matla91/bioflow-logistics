@@ -1,0 +1,10 @@
+scenario_id: s3_lowriver_2026-10-01
+seed: 20261001
+evidence_date: '2026-10-01'
+# ASSUMED: starts at Rotterdam after a completed simulated sea leg.
+start_at: '2026-10-01T02:45:00+02:00'
+charge_at: '2026-10-01T06:00:00+02:00'
+expected_action: BUFFER
+cache: s3_lowriver_2026-10-01.json
+# Sea history is simulated; departure is backdated from the sampled sea duration.
+overrides: {}

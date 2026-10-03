@@ -1,0 +1,183 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #e6edf5;
+  background: #101b29;
+  --accent: #75d1cd;
+  --band: #275251;
+  --exposure: #f3b96633;
+  --panel: #19283a;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 28px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: start;
+}
+h1 {
+  font-size: 2.6rem;
+  margin: 4px 0;
+}
+h2 {
+  margin: 8px 0 20px;
+}
+p,
+li {
+  line-height: 1.6;
+}
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+.pill {
+  border: 1px solid var(--accent);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0;
+}
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  border: 1px solid #527084;
+  background: #132233;
+  border-radius: 6px;
+  padding: 10px;
+}
+button {
+  cursor: pointer;
+}
+.active,
+button:hover {
+  border-color: var(--accent);
+}
+button:disabled,
+input:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+section {
+  background: var(--panel);
+  border: 1px solid #34495f;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.headline {
+  font-size: 1.3rem;
+}
+small {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #b0c1d2;
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+li {
+  margin-bottom: 14px;
+}
+label {
+  display: block;
+  margin: 16px 0;
+}
+label select {
+  margin-left: 12px;
+}
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 80px;
+  margin: 8px 0;
+}
+.buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.error {
+  background: #653834;
+  border-left: 4px solid #ffaa90;
+  padding: 14px;
+}
+.journey {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.journey span {
+  padding: 8px;
+  background: #101b29;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.journey .current {
+  background: #28625c;
+}
+svg {
+  width: 100%;
+  max-height: 240px;
+}
+svg text {
+  fill: currentColor;
+  font-size: 14px;
+}
+.scrub,
+progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+progress {
+  height: 24px;
+}
+.control {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+article {
+  border-top: 1px solid #34495f;
+  padding: 12px 0;
+}
+summary {
+  cursor: pointer;
+}
+@media (max-width: 650px) {
+  header {
+    display: block;
+  }
+  .pill {
+    display: inline-block;
+    margin-top: 12px;
+  }
+  main {
+    padding: 16px;
+  }
+  section {
+    padding: 16px;
+  }
+  .buttons {
+    display: block;
+  }
+  .buttons > * {
+    margin: 6px 0;
+    width: 100%;
+  }
+}

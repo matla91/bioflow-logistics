@@ -1,0 +1,64 @@
+# ASSUMED durations and positions; no actual shipment data.
+segments:
+  - id: sea
+    kind: leg
+    refrigerated: true
+    planned_min: 50400
+    distribution: normal
+    place: rotterdam
+    position: {lat: 31.23, lon: 121.47}
+    sd_min: 2880
+  - id: repack_rtm
+    kind: handover
+    refrigerated: false
+    planned_min: 45
+    distribution: triangular
+    place: rotterdam
+    position: {lat: 51.92, lon: 4.48}
+    triangular_min: [30, 45, 90]
+  - id: truck_to_barge
+    kind: leg
+    refrigerated: true
+    planned_min: 120
+    distribution: normal
+    place: rotterdam
+    position: {lat: 51.92, lon: 4.48}
+    sd_min: 30
+  - id: transfer
+    kind: handover
+    refrigerated: false
+    planned_min: 20
+    distribution: triangular
+    place: rotterdam
+    position: {lat: 51.92, lon: 4.48}
+    triangular_min: [10, 20, 45]
+  - id: barge
+    kind: leg
+    refrigerated: true
+    planned_min: 7200
+    distribution: fixed
+    place: basel
+    position: {lat: 50.09, lon: 7.76}
+  - id: unload_basel
+    kind: handover
+    refrigerated: false
+    planned_min: 30
+    distribution: triangular
+    place: basel
+    position: {lat: 47.59, lon: 7.59}
+    triangular_min: [15, 30, 60]
+  - id: truck_to_site
+    kind: leg
+    refrigerated: true
+    planned_min: 25
+    distribution: fixed
+    place: basel
+    position: {lat: 47.58, lon: 7.6}
+  - id: dock
+    kind: handover
+    refrigerated: false
+    planned_min: 15
+    distribution: triangular
+    place: basel
+    position: {lat: 47.56, lon: 7.61}
+    triangular_min: [5, 15, 40]

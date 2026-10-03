@@ -1,0 +1,8 @@
+reactor: R2
+charge_hour: 6
+timezone: Europe/Zurich
+# ASSUMED site state; no actual manufacturing data.
+reactor_drift_sd_min: 20
+stock_batches: 2
+batch_stock_required: 1
+lot: SIM-26-0814

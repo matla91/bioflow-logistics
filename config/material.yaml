@@ -1,0 +1,8 @@
+# ASSUMED; actual stability data and pallet response require QA validation.
+range_c: [2, 8]
+budget_min: 120
+setpoint_c: 5
+tau_reefer_min: 360
+tau_exposed_min: 360
+# ASSUMED: simulate cold-store recovery after docking, so excursion keeps counting.
+recovery_horizon_min: 1440
