@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { useSmartflowTheme } from '@/composables/useAppearance';
 import type { AppVariant } from '@/types';
 
 type Props = {
@@ -12,6 +13,7 @@ withDefaults(defineProps<Props>(), {
 });
 
 const isOpen = usePage().props.sidebarOpen;
+useSmartflowTheme();
 </script>
 
 <template>

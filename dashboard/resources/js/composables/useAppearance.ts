@@ -1,8 +1,13 @@
 import type { ComputedRef, Ref } from 'vue';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import type { Appearance, ResolvedAppearance } from '@/types';
 
 export type { Appearance, ResolvedAppearance };
+
+const fixedDark = ref(
+    typeof document !== 'undefined' &&
+        document.documentElement.dataset.theme === 'dark',
+);
 
 export type UseAppearanceReturn = {
     appearance: Ref<Appearance>;
@@ -12,6 +17,11 @@ export type UseAppearanceReturn = {
 
 export function updateTheme(value: Appearance): void {
     if (typeof window === 'undefined') {
+        return;
+    }
+
+    if (fixedDark.value) {
+        document.documentElement.classList.add('dark');
         return;
     }
 
@@ -85,6 +95,21 @@ export function initializeTheme(): void {
 
 const appearance = ref<Appearance>('system');
 
+// The persistent authenticated shell also covers Inertia login/logout navigation.
+export function useSmartflowTheme(): void {
+    onMounted(() => {
+        fixedDark.value = true;
+        document.documentElement.dataset.theme = 'dark';
+        updateTheme('dark');
+    });
+
+    onUnmounted(() => {
+        fixedDark.value = false;
+        delete document.documentElement.dataset.theme;
+        updateTheme(getStoredAppearance() || 'system');
+    });
+}
+
 export function useAppearance(): UseAppearanceReturn {
     onMounted(() => {
         const savedAppearance = localStorage.getItem(
@@ -97,6 +122,10 @@ export function useAppearance(): UseAppearanceReturn {
     });
 
     const resolvedAppearance = computed<ResolvedAppearance>(() => {
+        if (fixedDark.value) {
+            return 'dark';
+        }
+
         if (appearance.value === 'system') {
             return prefersDark() ? 'dark' : 'light';
         }
