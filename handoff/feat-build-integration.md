@@ -26,6 +26,8 @@ Read the local session handover, refreshed team refs and assembled dashboard ec9
 
 Added docs/DATA_FLOW.md with the product flow and current local implementation, linked from BUILD_INTEGRATION.md. ERP is explicitly a synthetic stand-in; engine and Laravel stores remain separate. Latest batch-linked assessment selection and evidence-bound decisions are builder work.
 
+Slide assets are in docs/slides/smartflow-data-flow.svg and .png (3200 × 1800, 16:9). Rendered and visually checked; editable SVG is the source. Export with rsvg-convert -w 3200 -h 1800 docs/slides/smartflow-data-flow.svg -o docs/slides/smartflow-data-flow.png.
+
 ## Next
 
 Both branches are published at the user’s explicit request. Do not merge. Keep the local session-handover untracked. Laravel runtime checks now pass locally; maintain them as batch workflows are added. ML owner implements batch-linked assessments; Laravel owner adds operational models/pages and imports linked assessments after that contract is available. Keep engine and Laravel databases separate until migration ownership/schema alignment is agreed. No merge authorized.

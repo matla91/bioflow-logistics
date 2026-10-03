@@ -1,5 +1,7 @@
 # Smartflow data flow
 
+Slide-ready colour diagram: [PNG, 3200 × 1800](slides/smartflow-data-flow.png) · [editable SVG, 16:9](slides/smartflow-data-flow.svg). The visual shows the product flow; its footer identifies the separate demo databases and batch-linked work still being integrated.
+
 Shipment and manufacturing records enter from an ERP source; public signals enter through provider ingestion. The analysis worker reads stored inputs and writes versioned JSON assessments and evidence. Smartflow displays assessments alongside operational records. People approve or override recommendations, and the app stores their decision traces.
 
 ## Product flow
