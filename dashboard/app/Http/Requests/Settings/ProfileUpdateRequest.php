@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Settings;
 
 use App\Concerns\ProfileValidationRules;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProfileUpdateRequest extends FormRequest
+final class ProfileUpdateRequest extends FormRequest
 {
     use ProfileValidationRules;
 
@@ -15,8 +19,8 @@ class ProfileUpdateRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(#[CurrentUser] User $user): array
     {
-        return $this->profileRules($this->user()->id);
+        return $this->profileRules($user->id);
     }
 }
