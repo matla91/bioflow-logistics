@@ -22,6 +22,10 @@ Read the local session handover, refreshed team refs and assembled dashboard ec9
 - Rechecked 58 Laravel tests (two skipped), 246 Python tests (seven verification gates deselected), both frontend builds, Vue types, scoped Pint and strict docs. Browser shows Logistics analysis - Smartflow with a loaded logo and no errors.
 - Externally prepared allow annotations in Register.vue, ResetPassword.vue and Security.vue were included; no agent-added override was used. Staged and push guards passed. Composer lock remains local because generated dependency metadata contains real author emails; it was not hand-edited.
 
+## Data flow diagram
+
+Added docs/DATA_FLOW.md with the product flow and current local implementation, linked from BUILD_INTEGRATION.md. ERP is explicitly a synthetic stand-in; engine and Laravel stores remain separate. Latest batch-linked assessment selection and evidence-bound decisions are builder work.
+
 ## Next
 
 Both branches are published at the user’s explicit request. Do not merge. Keep the local session-handover untracked. Laravel runtime checks now pass locally; maintain them as batch workflows are added. ML owner implements batch-linked assessments; Laravel owner adds operational models/pages and imports linked assessments after that contract is available. Keep engine and Laravel databases separate until migration ownership/schema alignment is agreed. No merge authorized.

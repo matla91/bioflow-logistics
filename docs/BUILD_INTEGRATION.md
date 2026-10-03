@@ -2,6 +2,8 @@
 
 The review branch `feat/build-integration` assembles the central data engine and logistics simulation with the Laravel app from `origin/dashboard` at ec9a145. Only the Laravel app directory was imported; unrelated branch histories and the archived dashboard were not imported. The fetched `origin/ML` at 74e4179 contains the original scaffold, with no additional ML implementation. The working logistics implementation is already in the engine's ancestry.
 
+See the [data flow diagrams](DATA_FLOW.md) for the product flow, ERP stand-in and current physical stores.
+
 ## Current connection
 
 Stored provider observations → scheduled logistics analysis → immutable SQLite assessment/evidence → local read API → Laravel `/integration` page. The page also shows stored operational dataset counts. Existing Laravel shipment decisions remain in Laravel's own database. Do not point Laravel migrations at the engine database: both currently define incompatible `shipments` tables.
