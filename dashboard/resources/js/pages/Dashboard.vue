@@ -68,7 +68,12 @@ const provenanceRows = computed(() =>
 );
 
 const whyNotRows = computed(() =>
-    Object.entries(props.logistics.recommendation.why_not),
+    Object.entries(props.logistics.recommendation.why_not).map(
+        ([action, explanation]) => ({
+            action: action as LogisticsAction,
+            explanation: explanation ?? '',
+        }),
+    ),
 );
 
 const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
@@ -76,11 +81,6 @@ const formatMinutes = (value: number) =>
     value < 0.05 ? '<0.1 min' : `${value.toFixed(1)} min`;
 const formatNumber = (value: number | null, digits = 1) =>
     value === null ? '—' : value.toFixed(digits);
-const headline = (value: string) =>
-    value
-        .replaceAll('_', ' ')
-        .toLowerCase()
-        .replace(/\b\w/g, (letter) => letter.toUpperCase());
 </script>
 
 <template>
@@ -511,13 +511,13 @@ const headline = (value: string) =>
                     <h3 class="text-sm font-semibold">Why not the alternatives?</h3>
                     <ul class="mt-2 flex flex-col gap-2">
                         <li
-                            v-for="[action, explanation] in whyNotRows"
-                            :key="action"
+                            v-for="row in whyNotRows"
+                            :key="row.action"
                             class="rounded-lg border p-3 text-sm"
                         >
-                            <b>{{ actionLabels[action as LogisticsAction] }}</b>
+                            <b>{{ actionLabels[row.action] }}</b>
                             <p class="mt-1 text-muted-foreground">
-                                {{ explanation }}
+                                {{ row.explanation }}
                             </p>
                         </li>
                     </ul>
