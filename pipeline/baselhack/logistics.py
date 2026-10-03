@@ -15,7 +15,7 @@ from baselhack.interfaces import (
     RealObservations,
     ShipmentState,
 )
-from baselhack.output import dumps, write
+from baselhack.output import dumps, dumps_frontend, write, write_frontend
 from baselhack.simulation import simulate
 from baselhack.storage import ROOT
 
@@ -44,6 +44,24 @@ def load_inputs(observations_path, shipment_path, assumptions_path):
     return observations, shipment, assumptions
 
 
+def load_demo(name, observations_path=None):
+    """Load a named simulated state and explicit overrides of the shared assumptions."""
+    if name not in {"normal", "disruption", "severe"}:
+        raise ValueError("Choose normal, disruption or severe")
+    observations, shipment, assumptions = load_inputs(
+        observations_path or ROOT / "data/cache/logistics_basel.json",
+        ROOT / "scenarios/logistics" / f"{name}.json",
+        ROOT / "config/logistics.yaml",
+    )
+    overrides = yaml.safe_load(
+        (ROOT / "config/logistics_scenarios" / f"{name}.yaml").read_text()
+    )
+    assumptions = LogisticsAssumptions.model_validate(
+        {**assumptions.model_dump(mode="python"), **overrides}
+    )
+    return observations, shipment, assumptions
+
+
 def refresh(shipment, assumptions, station_ids):
     """Fetch bounded real history; failures never substitute simulated observations."""
     from baselhack.ingestion import rhine, traffic, weather
@@ -66,30 +84,51 @@ def refresh(shipment, assumptions, station_ids):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["demo", "fetch"])
+    parser.add_argument("--scenario", choices=["normal", "disruption", "severe"])
+    parser.add_argument(
+        "--detailed",
+        action="store_true",
+        help="Export internal features, assumptions and full source metadata",
+    )
     parser.add_argument(
         "--observations", type=Path, default=ROOT / "data/cache/logistics_basel.json"
     )
-    parser.add_argument(
-        "--shipment", type=Path, default=ROOT / "scenarios/logistics_demo.json"
-    )
-    parser.add_argument(
-        "--assumptions", type=Path, default=ROOT / "config/logistics.yaml"
-    )
+    parser.add_argument("--shipment", type=Path)
+    parser.add_argument("--assumptions", type=Path)
     parser.add_argument("--stations", nargs="+", default=["402"])
     parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
     try:
         if args.command == "demo":
-            inputs = load_inputs(args.observations, args.shipment, args.assumptions)
+            if args.scenario and (args.shipment or args.assumptions):
+                parser.error("Use --scenario or custom --shipment/--assumptions paths")
+            inputs = (
+                load_demo(args.scenario, args.observations)
+                if args.scenario
+                else load_inputs(
+                    args.observations,
+                    args.shipment or ROOT / "scenarios/logistics_demo.json",
+                    args.assumptions or ROOT / "config/logistics.yaml",
+                )
+            )
             result = evaluate(*inputs, args.stations)
             if args.output:
-                write(result, args.output)
+                if args.detailed:
+                    write(result, args.output)
+                else:
+                    write_frontend(result, args.output)
             else:
-                sys.stdout.write(dumps(result))
+                sys.stdout.write(
+                    dumps(result) if args.detailed else dumps_frontend(result)
+                )
         else:
-            shipment = ShipmentState.model_validate_json(args.shipment.read_text())
+            if args.scenario or args.detailed:
+                parser.error("--scenario and --detailed apply only to demo output")
+            shipment_path = args.shipment or ROOT / "scenarios/logistics_demo.json"
+            assumptions_path = args.assumptions or ROOT / "config/logistics.yaml"
+            shipment = ShipmentState.model_validate_json(shipment_path.read_text())
             assumptions = LogisticsAssumptions.model_validate(
-                yaml.safe_load(args.assumptions.read_text())
+                yaml.safe_load(assumptions_path.read_text())
             )
             if args.output is None:
                 parser.error(

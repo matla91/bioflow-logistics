@@ -3,10 +3,10 @@
     {
       "action": "BUFFER",
       "assessment": "Factory continuity is covered by simulated stock; incoming shipment timing and exposure remain separate.",
-      "cold_chain_exposure_proxy_risk": 0.766,
+      "cold_chain_exposure_proxy_risk": 0.0,
       "eligible": true,
-      "on_time_arrival_probability": 0.2795,
-      "predicted_arrival_delay_min": 20.37925402673104,
+      "on_time_arrival_probability": 0.9968,
+      "predicted_arrival_delay_min": 0.017895175758668502,
       "predicted_delay_min": 0.0,
       "production_continuity_probability": 1.0,
       "reason": "ASSUMED sufficient stock covers the factory deadline; incoming shipment exposure is unchanged."
@@ -14,30 +14,30 @@
     {
       "action": "EXPEDITE",
       "assessment": "Incoming shipment arrival determines production continuity; exposure remains an ambient proxy.",
-      "cold_chain_exposure_proxy_risk": 0.0473,
+      "cold_chain_exposure_proxy_risk": 0.0,
       "eligible": true,
-      "on_time_arrival_probability": 0.9681,
-      "predicted_arrival_delay_min": 0.25738583939191484,
-      "predicted_delay_min": 0.25738583939191484,
-      "production_continuity_probability": 0.9681,
+      "on_time_arrival_probability": 1.0,
+      "predicted_arrival_delay_min": 0.0,
+      "predicted_delay_min": 0.0,
+      "production_continuity_probability": 1.0,
       "reason": "ASSUMED transport and handling speed factors reduce all corresponding journey minutes."
     },
     {
       "action": "REROUTE",
       "assessment": "Incoming shipment arrival determines production continuity; exposure remains an ambient proxy.",
-      "cold_chain_exposure_proxy_risk": 0.646,
+      "cold_chain_exposure_proxy_risk": 0.0,
       "eligible": true,
-      "on_time_arrival_probability": 0.4194,
-      "predicted_arrival_delay_min": 11.52802402873995,
-      "predicted_delay_min": 11.52802402873995,
-      "production_continuity_probability": 0.4194,
+      "on_time_arrival_probability": 0.7692,
+      "predicted_arrival_delay_min": 2.904993434412541,
+      "predicted_delay_min": 2.904993434412541,
+      "production_continuity_probability": 0.7692,
       "reason": "ASSUMED alternative road transport retains reduced traffic and full weather additions, omits river additions, and adds transfer handling."
     }
   ],
   "as_of": "2026-09-30T12:00:00Z",
   "data_provenance": {
     "delay_simulation": {
-      "detail": "Seeded Monte Carlo scenario frequencies (10000 runs; seed 20260930), conditional on simulated state and assumed coefficients.",
+      "detail": "Seeded Monte Carlo scenario frequencies (10000 runs; seed 7001), conditional on simulated state and assumed coefficients.",
       "kind": "MODEL",
       "observed_at": null,
       "provider": null,
@@ -181,37 +181,36 @@
     "Comparable production continuity and on-time arrival use the exact simulated deadline, independently of delay_threshold_min and the ambient proxy budget."
   ],
   "operational_impact": {
-    "cold_chain_exposure_proxy_risk": 0.766,
-    "delay_risk": 0.5053,
-    "predicted_delay_min": 20.37925402673104
+    "cold_chain_exposure_proxy_risk": 0.0,
+    "delay_risk": 0.0003,
+    "predicted_delay_min": 0.017895175758668502
   },
   "recommendation": {
-    "action": "EXPEDITE",
+    "action": "BUFFER",
     "confidence": "MEDIUM",
     "policy_detail": "ASSUMED policy: production continuity target 0.950; BUFFER incoming on-time target 0.900 and cold-chain exposure proxy cap 0.100. Qualified shipment interventions compare lower exposure proxy, then lower incoming mean lateness, then higher on-time arrival; remaining ties use EXPEDITE before REROUTE. These are scenario criteria, not QA release rules.",
-    "reason": "EXPEDITE: production continuity 0.9681, incoming on-time arrival 0.9681, cold-chain exposure proxy risk 0.0473, incoming mean lateness 0.25738583939191484 min. It meets the production continuity target 0.950; eligible shipment interventions meeting that target are compared by lower exposure proxy, lower incoming lateness, then higher on-time arrival.",
+    "reason": "BUFFER: production continuity 1.000, incoming on-time arrival 0.9968, cold-chain exposure proxy risk 0.000, incoming mean lateness 0.017895175758668502 min. BUFFER meets the continuity target and both incoming shipment criteria; the modeled stock coverage needs no additional shipment intervention.",
     "why_not": {
-      "BUFFER": "BUFFER: production continuity 1.000, incoming on-time arrival 0.2795, cold-chain exposure proxy risk 0.766, incoming mean lateness 20.37925402673104 min. Factory continuity alone is insufficient: incoming on-time arrival 0.2795 is below 0.900; cold-chain exposure proxy 0.766 exceeds 0.100.",
-      "REROUTE": "REROUTE: production continuity 0.4194, incoming on-time arrival 0.4194, cold-chain exposure proxy risk 0.646, incoming mean lateness 11.52802402873995 min. Production continuity 0.4194 is below the policy target 0.950."
+      "EXPEDITE": "EXPEDITE: production continuity 1.000, incoming on-time arrival 1.000, cold-chain exposure proxy risk 0.000, incoming mean lateness 0.0 min. BUFFER already meets all policy criteria without an additional intervention.",
+      "REROUTE": "REROUTE: production continuity 0.7692, incoming on-time arrival 0.7692, cold-chain exposure proxy risk 0.000, incoming mean lateness 2.904993434412541 min. BUFFER already meets all policy criteria without an additional intervention."
     },
     "would_change_if": [
-      "SIMULATED planned_remaining_min changed from 120 to 60 min: the paired model rerun selects BUFFER.",
-      "SIMULATED planned_remaining_min changed from 120 to 180 min: the paired model rerun selects BUFFER.",
-      "SIMULATED planned_remaining_min changed from 120 to 240 min: the paired model rerun selects BUFFER."
+      "SIMULATED stock_available changed from 1 to 0 units: the paired model rerun selects EXPEDITE.",
+      "SIMULATED planned_remaining_min changed from 80 to 120 min: the paired model rerun selects EXPEDITE."
     ]
   },
-  "shipment_id": "SIM-BASEL-20260930",
+  "shipment_id": "SIM-BASEL-NORMAL",
   "simulated_shipment": {
     "as_of": "2026-09-30T12:00:00Z",
     "deadline_at": "2026-09-30T14:30:00Z",
     "expedite_available": true,
-    "handling_min": 40.0,
-    "planned_remaining_min": 120.0,
+    "handling_min": 20.0,
+    "planned_remaining_min": 80.0,
     "prior_exposure_degree_min": 0.0,
-    "protection_remaining_min": 130.0,
+    "protection_remaining_min": 240.0,
     "reroute_available": true,
     "route_mode": "river",
-    "shipment_id": "SIM-BASEL-20260930",
+    "shipment_id": "SIM-BASEL-NORMAL",
     "simulated": true,
     "stock_available": 1,
     "stock_required": 1

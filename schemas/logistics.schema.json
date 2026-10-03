@@ -2,6 +2,7 @@
   "$defs": {
     "LogisticsActionResult": {
       "additionalProperties": false,
+      "description": "Separate production timing, shipment timing and ambient exposure outcomes.\n\nArrival and production continuity use the exact deadline, without the legacy\ndelay tolerance. Factory timing is independent of ambient proxy exceedance;\nno pharmaceutical usability or QA release is inferred. BUFFER may cover the\nfactory while incoming arrival/exposure remain poor.",
       "properties": {
         "action": {
           "enum": [
@@ -11,6 +12,17 @@
           ],
           "title": "Action",
           "type": "string"
+        },
+        "assessment": {
+          "minLength": 1,
+          "title": "Assessment",
+          "type": "string"
+        },
+        "cold_chain_exposure_proxy_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Cold Chain Exposure Proxy Risk",
+          "type": "number"
         },
         "delay_risk": {
           "maximum": 1,
@@ -22,9 +34,26 @@
           "title": "Eligible",
           "type": "boolean"
         },
+        "on_time_arrival_probability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "On Time Arrival Probability",
+          "type": "number"
+        },
+        "predicted_arrival_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Arrival Delay Min",
+          "type": "number"
+        },
         "predicted_delay_min": {
           "minimum": 0,
           "title": "Predicted Delay Min",
+          "type": "number"
+        },
+        "production_continuity_probability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Production Continuity Probability",
           "type": "number"
         },
         "reason": {
@@ -32,13 +61,9 @@
           "title": "Reason",
           "type": "string"
         },
-        "shipment_thermal_exposure_risk": {
-          "maximum": 1,
-          "minimum": 0,
-          "title": "Shipment Thermal Exposure Risk",
-          "type": "number"
-        },
         "success_probability": {
+          "deprecated": true,
+          "description": "DEPRECATED: BUFFER stock coverage, otherwise joint factory lateness <= tolerance and ambient proxy <= budget. Not comparable across actions; never used for recommendations.",
           "maximum": 1,
           "minimum": 0,
           "title": "Success Probability",
@@ -48,11 +73,15 @@
       "required": [
         "action",
         "eligible",
-        "success_probability",
+        "production_continuity_probability",
+        "on_time_arrival_probability",
+        "cold_chain_exposure_proxy_risk",
         "predicted_delay_min",
+        "predicted_arrival_delay_min",
         "delay_risk",
-        "shipment_thermal_exposure_risk",
-        "reason"
+        "assessment",
+        "reason",
+        "success_probability"
       ],
       "title": "LogisticsActionResult",
       "type": "object"
@@ -144,10 +173,25 @@
           "title": "N Runs",
           "type": "integer"
         },
+        "navigation_restricted_penalty_min": {
+          "default": 30,
+          "exclusiveMinimum": 0,
+          "title": "Navigation Restricted Penalty Min",
+          "type": "number"
+        },
+        "navigation_severe_penalty_min": {
+          "default": 60,
+          "exclusiveMinimum": 0,
+          "title": "Navigation Severe Penalty Min",
+          "type": "number"
+        },
         "rain_min_per_mm": {
           "minimum": 0,
           "title": "Rain Min Per Mm",
           "type": "number"
+        },
+        "recommendation_policy": {
+          "$ref": "#/$defs/RecommendationPolicy"
         },
         "reroute_extra_handling_min": {
           "minimum": 0,
@@ -173,6 +217,12 @@
         "river_penalty_cap_min": {
           "minimum": 0,
           "title": "River Penalty Cap Min",
+          "type": "number"
+        },
+        "route_block_delay_min": {
+          "default": 1440,
+          "exclusiveMinimum": 0,
+          "title": "Route Block Delay Min",
           "type": "number"
         },
         "seed": {
@@ -256,6 +306,17 @@
           "title": "As Of",
           "type": "string"
         },
+        "official_navigation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OfficialNavigationSignal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "rhine": {
           "anyOf": [
             {
@@ -299,6 +360,116 @@
         "warnings"
       ],
       "title": "LogisticsFeatures",
+      "type": "object"
+    },
+    "NavigationAssessment": {
+      "additionalProperties": false,
+      "description": "Official state if supplied and valid; otherwise an ASSUMED trend scenario.\n\nDelay provenance is independent of status provenance. No state implies an\nofficial hydrological threshold or navigation restriction without an adapter.",
+      "properties": {
+        "delay_kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Delay Kind",
+          "type": "string"
+        },
+        "delay_penalty_min": {
+          "minimum": 0,
+          "title": "Delay Penalty Min",
+          "type": "number"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "normal_route_eligible": {
+          "title": "Normal Route Eligible",
+          "type": "boolean"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reported_delay_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reported Delay Min"
+        },
+        "state": {
+          "enum": [
+            "NORMAL",
+            "WATCH",
+            "RESTRICTED",
+            "SEVERE",
+            "UNKNOWN"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "state",
+        "kind",
+        "normal_route_eligible",
+        "delay_penalty_min",
+        "delay_kind",
+        "reason"
+      ],
+      "title": "NavigationAssessment",
       "type": "object"
     },
     "ObservationSource": {
@@ -358,6 +529,263 @@
         "licence"
       ],
       "title": "ObservationSource",
+      "type": "object"
+    },
+    "OfficialNavigationSignal": {
+      "additionalProperties": false,
+      "description": "Future adapter input; no official feed is integrated by the current demo.\n\nState/route eligibility must come from the identified official source. A\nmissing delay estimate remains missing and uses a labelled assumed fallback.",
+      "properties": {
+        "expected_delay_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Delay Min"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "normal_route_eligible": {
+          "title": "Normal Route Eligible",
+          "type": "boolean"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "source_url": {
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "NORMAL",
+            "WATCH",
+            "RESTRICTED",
+            "SEVERE"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "valid_from": {
+          "format": "date-time",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "valid_until": {
+          "format": "date-time",
+          "title": "Valid Until",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "state",
+        "provider",
+        "source_url",
+        "issued_at",
+        "valid_from",
+        "valid_until",
+        "normal_route_eligible"
+      ],
+      "title": "OfficialNavigationSignal",
+      "type": "object"
+    },
+    "ProvenanceSummary": {
+      "additionalProperties": false,
+      "description": "Indices refer to full detailed-output source metadata; no repeated URLs.",
+      "properties": {
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "source_indices": {
+          "default": [],
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "title": "Source Indices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "title": "ProvenanceSummary",
+      "type": "object"
+    },
+    "Recommendation": {
+      "additionalProperties": false,
+      "description": "Deterministic scenario recommendation; confidence describes evidence quality.",
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "enum": [
+                "BUFFER",
+                "EXPEDITE",
+                "REROUTE"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Action"
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "policy_detail": {
+          "minLength": 1,
+          "title": "Policy Detail",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "why_not": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "BUFFER",
+              "EXPEDITE",
+              "REROUTE"
+            ]
+          },
+          "title": "Why Not",
+          "type": "object"
+        },
+        "would_change_if": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Would Change If",
+          "type": "array"
+        }
+      },
+      "required": [
+        "action",
+        "confidence",
+        "reason",
+        "why_not",
+        "would_change_if",
+        "policy_detail"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "RecommendationPolicy": {
+      "additionalProperties": false,
+      "description": "Assumed service targets for deterministic decisions, not calibrated limits.",
+      "properties": {
+        "max_exposure_proxy_risk": {
+          "default": 0.1,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Max Exposure Proxy Risk",
+          "type": "number"
+        },
+        "sensitivity_factors": {
+          "default": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "items": {
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "title": "Sensitivity Factors",
+          "type": "array"
+        },
+        "target_on_time_arrival": {
+          "default": 0.9,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target On Time Arrival",
+          "type": "number"
+        },
+        "target_production_continuity": {
+          "default": 0.95,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target Production Continuity",
+          "type": "number"
+        }
+      },
+      "title": "RecommendationPolicy",
       "type": "object"
     },
     "RhineFeatures": {
@@ -441,6 +869,9 @@
         "evidence_kind": {
           "enum": [
             "observed",
+            "official_forecast",
+            "model",
+            "simulated",
             "assumed"
           ],
           "title": "Evidence Kind",
@@ -491,6 +922,11 @@
           "title": "Deadline At",
           "type": "string"
         },
+        "expedite_available": {
+          "default": true,
+          "title": "Expedite Available",
+          "type": "boolean"
+        },
         "handling_min": {
           "minimum": 0,
           "title": "Handling Min",
@@ -511,6 +947,11 @@
           "minimum": 0,
           "title": "Protection Remaining Min",
           "type": "number"
+        },
+        "reroute_available": {
+          "default": true,
+          "title": "Reroute Available",
+          "type": "boolean"
         },
         "route_mode": {
           "enum": [
@@ -712,7 +1153,7 @@
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
-  "description": "Probabilities are Monte Carlo frequencies under assumptions, not calibration.\n\npredicted_delay_min is mean lateness beyond the simulated deadline. delay_risk\nuses delay_threshold_min. Thermal risk is P(ambient degree-minute proxy exceeds\nits assumed budget), with no claim of actual product-temperature excursions.\nSuccess means factory lateness <= threshold AND exposure proxy <= budget;\nBUFFER instead needs sufficient stock, independent of the incoming lot's proxy.",
+  "description": "Probabilities are Monte Carlo frequencies under assumptions, not calibration.\n\npredicted_delay_min is mean lateness beyond the simulated deadline. delay_risk\nuses delay_threshold_min. Proxy risk is P(ambient degree-minute proxy exceeds\nits assumed budget), with no claim of actual product-temperature excursions.\nSuccess means factory lateness <= threshold AND exposure proxy <= budget;\nBUFFER instead needs sufficient stock, independent of the incoming lot's proxy.",
   "properties": {
     "action_success_probabilities": {
       "additionalProperties": {
@@ -720,6 +1161,8 @@
         "minimum": 0,
         "type": "number"
       },
+      "deprecated": true,
+      "description": "DEPRECATED: action-specific legacy success events; do not compare or use for recommendations.",
       "propertyNames": {
         "enum": [
           "BUFFER",
@@ -744,6 +1187,19 @@
     },
     "assumptions": {
       "$ref": "#/$defs/LogisticsAssumptions"
+    },
+    "cold_chain_exposure_proxy_risk": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Cold Chain Exposure Proxy Risk",
+      "type": "number"
+    },
+    "data_provenance": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ProvenanceSummary"
+      },
+      "title": "Data Provenance",
+      "type": "object"
     },
     "delay_risk": {
       "maximum": 1,
@@ -774,6 +1230,9 @@
       "title": "Model",
       "type": "string"
     },
+    "navigation": {
+      "$ref": "#/$defs/NavigationAssessment"
+    },
     "predicted_delay_min": {
       "minimum": 0,
       "title": "Predicted Delay Min",
@@ -787,6 +1246,9 @@
       "title": "Real Data Sources",
       "type": "array"
     },
+    "recommendation": {
+      "$ref": "#/$defs/Recommendation"
+    },
     "shipment_id": {
       "minLength": 1,
       "title": "Shipment Id",
@@ -794,12 +1256,6 @@
     },
     "simulated_shipment": {
       "$ref": "#/$defs/ShipmentState"
-    },
-    "thermal_exposure_risk": {
-      "maximum": 1,
-      "minimum": 0,
-      "title": "Thermal Exposure Risk",
-      "type": "number"
     }
   },
   "required": [
@@ -807,9 +1263,12 @@
     "as_of",
     "predicted_delay_min",
     "delay_risk",
-    "thermal_exposure_risk",
+    "cold_chain_exposure_proxy_risk",
     "action_success_probabilities",
     "actions",
+    "navigation",
+    "recommendation",
+    "data_provenance",
     "main_risk_drivers",
     "features",
     "simulated_shipment",

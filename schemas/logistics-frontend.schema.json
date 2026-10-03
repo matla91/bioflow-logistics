@@ -1,0 +1,776 @@
+{
+  "$defs": {
+    "ExternalState": {
+      "additionalProperties": false,
+      "properties": {
+        "navigation": {
+          "$ref": "#/$defs/NavigationAssessment"
+        },
+        "rhine": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RhineFeatures"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traffic": {
+          "items": {
+            "$ref": "#/$defs/TrafficFeature"
+          },
+          "title": "Traffic",
+          "type": "array"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        },
+        "weather": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WeatherFeatures"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "rhine",
+        "traffic",
+        "weather",
+        "navigation",
+        "warnings"
+      ],
+      "title": "ExternalState",
+      "type": "object"
+    },
+    "FrontendAction": {
+      "additionalProperties": false,
+      "description": "Comparable scenario dimensions; deprecated legacy success is excluded.",
+      "properties": {
+        "action": {
+          "enum": [
+            "BUFFER",
+            "EXPEDITE",
+            "REROUTE"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "assessment": {
+          "minLength": 1,
+          "title": "Assessment",
+          "type": "string"
+        },
+        "cold_chain_exposure_proxy_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Cold Chain Exposure Proxy Risk",
+          "type": "number"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "on_time_arrival_probability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "On Time Arrival Probability",
+          "type": "number"
+        },
+        "predicted_arrival_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Arrival Delay Min",
+          "type": "number"
+        },
+        "predicted_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Delay Min",
+          "type": "number"
+        },
+        "production_continuity_probability": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Production Continuity Probability",
+          "type": "number"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "eligible",
+        "production_continuity_probability",
+        "on_time_arrival_probability",
+        "cold_chain_exposure_proxy_risk",
+        "predicted_delay_min",
+        "predicted_arrival_delay_min",
+        "assessment",
+        "reason"
+      ],
+      "title": "FrontendAction",
+      "type": "object"
+    },
+    "NavigationAssessment": {
+      "additionalProperties": false,
+      "description": "Official state if supplied and valid; otherwise an ASSUMED trend scenario.\n\nDelay provenance is independent of status provenance. No state implies an\nofficial hydrological threshold or navigation restriction without an adapter.",
+      "properties": {
+        "delay_kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Delay Kind",
+          "type": "string"
+        },
+        "delay_penalty_min": {
+          "minimum": 0,
+          "title": "Delay Penalty Min",
+          "type": "number"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "normal_route_eligible": {
+          "title": "Normal Route Eligible",
+          "type": "boolean"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reported_delay_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reported Delay Min"
+        },
+        "state": {
+          "enum": [
+            "NORMAL",
+            "WATCH",
+            "RESTRICTED",
+            "SEVERE",
+            "UNKNOWN"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "state",
+        "kind",
+        "normal_route_eligible",
+        "delay_penalty_min",
+        "delay_kind",
+        "reason"
+      ],
+      "title": "NavigationAssessment",
+      "type": "object"
+    },
+    "OperationalImpact": {
+      "additionalProperties": false,
+      "description": "Baseline factory lateness and ambient proxy frequencies under assumptions.",
+      "properties": {
+        "cold_chain_exposure_proxy_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Cold Chain Exposure Proxy Risk",
+          "type": "number"
+        },
+        "delay_risk": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delay Risk",
+          "type": "number"
+        },
+        "predicted_delay_min": {
+          "minimum": 0,
+          "title": "Predicted Delay Min",
+          "type": "number"
+        }
+      },
+      "required": [
+        "predicted_delay_min",
+        "delay_risk",
+        "cold_chain_exposure_proxy_risk"
+      ],
+      "title": "OperationalImpact",
+      "type": "object"
+    },
+    "ProvenanceSummary": {
+      "additionalProperties": false,
+      "description": "Indices refer to full detailed-output source metadata; no repeated URLs.",
+      "properties": {
+        "detail": {
+          "minLength": 1,
+          "title": "Detail",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "REAL",
+            "OFFICIAL_FORECAST",
+            "MODEL",
+            "SIMULATED",
+            "ASSUMED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Observed At"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        },
+        "source_indices": {
+          "default": [],
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "title": "Source Indices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "detail"
+      ],
+      "title": "ProvenanceSummary",
+      "type": "object"
+    },
+    "Recommendation": {
+      "additionalProperties": false,
+      "description": "Deterministic scenario recommendation; confidence describes evidence quality.",
+      "properties": {
+        "action": {
+          "anyOf": [
+            {
+              "enum": [
+                "BUFFER",
+                "EXPEDITE",
+                "REROUTE"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Action"
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "policy_detail": {
+          "minLength": 1,
+          "title": "Policy Detail",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "why_not": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "enum": [
+              "BUFFER",
+              "EXPEDITE",
+              "REROUTE"
+            ]
+          },
+          "title": "Why Not",
+          "type": "object"
+        },
+        "would_change_if": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Would Change If",
+          "type": "array"
+        }
+      },
+      "required": [
+        "action",
+        "confidence",
+        "reason",
+        "why_not",
+        "would_change_if",
+        "policy_detail"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    },
+    "RhineFeatures": {
+      "additionalProperties": false,
+      "properties": {
+        "discharge_m3_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Discharge M3 S"
+        },
+        "discharge_trend_m3_s_per_hour": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Discharge Trend M3 S Per Hour"
+        },
+        "level_masl": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Level Masl"
+        },
+        "level_trend_cm_per_hour": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Level Trend Cm Per Hour"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "sample_count": {
+          "minimum": 1,
+          "title": "Sample Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "observed_at",
+        "level_masl",
+        "discharge_m3_s",
+        "level_trend_cm_per_hour",
+        "discharge_trend_m3_s_per_hour",
+        "sample_count"
+      ],
+      "title": "RhineFeatures",
+      "type": "object"
+    },
+    "ShipmentState": {
+      "additionalProperties": false,
+      "description": "All fields are SIMULATED. Transport minutes exclude handling minutes.\n\nProtection autonomy is remaining whole-journey time until packaging protection\nis assumed to expire. BUFFER covers the factory deadline from assumed stock.",
+      "properties": {
+        "as_of": {
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "deadline_at": {
+          "format": "date-time",
+          "title": "Deadline At",
+          "type": "string"
+        },
+        "expedite_available": {
+          "default": true,
+          "title": "Expedite Available",
+          "type": "boolean"
+        },
+        "handling_min": {
+          "minimum": 0,
+          "title": "Handling Min",
+          "type": "number"
+        },
+        "planned_remaining_min": {
+          "exclusiveMinimum": 0,
+          "title": "Planned Remaining Min",
+          "type": "number"
+        },
+        "prior_exposure_degree_min": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Prior Exposure Degree Min",
+          "type": "number"
+        },
+        "protection_remaining_min": {
+          "minimum": 0,
+          "title": "Protection Remaining Min",
+          "type": "number"
+        },
+        "reroute_available": {
+          "default": true,
+          "title": "Reroute Available",
+          "type": "boolean"
+        },
+        "route_mode": {
+          "enum": [
+            "river",
+            "road"
+          ],
+          "title": "Route Mode",
+          "type": "string"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        },
+        "simulated": {
+          "const": true,
+          "default": true,
+          "title": "Simulated",
+          "type": "boolean"
+        },
+        "stock_available": {
+          "minimum": 0,
+          "title": "Stock Available",
+          "type": "integer"
+        },
+        "stock_required": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Stock Required",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "shipment_id",
+        "as_of",
+        "deadline_at",
+        "route_mode",
+        "planned_remaining_min",
+        "handling_min",
+        "protection_remaining_min",
+        "stock_available"
+      ],
+      "title": "ShipmentState",
+      "type": "object"
+    },
+    "TrafficFeature": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_mean": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Baseline Mean"
+        },
+        "baseline_sample_count": {
+          "minimum": 0,
+          "title": "Baseline Sample Count",
+          "type": "integer"
+        },
+        "baseline_sd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Baseline Sd"
+        },
+        "interval_end": {
+          "format": "date-time",
+          "title": "Interval End",
+          "type": "string"
+        },
+        "observed_count": {
+          "minimum": 0,
+          "title": "Observed Count",
+          "type": "number"
+        },
+        "station_id": {
+          "minLength": 1,
+          "title": "Station Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "missing_baseline",
+            "zero_variance"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "z_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Z Score"
+        }
+      },
+      "required": [
+        "station_id",
+        "interval_end",
+        "observed_count",
+        "baseline_mean",
+        "baseline_sd",
+        "baseline_sample_count",
+        "z_score",
+        "status"
+      ],
+      "title": "TrafficFeature",
+      "type": "object"
+    },
+    "WeatherFeatures": {
+      "additionalProperties": false,
+      "properties": {
+        "air_temperature_c": {
+          "title": "Air Temperature C",
+          "type": "number"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "precipitation_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Precipitation Mm"
+        },
+        "relative_humidity_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Relative Humidity Pct"
+        },
+        "temperature_trend_c_per_hour": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Temperature Trend C Per Hour"
+        },
+        "wind_speed_m_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Wind Speed M S"
+        }
+      },
+      "required": [
+        "observed_at",
+        "air_temperature_c",
+        "precipitation_mm",
+        "wind_speed_m_s",
+        "relative_humidity_pct",
+        "temperature_trend_c_per_hour"
+      ],
+      "title": "WeatherFeatures",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Primary frontend contract. Internal Monte Carlo/source details stay separate.",
+  "properties": {
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/FrontendAction"
+      },
+      "title": "Actions",
+      "type": "array"
+    },
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "data_provenance": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ProvenanceSummary"
+      },
+      "title": "Data Provenance",
+      "type": "object"
+    },
+    "external_state": {
+      "$ref": "#/$defs/ExternalState"
+    },
+    "limitations": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "operational_impact": {
+      "$ref": "#/$defs/OperationalImpact"
+    },
+    "recommendation": {
+      "$ref": "#/$defs/Recommendation"
+    },
+    "shipment_id": {
+      "minLength": 1,
+      "title": "Shipment Id",
+      "type": "string"
+    },
+    "simulated_shipment": {
+      "$ref": "#/$defs/ShipmentState"
+    }
+  },
+  "required": [
+    "as_of",
+    "shipment_id",
+    "external_state",
+    "simulated_shipment",
+    "operational_impact",
+    "actions",
+    "recommendation",
+    "data_provenance",
+    "limitations"
+  ],
+  "title": "LogisticsFrontendResult",
+  "type": "object"
+}

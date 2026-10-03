@@ -59,12 +59,22 @@ simulation uses paired seeded transport/handling draws plus explicit assumed
 traffic, river and weather minute additions. Coefficients live in
 `config/logistics.yaml`; they are scenario assumptions with no fitted accuracy.
 
-The snapshot thermal measure differs from the existing journey temperature trace:
+The snapshot cold-chain exposure proxy differs from the existing journey temperature trace:
 it multiplies ambient degrees outside an assumed band by time after assumed
 packaging autonomy expires. Ambient is held at the last observed value for the
 future journey. This is an ambient exposure proxy and cannot establish actual
 product-temperature excursions. BUFFER serves the deadline from assumed stock
 without improving the incoming shipment; EXPEDITE and REROUTE change its elapsed
-time. Success probabilities use the joint delay/exposure event, with BUFFER
-evaluating stock continuity instead. No human approval or release decision is
-made by this layer.
+time. Factory continuity, incoming on-time arrival and ambient exposure proxy
+are comparable separate dimensions. A deterministic policy selects an eligible
+action and explains alternatives and tested decision-change conditions, with
+evidence confidence capped at MEDIUM for assumed inputs. The frontend contract,
+heuristics, compatibility and demo commands live in
+[LOGISTICS_CONTRACT.md](LOGISTICS_CONTRACT.md). No release decision is made by
+this layer.
+
+Navigation state uses official adapter input only if supplied and valid. The
+current examples use an ASSUMED fallback: correlated level/discharge trend
+penalties contribute their maximum rather than their sum. No official threshold
+is invented. Named normal/disruption/severe demos retain identical real evidence
+and vary only transparent simulated shipment state and assumption overrides.

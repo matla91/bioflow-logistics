@@ -1,0 +1,4 @@
+# SIMULATED normal remaining journey; external observations are unchanged.
+seed: 7001
+transport_sd_min: 15
+handling_sd_min: 5

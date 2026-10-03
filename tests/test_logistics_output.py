@@ -104,7 +104,7 @@ def test_output_revalidates_copied_and_nested_models(inputs):
     with pytest.raises(ValidationError):
         dumps(result.model_copy(update={"delay_risk": 2}))
     broken_actions = [
-        result.actions[0].model_copy(update={"shipment_thermal_exposure_risk": -1}),
+        result.actions[0].model_copy(update={"cold_chain_exposure_proxy_risk": -1}),
         *result.actions[1:],
     ]
     with pytest.raises(ValidationError):

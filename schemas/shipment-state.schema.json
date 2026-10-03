@@ -13,6 +13,11 @@
       "title": "Deadline At",
       "type": "string"
     },
+    "expedite_available": {
+      "default": true,
+      "title": "Expedite Available",
+      "type": "boolean"
+    },
     "handling_min": {
       "minimum": 0,
       "title": "Handling Min",
@@ -33,6 +38,11 @@
       "minimum": 0,
       "title": "Protection Remaining Min",
       "type": "number"
+    },
+    "reroute_available": {
+      "default": true,
+      "title": "Reroute Available",
+      "type": "boolean"
     },
     "route_mode": {
       "enum": [

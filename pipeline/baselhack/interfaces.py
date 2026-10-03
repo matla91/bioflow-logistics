@@ -9,6 +9,7 @@ from enum import StrEnum
 from typing import Annotated, Literal, Protocol
 
 from pydantic import (
+    AliasChoices,
     AfterValidator,
     BaseModel,
     ConfigDict,
@@ -444,12 +445,63 @@ class WeatherFeatures(Contract):
     temperature_trend_c_per_hour: Finite | None
 
 
+ProvenanceKind = Literal["REAL", "OFFICIAL_FORECAST", "MODEL", "SIMULATED", "ASSUMED"]
+LogisticsAction = Literal["BUFFER", "EXPEDITE", "REROUTE"]
+NavigationState = Literal["NORMAL", "WATCH", "RESTRICTED", "SEVERE", "UNKNOWN"]
+
+
+class OfficialNavigationSignal(Contract):
+    """Future adapter input; no official feed is integrated by the current demo.
+
+    State/route eligibility must come from the identified official source. A
+    missing delay estimate remains missing and uses a labelled assumed fallback.
+    """
+
+    kind: Literal["REAL", "OFFICIAL_FORECAST"]
+    state: Literal["NORMAL", "WATCH", "RESTRICTED", "SEVERE"]
+    provider: Text
+    source_url: Text
+    issued_at: Timestamp
+    valid_from: Timestamp
+    valid_until: Timestamp
+    normal_route_eligible: bool
+    expected_delay_min: Nonnegative | None = None
+
+    @model_validator(mode="after")
+    def valid_window(self):
+        if self.valid_until < self.valid_from or self.issued_at > self.valid_until:
+            raise ValueError(
+                "Official navigation signal has an invalid validity window"
+            )
+        return self
+
+
+class NavigationAssessment(Contract):
+    """Official state if supplied and valid; otherwise an ASSUMED trend scenario.
+
+    Delay provenance is independent of status provenance. No state implies an
+    official hydrological threshold or navigation restriction without an adapter.
+    """
+
+    state: NavigationState
+    kind: ProvenanceKind
+    normal_route_eligible: bool
+    delay_penalty_min: Nonnegative
+    delay_kind: ProvenanceKind
+    reported_delay_min: Nonnegative | None = None
+    provider: Text | None = None
+    observed_at: Timestamp | None = None
+    reason: Text
+    warnings: list[str] = []
+
+
 class LogisticsFeatures(Contract):
     as_of: Timestamp
     traffic: list[TrafficFeature]
     rhine: RhineFeatures | None
     weather: WeatherFeatures | None
     warnings: list[str]
+    official_navigation: OfficialNavigationSignal | None = None
 
 
 class ShipmentState(Contract):
@@ -470,12 +522,23 @@ class ShipmentState(Contract):
     prior_exposure_degree_min: Nonnegative = 0
     stock_available: Annotated[int, Field(ge=0)]
     stock_required: Annotated[int, Field(ge=1)] = 1
+    expedite_available: bool = True
+    reroute_available: bool = True
 
     @model_validator(mode="after")
     def future_deadline(self):
         if self.deadline_at < self.as_of:
             raise ValueError("Shipment deadline must be at or after as_of")
         return self
+
+
+class RecommendationPolicy(Contract):
+    """Assumed service targets for deterministic decisions, not calibrated limits."""
+
+    target_production_continuity: Probability = 0.95
+    target_on_time_arrival: Probability = 0.90
+    max_exposure_proxy_risk: Probability = 0.10
+    sensitivity_factors: tuple[Positive, ...] = (0.5, 1.5, 2.0)
 
 
 class LogisticsAssumptions(Contract):
@@ -509,6 +572,12 @@ class LogisticsAssumptions(Contract):
     trend_window_min: Positive
     trend_min_span_min: Positive
     baseline_min_samples: Annotated[int, Field(ge=2)]
+    navigation_restricted_penalty_min: Positive = 30
+    navigation_severe_penalty_min: Positive = 60
+    route_block_delay_min: Positive = 1440
+    recommendation_policy: RecommendationPolicy = Field(
+        default_factory=RecommendationPolicy
+    )
 
     @model_validator(mode="after")
     def ordered_band(self):
@@ -516,17 +585,64 @@ class LogisticsAssumptions(Contract):
             raise ValueError("Ambient reference band must be ordered")
         if self.trend_min_span_min > self.trend_window_min:
             raise ValueError("Minimum trend span must fit inside the trend window")
+        if self.navigation_restricted_penalty_min >= self.navigation_severe_penalty_min:
+            raise ValueError("Assumed navigation delay bands must be ordered")
         return self
 
 
 class LogisticsActionResult(Contract):
-    action: Literal["BUFFER", "EXPEDITE", "REROUTE"]
+    """Separate production timing, shipment timing and ambient exposure outcomes.
+
+    Arrival and production continuity use the exact deadline, without the legacy
+    delay tolerance. Factory timing is independent of ambient proxy exceedance;
+    no pharmaceutical usability or QA release is inferred. BUFFER may cover the
+    factory while incoming arrival/exposure remain poor.
+    """
+
+    action: LogisticsAction
     eligible: bool
-    success_probability: Probability
+    production_continuity_probability: Probability
+    on_time_arrival_probability: Probability
+    cold_chain_exposure_proxy_risk: Probability = Field(
+        validation_alias=AliasChoices(
+            "cold_chain_exposure_proxy_risk", "shipment_thermal_exposure_risk"
+        )
+    )
     predicted_delay_min: Nonnegative
+    predicted_arrival_delay_min: Nonnegative
     delay_risk: Probability
-    shipment_thermal_exposure_risk: Probability
+    assessment: Text
     reason: Text
+    success_probability: Probability = Field(
+        description="DEPRECATED: BUFFER stock coverage, otherwise joint factory lateness <= tolerance and ambient proxy <= budget. Not comparable across actions; never used for recommendations.",
+        json_schema_extra={"deprecated": True},
+    )
+
+    @property
+    def shipment_thermal_exposure_risk(self) -> float:
+        """Deprecated read alias. JSON uses cold_chain_exposure_proxy_risk."""
+        return self.cold_chain_exposure_proxy_risk
+
+
+class Recommendation(Contract):
+    """Deterministic scenario recommendation; confidence describes evidence quality."""
+
+    action: LogisticsAction | None
+    confidence: Literal["HIGH", "MEDIUM", "LOW"]
+    reason: Text
+    why_not: dict[LogisticsAction, Text]
+    would_change_if: list[Text]
+    policy_detail: Text
+
+
+class ProvenanceSummary(Contract):
+    """Indices refer to full detailed-output source metadata; no repeated URLs."""
+
+    kind: ProvenanceKind
+    provider: Text | None = None
+    observed_at: Timestamp | None = None
+    source_indices: list[Annotated[int, Field(ge=0)]] = []
+    detail: Text
 
 
 class RiskDriver(Contract):
@@ -535,14 +651,16 @@ class RiskDriver(Contract):
     unit: Text
     estimated_delay_contribution_min: Nonnegative
     explanation: Text
-    evidence_kind: Literal["observed", "assumed"]
+    evidence_kind: Literal[
+        "observed", "official_forecast", "model", "simulated", "assumed"
+    ]
 
 
 class LogisticsResult(Contract):
     """Probabilities are Monte Carlo frequencies under assumptions, not calibration.
 
     predicted_delay_min is mean lateness beyond the simulated deadline. delay_risk
-    uses delay_threshold_min. Thermal risk is P(ambient degree-minute proxy exceeds
+    uses delay_threshold_min. Proxy risk is P(ambient degree-minute proxy exceeds
     its assumed budget), with no claim of actual product-temperature excursions.
     Success means factory lateness <= threshold AND exposure proxy <= budget;
     BUFFER instead needs sufficient stock, independent of the incoming lot's proxy.
@@ -552,11 +670,21 @@ class LogisticsResult(Contract):
     as_of: Timestamp
     predicted_delay_min: Nonnegative
     delay_risk: Probability
-    thermal_exposure_risk: Probability
+    cold_chain_exposure_proxy_risk: Probability = Field(
+        validation_alias=AliasChoices(
+            "cold_chain_exposure_proxy_risk", "thermal_exposure_risk"
+        )
+    )
     action_success_probabilities: dict[
         Literal["BUFFER", "EXPEDITE", "REROUTE"], Probability
-    ]
+    ] = Field(
+        description="DEPRECATED: action-specific legacy success events; do not compare or use for recommendations.",
+        json_schema_extra={"deprecated": True},
+    )
     actions: list[LogisticsActionResult]
+    navigation: NavigationAssessment
+    recommendation: Recommendation
+    data_provenance: dict[str, ProvenanceSummary]
     main_risk_drivers: list[RiskDriver]
     features: LogisticsFeatures
     simulated_shipment: ShipmentState
@@ -578,12 +706,86 @@ class LogisticsResult(Contract):
                 != action.success_probability
             ):
                 raise ValueError("Action details and success probabilities must agree")
+        if self.recommendation.action is not None:
+            chosen = next(
+                a for a in self.actions if a.action == self.recommendation.action
+            )
+            if not chosen.eligible:
+                raise ValueError("Recommended action must be eligible")
+        if set(self.recommendation.why_not) != expected - {self.recommendation.action}:
+            raise ValueError("Recommendation must explain all alternatives")
+        return self
+
+    @property
+    def thermal_exposure_risk(self) -> float:
+        """Deprecated read alias. JSON uses cold_chain_exposure_proxy_risk."""
+        return self.cold_chain_exposure_proxy_risk
+
+
+class ExternalState(Contract):
+    rhine: RhineFeatures | None
+    traffic: list[TrafficFeature]
+    weather: WeatherFeatures | None
+    navigation: NavigationAssessment
+    warnings: list[str]
+
+
+class OperationalImpact(Contract):
+    """Baseline factory lateness and ambient proxy frequencies under assumptions."""
+
+    predicted_delay_min: Nonnegative
+    delay_risk: Probability
+    cold_chain_exposure_proxy_risk: Probability
+
+
+class FrontendAction(Contract):
+    """Comparable scenario dimensions; deprecated legacy success is excluded."""
+
+    action: LogisticsAction
+    eligible: bool
+    production_continuity_probability: Probability
+    on_time_arrival_probability: Probability
+    cold_chain_exposure_proxy_risk: Probability
+    predicted_delay_min: Nonnegative
+    predicted_arrival_delay_min: Nonnegative
+    assessment: Text
+    reason: Text
+
+
+class LogisticsFrontendResult(Contract):
+    """Primary frontend contract. Internal Monte Carlo/source details stay separate."""
+
+    as_of: Timestamp
+    shipment_id: Text
+    external_state: ExternalState
+    simulated_shipment: ShipmentState
+    operational_impact: OperationalImpact
+    actions: list[FrontendAction]
+    recommendation: Recommendation
+    data_provenance: dict[str, ProvenanceSummary]
+    limitations: list[Text]
+
+    @model_validator(mode="after")
+    def complete_action_comparison(self):
+        expected = {"BUFFER", "EXPEDITE", "REROUTE"}
+        if len(self.actions) != 3 or {a.action for a in self.actions} != expected:
+            raise ValueError("All three frontend action dimensions are required")
+        if (
+            self.recommendation.action is not None
+            and not next(
+                a for a in self.actions if a.action == self.recommendation.action
+            ).eligible
+        ):
+            raise ValueError("Recommended action must be eligible")
+        if set(self.recommendation.why_not) != expected - {self.recommendation.action}:
+            raise ValueError("Recommendation must explain all alternatives")
         return self
 
 
 # These have separate cache/output homes; legacy scenes do not require them.
 LOGISTICS_MODELS = {
     "logistics": LogisticsResult,
+    "logistics-frontend": LogisticsFrontendResult,
     "real-observations": RealObservations,
     "shipment-state": ShipmentState,
     "logistics-assumptions": LogisticsAssumptions,

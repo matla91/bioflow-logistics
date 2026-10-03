@@ -64,10 +64,16 @@ temperature is inferred from them. The cache was retrieved after the scenario
 date; historical publication availability and provider revisions are unknown,
 so this is a retrospective demonstration, not a real-time backtest.
 
-`scenarios/logistics_demo.json` and `config/logistics.yaml` contain **simulated
-or assumed** inputs exclusively. They include shipment/stock, packaging autonomy,
+`scenarios/logistics_demo.json`, `scenarios/logistics/`, `config/logistics.yaml`
+and `config/logistics_scenarios/` contain **simulated or assumed** inputs
+exclusively. They include shipment/stock, packaging autonomy,
 route durations, action effects, minute coefficients and proxy thresholds.
 The exposure budget is not a pharmaceutical stability limit. The reproducible
 demo uses this fixed historical cache; refresh writes another file and never
 rewrites the bundled evidence. Provider provenance/attribution travels in every
-output JSON object.
+output JSON object: the primary contract carries concise provenance while full
+URLs, retrieval times, licences and hashes remain in detailed output. No official
+Rhine/BAFU forecast feed is integrated by the contract refinement. Its future
+adapter accepts identified, validity-bounded official input; without that input,
+navigation state and delay remain explicitly ASSUMED. State bands apply to modelled
+delay minutes, never purported official water-level or discharge thresholds.

@@ -1,4 +1,48 @@
 {
+  "$defs": {
+    "RecommendationPolicy": {
+      "additionalProperties": false,
+      "description": "Assumed service targets for deterministic decisions, not calibrated limits.",
+      "properties": {
+        "max_exposure_proxy_risk": {
+          "default": 0.1,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Max Exposure Proxy Risk",
+          "type": "number"
+        },
+        "sensitivity_factors": {
+          "default": [
+            0.5,
+            1.5,
+            2.0
+          ],
+          "items": {
+            "exclusiveMinimum": 0,
+            "type": "number"
+          },
+          "title": "Sensitivity Factors",
+          "type": "array"
+        },
+        "target_on_time_arrival": {
+          "default": 0.9,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target On Time Arrival",
+          "type": "number"
+        },
+        "target_production_continuity": {
+          "default": 0.95,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Target Production Continuity",
+          "type": "number"
+        }
+      },
+      "title": "RecommendationPolicy",
+      "type": "object"
+    }
+  },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "description": "Uncalibrated scenario coefficients, never provider facts or QA limits.",
@@ -86,10 +130,25 @@
       "title": "N Runs",
       "type": "integer"
     },
+    "navigation_restricted_penalty_min": {
+      "default": 30,
+      "exclusiveMinimum": 0,
+      "title": "Navigation Restricted Penalty Min",
+      "type": "number"
+    },
+    "navigation_severe_penalty_min": {
+      "default": 60,
+      "exclusiveMinimum": 0,
+      "title": "Navigation Severe Penalty Min",
+      "type": "number"
+    },
     "rain_min_per_mm": {
       "minimum": 0,
       "title": "Rain Min Per Mm",
       "type": "number"
+    },
+    "recommendation_policy": {
+      "$ref": "#/$defs/RecommendationPolicy"
     },
     "reroute_extra_handling_min": {
       "minimum": 0,
@@ -115,6 +174,12 @@
     "river_penalty_cap_min": {
       "minimum": 0,
       "title": "River Penalty Cap Min",
+      "type": "number"
+    },
+    "route_block_delay_min": {
+      "default": 1440,
+      "exclusiveMinimum": 0,
+      "title": "Route Block Delay Min",
       "type": "number"
     },
     "seed": {

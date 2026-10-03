@@ -97,31 +97,40 @@ Code: MIT (pending organiser confirmation). Data keeps its providers' terms.
 The separate snapshot layer adds `pipeline/baselhack/ingestion/`,
 `pipeline/baselhack/features/`, `pipeline/baselhack/simulation/` and
 `pipeline/baselhack/output/`. It estimates
-deadline lateness and an ambient thermal exposure proxy, and compares BUFFER,
+deadline lateness and a cold-chain exposure proxy, and compares BUFFER,
 EXPEDITE and REROUTE. Its JSON can be consumed independently of the existing UI.
 
-Run the reproducible offline scenario and its focused tests:
+Run the three reproducible offline scenarios and the focused tests:
 
 ```sh
-pixi run logistics-demo
+pixi run logistics-normal
+pixi run logistics-disruption
+pixi run logistics-severe
 pixi run logistics-test
 ```
 
-The result is `output/logistics-demo.json`. Observed provider data is stored in
-`data/cache/logistics_basel.json`; simulated shipment state is in
-`scenarios/logistics_demo.json`; all uncalibrated coefficients and thresholds
-are in `config/logistics.yaml`. Source coverage, attribution and retrieval
+Results are `output/logistics-normal.json`, `output/logistics-disruption.json`
+and `output/logistics-severe.json`, recommending BUFFER, EXPEDITE and REROUTE
+respectively from simulated action metrics. Observed provider data is stored in
+`data/cache/logistics_basel.json`; simulated shipment states are in
+`scenarios/logistics/`; all uncalibrated coefficients and thresholds
+are in `config/logistics.yaml` with overrides in `config/logistics_scenarios/`.
+Source coverage, attribution and retrieval
 caveats are recorded in [docs/SOURCES.md](docs/SOURCES.md).
 
-The JSON contains `predicted_delay_min` (mean lateness), `delay_risk`,
-`thermal_exposure_risk`, `action_success_probabilities`, and `main_risk_drivers`,
-plus feature values, assumptions, provenance and limitations. Precise event
-definitions live in [interfaces.py](pipeline/baselhack/interfaces.py).
+The primary JSON contains `external_state`, `operational_impact`, comparable
+action dimensions, a deterministic recommendation, concise provenance and
+limitations. The frontend schema and decision policy are documented in
+[docs/LOGISTICS_CONTRACT.md](docs/LOGISTICS_CONTRACT.md); event definitions live
+in [interfaces.py](pipeline/baselhack/interfaces.py). Use `--detailed` for full
+source metadata, coefficients and risk drivers. Deprecated action-specific
+success fields are retained only in detailed output and never drive the decision.
 
-Thermal risk is the probability that a configured **ambient degree-minute
+`cold_chain_exposure_proxy_risk` is the frequency with which an **ambient degree-minute
 proxy** exceeds its assumed budget after packaging protection expires. It does
-not establish actual product-temperature excursions. BUFFER success describes
-factory continuity from assumed stock; the incoming shipment's exposure remains.
+not establish actual product-temperature excursions. Factory continuity,
+incoming on-time arrival and exposure are separate dimensions for every action.
+BUFFER can cover the factory from assumed stock while incoming exposure remains.
 
 Refresh public observations to a **new** file with `pixi run logistics-fetch`.
 The bundled historical cache is preserved. Larger traffic queries must fit the
@@ -131,7 +140,9 @@ needed. Refreshing requires network access; the cached demo does not.
 For an existing pip environment, these equivalent commands were verified locally:
 
 ```sh
-.venv/bin/python -m baselhack.logistics demo --output output/logistics-demo.json
+.venv/bin/python -m baselhack.logistics demo --scenario normal --output output/logistics-normal.json
+.venv/bin/python -m baselhack.logistics demo --scenario disruption --output output/logistics-disruption.json
+.venv/bin/python -m baselhack.logistics demo --scenario severe --output output/logistics-severe.json
 .venv/bin/python -m pytest -q tests/test_logistics_*.py
 ```
 
@@ -140,4 +151,6 @@ Custom scenarios can use `--shipment`, `--observations`, `--assumptions` and
 features produce explicit limitations and may understate delay risk. Repeated
 runs with the same input files, seed and dependency versions produce identical
 JSON. The original project's unresolved verification gates remain separate from
-the passing model tests.
+the passing model tests. `pixi run logistics-demo` preserves the original custom
+shipment entry point and writes the current primary contract to
+`output/logistics-demo.json`.

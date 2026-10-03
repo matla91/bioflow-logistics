@@ -27,3 +27,12 @@ max_weather_age_min: 90
 trend_window_min: 360
 trend_min_span_min: 60
 baseline_min_samples: 3
+# State bands apply to assumed additional MINUTES, not official gauge thresholds.
+navigation_restricted_penalty_min: 30
+navigation_severe_penalty_min: 60
+route_block_delay_min: 1440
+recommendation_policy:
+  target_production_continuity: 0.95
+  target_on_time_arrival: 0.90
+  max_exposure_proxy_risk: 0.10
+  sensitivity_factors: [0.5, 1.5, 2.0]

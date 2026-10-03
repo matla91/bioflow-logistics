@@ -1,0 +1,13 @@
+{
+  "simulated": true,
+  "shipment_id": "SIM-BASEL-NORMAL",
+  "as_of": "2026-09-30T12:00:00Z",
+  "deadline_at": "2026-09-30T14:30:00Z",
+  "route_mode": "river",
+  "planned_remaining_min": 80,
+  "handling_min": 20,
+  "protection_remaining_min": 240,
+  "prior_exposure_degree_min": 0,
+  "stock_available": 1,
+  "stock_required": 1
+}

@@ -290,9 +290,10 @@ def test_river_penalties_only_river_and_weather_reaches_reroute(
     )
     # Transport 100 + traffic 20 + rain 3 + wind 4; handling 20 is separate.
     assert road.predicted_delay_min == 147
-    assert river.predicted_delay_min == 167  # River level 10 + discharge 10.
+    # P1: level and discharge describe one hydrological state, so max(10, 10).
+    assert river.predicted_delay_min == 157
     assert action(road, "EXPEDITE").predicted_delay_min == 73.5
-    assert action(river, "EXPEDITE").predicted_delay_min == 83.5
+    assert action(river, "EXPEDITE").predicted_delay_min == 78.5
     # Alternative transport 50 + half traffic 10 + weather 7, plus handling 20 + transfer 10.
     assert action(road, "REROUTE").predicted_delay_min == 97
     assert action(river, "REROUTE").predicted_delay_min == 97

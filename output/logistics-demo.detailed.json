@@ -1,40 +1,98 @@
 {
+  "action_success_probabilities": {
+    "BUFFER": 1.0,
+    "EXPEDITE": 0.9527,
+    "REROUTE": 0.354
+  },
   "actions": [
     {
       "action": "BUFFER",
       "assessment": "Factory continuity is covered by simulated stock; incoming shipment timing and exposure remain separate.",
       "cold_chain_exposure_proxy_risk": 0.766,
+      "delay_risk": 0.0,
       "eligible": true,
       "on_time_arrival_probability": 0.2795,
       "predicted_arrival_delay_min": 20.37925402673104,
       "predicted_delay_min": 0.0,
       "production_continuity_probability": 1.0,
-      "reason": "ASSUMED sufficient stock covers the factory deadline; incoming shipment exposure is unchanged."
+      "reason": "ASSUMED sufficient stock covers the factory deadline; incoming shipment exposure is unchanged.",
+      "success_probability": 1.0
     },
     {
       "action": "EXPEDITE",
       "assessment": "Incoming shipment arrival determines production continuity; exposure remains an ambient proxy.",
       "cold_chain_exposure_proxy_risk": 0.0473,
+      "delay_risk": 0.0041,
       "eligible": true,
       "on_time_arrival_probability": 0.9681,
       "predicted_arrival_delay_min": 0.25738583939191484,
       "predicted_delay_min": 0.25738583939191484,
       "production_continuity_probability": 0.9681,
-      "reason": "ASSUMED transport and handling speed factors reduce all corresponding journey minutes."
+      "reason": "ASSUMED transport and handling speed factors reduce all corresponding journey minutes.",
+      "success_probability": 0.9527
     },
     {
       "action": "REROUTE",
       "assessment": "Incoming shipment arrival determines production continuity; exposure remains an ambient proxy.",
       "cold_chain_exposure_proxy_risk": 0.646,
+      "delay_risk": 0.3254,
       "eligible": true,
       "on_time_arrival_probability": 0.4194,
       "predicted_arrival_delay_min": 11.52802402873995,
       "predicted_delay_min": 11.52802402873995,
       "production_continuity_probability": 0.4194,
-      "reason": "ASSUMED alternative road transport retains reduced traffic and full weather additions, omits river additions, and adds transfer handling."
+      "reason": "ASSUMED alternative road transport retains reduced traffic and full weather additions, omits river additions, and adds transfer handling.",
+      "success_probability": 0.354
     }
   ],
   "as_of": "2026-09-30T12:00:00Z",
+  "assumptions": {
+    "ambient_reference_band_c": [
+      2.0,
+      8.0
+    ],
+    "assumed": true,
+    "baseline_min_samples": 3,
+    "delay_threshold_min": 15.0,
+    "expedite_handling_factor": 0.5,
+    "expedite_transport_factor": 0.75,
+    "exposure_budget_degree_min": 300.0,
+    "falling_discharge_min_per_m3_s_hour": 1.0,
+    "falling_level_min_per_cm_hour": 8.0,
+    "handling_sd_min": 10.0,
+    "max_rhine_age_min": 30.0,
+    "max_traffic_age_min": 90.0,
+    "max_weather_age_min": 90.0,
+    "n_runs": 10000,
+    "navigation_restricted_penalty_min": 30.0,
+    "navigation_severe_penalty_min": 60.0,
+    "rain_min_per_mm": 4.0,
+    "recommendation_policy": {
+      "max_exposure_proxy_risk": 0.1,
+      "sensitivity_factors": [
+        0.5,
+        1.5,
+        2.0
+      ],
+      "target_on_time_arrival": 0.9,
+      "target_production_continuity": 0.95
+    },
+    "reroute_extra_handling_min": 20.0,
+    "reroute_traffic_factor": 0.5,
+    "reroute_transport_min": 95.0,
+    "reroute_transport_sd_min": 20.0,
+    "river_penalty_cap_min": 90.0,
+    "route_block_delay_min": 1440.0,
+    "seed": 20260930,
+    "traffic_min_per_positive_z": 12.0,
+    "traffic_z_cap": 4.0,
+    "transport_sd_min": 25.0,
+    "trend_min_span_min": 60.0,
+    "trend_window_min": 360.0,
+    "wind_min_per_m_s": 3.0,
+    "wind_threshold_m_s": 10.0
+  },
+  "cold_chain_exposure_proxy_risk": 0.766,
   "data_provenance": {
     "delay_simulation": {
       "detail": "Seeded Monte Carlo scenario frequencies (10000 runs; seed 20260930), conditional on simulated state and assumed coefficients.",
@@ -126,19 +184,10 @@
       ]
     }
   },
-  "external_state": {
-    "navigation": {
-      "delay_kind": "ASSUMED",
-      "delay_penalty_min": 6.043687523139739,
-      "kind": "ASSUMED",
-      "normal_route_eligible": true,
-      "observed_at": "2026-09-30T12:00:00Z",
-      "provider": null,
-      "reason": "No valid official navigation adapter input is available. State uses ASSUMED delay bands of 30/60 min, with the largest level/discharge trend component; absolute Rhine values imply no official restriction.",
-      "reported_delay_min": null,
-      "state": "WATCH",
-      "warnings": []
-    },
+  "delay_risk": 0.5053,
+  "features": {
+    "as_of": "2026-09-30T12:00:00Z",
+    "official_navigation": null,
     "rhine": {
       "discharge_m3_s": 365.218,
       "discharge_trend_m3_s_per_hour": -5.717126249537209,
@@ -178,13 +227,142 @@
     "ASSUMED packaging autonomy expires as one whole-journey clock; refrigeration failures, packaging performance and product thermal response are not modelled.",
     "Independent normal transport and handling draws, with durations floored at zero, are paired across actions; they do not model extremes, station causality or operational feasibility.",
     "Without a valid official status/forecast adapter, Rhine navigation state and delay use an ASSUMED fallback. Falling level/discharge describe one hydrological state; the largest component is used without summing them. No official threshold values are inferred.",
+    "Deprecated success_probability is stock sufficiency for BUFFER; for EXPEDITE/REROUTE it is the joint frequency of lateness <= delay_threshold_min and ambient proxy <= exposure_budget_degree_min. It does not drive recommendations.",
     "Comparable production continuity and on-time arrival use the exact simulated deadline, independently of delay_threshold_min and the ambient proxy budget."
   ],
-  "operational_impact": {
-    "cold_chain_exposure_proxy_risk": 0.766,
-    "delay_risk": 0.5053,
-    "predicted_delay_min": 20.37925402673104
+  "main_risk_drivers": [
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "observed",
+      "explanation": "Station 402 observed 1262 vehicles against baseline mean 1269.1538461538462; largest available z-score is capped at ASSUMED 4 and multiplied by ASSUMED 12 min/z. This adds mean transport time before random draws.",
+      "name": "Traffic anomaly",
+      "unit": "z-score",
+      "value": -0.17948440074539437
+    },
+    {
+      "estimated_delay_contribution_min": 6.043687523139739,
+      "evidence_kind": "observed",
+      "explanation": "Observed falling trend multiplied by ASSUMED 8 min per cm/hour. Level and discharge represent the same hydrological state, so only the largest component contributes, capped at ASSUMED 90 min. This is an ASSUMED navigation scenario, not a validated navigation relationship or official threshold.",
+      "name": "Rhine level trend",
+      "unit": "cm/hour",
+      "value": -0.7554609403924674
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "observed",
+      "explanation": "Observed falling trend multiplied by ASSUMED 1 min per m³/s/hour. Level and discharge represent the same hydrological state, so only the largest component contributes, capped at ASSUMED 90 min. This is an ASSUMED navigation scenario, not a validated navigation relationship or official threshold.",
+      "name": "Rhine discharge trend",
+      "unit": "m³/s/hour",
+      "value": -5.717126249537209
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "observed",
+      "explanation": "Latest hourly precipitation multiplied by ASSUMED 4 min/mm for every route. This is an assumed mean transport addition, not a precipitation forecast.",
+      "name": "Observed rain",
+      "unit": "mm/hour",
+      "value": 0.0
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "observed",
+      "explanation": "Observed wind above ASSUMED 10 m/s multiplied by ASSUMED 3 min per m/s for every route; an assumed mean transport addition.",
+      "name": "Observed wind",
+      "unit": "m/s",
+      "value": 0.8
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "observed",
+      "explanation": "Ambient is 18.4°C outside ASSUMED reference band (2.0, 8.0). Snapshot ambient is ASSUMED constant over the entire future unprotected interval; actual product temperature is not inferred.",
+      "name": "Snapshot ambient temperature",
+      "unit": "°C",
+      "value": 26.4
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "assumed",
+      "explanation": "SIMULATED remaining transport excludes handling; normal variation is added using ASSUMED transport_sd_min and transport duration is floored at zero.",
+      "name": "Planned remaining transport",
+      "unit": "min",
+      "value": 120.0
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "assumed",
+      "explanation": "SIMULATED handling is separately varied using ASSUMED handling_sd_min and added to whole-journey time.",
+      "name": "Remaining handling",
+      "unit": "min",
+      "value": 40.0
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "assumed",
+      "explanation": "SIMULATED schedule window; lateness is total remaining journey time beyond this window, floored at zero.",
+      "name": "Time until factory deadline",
+      "unit": "min",
+      "value": 150.0
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "assumed",
+      "explanation": "SIMULATED whole-journey packaging autonomy; ambient exposure proxy accrues only after this duration expires.",
+      "name": "Remaining packaging protection",
+      "unit": "min",
+      "value": 130.0
+    },
+    {
+      "estimated_delay_contribution_min": 0.0,
+      "evidence_kind": "assumed",
+      "explanation": "SIMULATED prior degree-minutes added to each action's future exposure proxy; not measured product exposure.",
+      "name": "Prior ambient exposure proxy",
+      "unit": "°C·min",
+      "value": 0.0
+    }
+  ],
+  "model": "Explainable paired normal Monte Carlo with ambient degree-minute exposure proxy v2",
+  "navigation": {
+    "delay_kind": "ASSUMED",
+    "delay_penalty_min": 6.043687523139739,
+    "kind": "ASSUMED",
+    "normal_route_eligible": true,
+    "observed_at": "2026-09-30T12:00:00Z",
+    "provider": null,
+    "reason": "No valid official navigation adapter input is available. State uses ASSUMED delay bands of 30/60 min, with the largest level/discharge trend component; absolute Rhine values imply no official restriction.",
+    "reported_delay_min": null,
+    "state": "WATCH",
+    "warnings": []
   },
+  "predicted_delay_min": 20.37925402673104,
+  "real_data_sources": [
+    {
+      "dataset": "100006",
+      "licence": "CC BY 4.0",
+      "provider": "Amt für Mobilität, Open Data Basel-Stadt",
+      "real_data": true,
+      "retrieved_at": "2026-10-03T10:39:34.579139Z",
+      "sha256": "7a742c8823cc644666d49d8dcde499a5bc4a34665116784596d77d0fa97efd71",
+      "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100006/records?limit=100&select=zst_id,sitename,datetimefrom,datetimeto,directionname,lanecode,total,valuesapproved,valuesedited,weekday,hourfrom&where=zst_id%3D402%20and%20weekday%3D2%20and%20hourfrom%3D13%20and%20datetimefrom%3E%3Ddate%272026-07-01T00%3A00%3A00Z%27%20and%20datetimefrom%3C%3Ddate%272026-09-30T11%3A00%3A00Z%27&order_by=datetimefrom%20asc,lanecode%20asc"
+    },
+    {
+      "dataset": "100089",
+      "licence": "CC0 1.0",
+      "provider": "Bundesamt für Umwelt BAFU via Open Data Basel-Stadt",
+      "real_data": true,
+      "retrieved_at": "2026-10-03T10:39:34.638139Z",
+      "sha256": "78cefb7d1f8a3e796c6aa38f44459f1ee14c28958ec6f8155ef952f05efae22a",
+      "url": "https://data.bs.ch/api/explore/v2.1/catalog/datasets/100089/records?limit=100&where=timestamp%3E%3Ddate%272026-09-30T00%3A00%3A00Z%27%20and%20timestamp%3C%3Ddate%272026-09-30T12%3A00%3A00Z%27&order_by=timestamp%20asc"
+    },
+    {
+      "dataset": "SwissMetNet BAS hourly observations",
+      "licence": "CC BY 4.0; Source: MeteoSwiss",
+      "provider": "MeteoSwiss",
+      "real_data": true,
+      "retrieved_at": "2026-10-03T10:38:04.027057Z",
+      "sha256": "06f651012668482a44055acee54628f30a00957e5758cfe8af28a231b20f2a26",
+      "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/bas/ogd-smn_bas_h_recent.csv"
+    }
+  ],
   "recommendation": {
     "action": "EXPEDITE",
     "confidence": "MEDIUM",

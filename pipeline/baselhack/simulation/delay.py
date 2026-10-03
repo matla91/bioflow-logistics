@@ -10,6 +10,8 @@ from baselhack.interfaces import (
     ShipmentState,
 )
 
+from .navigation import assess_navigation
+
 
 def delay_penalties(
     shipment: ShipmentState,
@@ -57,50 +59,12 @@ def _traffic_penalty(shipment, features, assumptions):
 
 
 def _river_penalty(shipment, features, assumptions):
-    rhine = features.rhine
-    if shipment.route_mode != "river" or rhine is None:
+    if shipment.route_mode != "river":
         return 0.0, []
-    age = (shipment.as_of - rhine.observed_at).total_seconds() / 60
-    if not 0 <= age <= assumptions.max_rhine_age_min:
-        return 0.0, []
-    trends = (
-        (
-            "Rhine level trend",
-            rhine.level_trend_cm_per_hour,
-            "cm/hour",
-            assumptions.falling_level_min_per_cm_hour,
-        ),
-        (
-            "Rhine discharge trend",
-            rhine.discharge_trend_m3_s_per_hour,
-            "m³/s/hour",
-            assumptions.falling_discharge_min_per_m3_s_hour,
-        ),
-    )
-    contributions = [
-        max(-value, 0.0) * factor for _, value, _, factor in trends if value is not None
-    ]
-    raw_penalty = sum(contributions)
-    penalty = min(raw_penalty, assumptions.river_penalty_cap_min)
-    cap_factor = penalty / raw_penalty if raw_penalty else 1.0
-    drivers = [
-        RiskDriver(
-            name=name,
-            value=value,
-            unit=unit,
-            estimated_delay_contribution_min=max(-value, 0.0) * factor * cap_factor,
-            explanation=(
-                f"Observed falling trend multiplied by ASSUMED {factor:g} min per {unit}; "
-                f"combined river addition is capped at ASSUMED {assumptions.river_penalty_cap_min:g} min. "
-                "Only the simulated river route receives this mean transport addition; "
-                "this is not a navigation restriction or official hydrological forecast."
-            ),
-            evidence_kind="observed",
-        )
-        for name, value, unit, factor in trends
-        if value is not None
-    ]
-    return penalty, drivers
+    navigation, drivers = assess_navigation(shipment, features, assumptions)
+    # Navigation owns the effective addition and its provenance, including any
+    # finite ASSUMED blockage horizon; simulation separately forces arrival zero.
+    return navigation.delay_penalty_min, drivers
 
 
 def _weather_penalty(features, assumptions):

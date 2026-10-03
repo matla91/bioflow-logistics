@@ -20,13 +20,15 @@ def validate_snapshot(
     weather = features.weather
     if weather is None:
         raise ValueError(
-            "Weather is missing; thermal exposure risk cannot be estimated"
+            "Weather is missing; cold-chain exposure proxy risk cannot be estimated"
         )
     weather_age = (shipment.as_of - weather.observed_at).total_seconds() / 60
     if weather_age < 0:
         raise ValueError("Weather observation must not be later than as_of")
     if weather_age > assumptions.max_weather_age_min:
-        raise ValueError("Weather is stale; thermal exposure risk cannot be estimated")
+        raise ValueError(
+            "Weather is stale; cold-chain exposure proxy risk cannot be estimated"
+        )
 
     warnings = list(features.warnings)
     usable_traffic = [
