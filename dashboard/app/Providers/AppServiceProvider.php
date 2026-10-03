@@ -42,7 +42,9 @@ final class AppServiceProvider extends ServiceProvider
         Model::automaticallyEagerLoadRelationships();
         Model::shouldBeStrict();
         Model::unguard();
-        URL::forceHttps();
+        if ($this->app->isProduction()) {
+            URL::forceHttps();
+        }
 
         Password::defaults(fn (): ?Password => app()->isProduction()
             ? Password::min(12)
