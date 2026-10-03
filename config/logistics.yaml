@@ -1,0 +1,29 @@
+# All coefficients are ASSUMED for an explainable prototype, not calibrated.
+assumed: true
+n_runs: 10000
+seed: 20260930
+transport_sd_min: 25
+handling_sd_min: 10
+traffic_min_per_positive_z: 12
+traffic_z_cap: 4
+falling_level_min_per_cm_hour: 8
+falling_discharge_min_per_m3_s_hour: 1
+river_penalty_cap_min: 90
+rain_min_per_mm: 4
+wind_threshold_m_s: 10
+wind_min_per_m_s: 3
+delay_threshold_min: 15
+ambient_reference_band_c: [2, 8]
+exposure_budget_degree_min: 300
+expedite_transport_factor: 0.75
+expedite_handling_factor: 0.5
+reroute_transport_min: 95
+reroute_transport_sd_min: 20
+reroute_extra_handling_min: 20
+reroute_traffic_factor: 0.5
+max_traffic_age_min: 90
+max_rhine_age_min: 30
+max_weather_age_min: 90
+trend_window_min: 360
+trend_min_span_min: 60
+baseline_min_samples: 3

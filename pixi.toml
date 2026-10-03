@@ -1,0 +1,31 @@
+[workspace]
+name = "baselhack-c4"
+version = "0.1.0"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64", "win-64", "osx-64"]
+
+[dependencies]
+python = ">=3.12,<3.13"
+nodejs = ">=22,<23"
+pip = "*"
+
+[pypi-dependencies]
+baselhack = { path = "pipeline", editable = true, extras = ["dev", "api"] }
+
+[tasks]
+setup = { cmd = "npm ci --prefix web --cache .pixi/npm-cache && python -m baselhack.generate", description = "Install frontend lockfile and generate contracts; pixi installs Python environment" }
+data = "baselhack fetch"
+sim = { cmd = "python -m baselhack.tasks sim", description = "Scenario and timeline; optional SCENE=scene_id argument" }
+ml = { cmd = "python -m baselhack.tasks ml", description = "Scenario, timeline and 2,000-run action analysis" }
+decide = { cmd = "python -m baselhack.tasks decide", description = "Full scene through recommendation" }
+all = "python -m baselhack.tasks all"
+demo = { cmd = "python -m baselhack.tasks demo", description = "Build and serve offline snapshots; optional SCENE=scene_id" }
+test = "pytest -q tests"
+verify = "baselhack verify"
+format = "ruff format pipeline/baselhack tests"
+lint = "ruff check pipeline/baselhack tests"
+contracts = "python -m baselhack.generate"
+variants = "python -m baselhack.variants"
+logistics-demo = "python -m baselhack.logistics demo --output output/logistics-demo.json"
+logistics-fetch = "python -m baselhack.logistics fetch --output data/cache/logistics-refreshed.json"
+logistics-test = "pytest -q tests/test_logistics_ingestion.py tests/test_logistics_features.py tests/test_logistics_simulation.py tests/test_logistics_output.py"

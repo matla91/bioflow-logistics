@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Uncalibrated scenario coefficients, never provider facts or QA limits.",
+  "properties": {
+    "ambient_reference_band_c": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Ambient Reference Band C",
+      "type": "array"
+    },
+    "assumed": {
+      "const": true,
+      "default": true,
+      "title": "Assumed",
+      "type": "boolean"
+    },
+    "baseline_min_samples": {
+      "minimum": 2,
+      "title": "Baseline Min Samples",
+      "type": "integer"
+    },
+    "delay_threshold_min": {
+      "minimum": 0,
+      "title": "Delay Threshold Min",
+      "type": "number"
+    },
+    "expedite_handling_factor": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Expedite Handling Factor",
+      "type": "number"
+    },
+    "expedite_transport_factor": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Expedite Transport Factor",
+      "type": "number"
+    },
+    "exposure_budget_degree_min": {
+      "exclusiveMinimum": 0,
+      "title": "Exposure Budget Degree Min",
+      "type": "number"
+    },
+    "falling_discharge_min_per_m3_s_hour": {
+      "minimum": 0,
+      "title": "Falling Discharge Min Per M3 S Hour",
+      "type": "number"
+    },
+    "falling_level_min_per_cm_hour": {
+      "minimum": 0,
+      "title": "Falling Level Min Per Cm Hour",
+      "type": "number"
+    },
+    "handling_sd_min": {
+      "minimum": 0,
+      "title": "Handling Sd Min",
+      "type": "number"
+    },
+    "max_rhine_age_min": {
+      "exclusiveMinimum": 0,
+      "title": "Max Rhine Age Min",
+      "type": "number"
+    },
+    "max_traffic_age_min": {
+      "exclusiveMinimum": 0,
+      "title": "Max Traffic Age Min",
+      "type": "number"
+    },
+    "max_weather_age_min": {
+      "exclusiveMinimum": 0,
+      "title": "Max Weather Age Min",
+      "type": "number"
+    },
+    "n_runs": {
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "N Runs",
+      "type": "integer"
+    },
+    "rain_min_per_mm": {
+      "minimum": 0,
+      "title": "Rain Min Per Mm",
+      "type": "number"
+    },
+    "reroute_extra_handling_min": {
+      "minimum": 0,
+      "title": "Reroute Extra Handling Min",
+      "type": "number"
+    },
+    "reroute_traffic_factor": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Reroute Traffic Factor",
+      "type": "number"
+    },
+    "reroute_transport_min": {
+      "exclusiveMinimum": 0,
+      "title": "Reroute Transport Min",
+      "type": "number"
+    },
+    "reroute_transport_sd_min": {
+      "minimum": 0,
+      "title": "Reroute Transport Sd Min",
+      "type": "number"
+    },
+    "river_penalty_cap_min": {
+      "minimum": 0,
+      "title": "River Penalty Cap Min",
+      "type": "number"
+    },
+    "seed": {
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "traffic_min_per_positive_z": {
+      "minimum": 0,
+      "title": "Traffic Min Per Positive Z",
+      "type": "number"
+    },
+    "traffic_z_cap": {
+      "exclusiveMinimum": 0,
+      "title": "Traffic Z Cap",
+      "type": "number"
+    },
+    "transport_sd_min": {
+      "minimum": 0,
+      "title": "Transport Sd Min",
+      "type": "number"
+    },
+    "trend_min_span_min": {
+      "exclusiveMinimum": 0,
+      "title": "Trend Min Span Min",
+      "type": "number"
+    },
+    "trend_window_min": {
+      "exclusiveMinimum": 0,
+      "title": "Trend Window Min",
+      "type": "number"
+    },
+    "wind_min_per_m_s": {
+      "minimum": 0,
+      "title": "Wind Min Per M S",
+      "type": "number"
+    },
+    "wind_threshold_m_s": {
+      "minimum": 0,
+      "title": "Wind Threshold M S",
+      "type": "number"
+    }
+  },
+  "required": [
+    "n_runs",
+    "seed",
+    "transport_sd_min",
+    "handling_sd_min",
+    "traffic_min_per_positive_z",
+    "traffic_z_cap",
+    "falling_level_min_per_cm_hour",
+    "falling_discharge_min_per_m3_s_hour",
+    "river_penalty_cap_min",
+    "rain_min_per_mm",
+    "wind_threshold_m_s",
+    "wind_min_per_m_s",
+    "delay_threshold_min",
+    "ambient_reference_band_c",
+    "exposure_budget_degree_min",
+    "expedite_transport_factor",
+    "expedite_handling_factor",
+    "reroute_transport_min",
+    "reroute_transport_sd_min",
+    "reroute_extra_handling_min",
+    "reroute_traffic_factor",
+    "max_traffic_age_min",
+    "max_rhine_age_min",
+    "max_weather_age_min",
+    "trend_window_min",
+    "trend_min_span_min",
+    "baseline_min_samples"
+  ],
+  "title": "LogisticsAssumptions",
+  "type": "object"
+}

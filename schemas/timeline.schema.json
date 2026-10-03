@@ -1,0 +1,190 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "RUN_AS_PLANNED",
+        "EXPEDITE",
+        "BUFFER",
+        "REROUTE",
+        "QUARANTINE"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "Position": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "Position",
+      "type": "object"
+    },
+    "TimelineStep": {
+      "additionalProperties": false,
+      "properties": {
+        "ambient_c": {
+          "title": "Ambient C",
+          "type": "number"
+        },
+        "budget_used": {
+          "minimum": 0,
+          "title": "Budget Used",
+          "type": "number"
+        },
+        "excursion_min": {
+          "minimum": 0,
+          "title": "Excursion Min",
+          "type": "number"
+        },
+        "position": {
+          "$ref": "#/$defs/Position"
+        },
+        "product_c": {
+          "title": "Product C",
+          "type": "number"
+        },
+        "refrigerated": {
+          "title": "Refrigerated",
+          "type": "boolean"
+        },
+        "segment": {
+          "minLength": 1,
+          "title": "Segment",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        }
+      },
+      "required": [
+        "t",
+        "segment",
+        "position",
+        "refrigerated",
+        "ambient_c",
+        "product_c",
+        "excursion_min",
+        "budget_used",
+        "source"
+      ],
+      "title": "TimelineStep",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/Action"
+    },
+    "batch_delay_min": {
+      "minimum": 0,
+      "title": "Batch Delay Min",
+      "type": "number"
+    },
+    "budget_used": {
+      "minimum": 0,
+      "title": "Budget Used",
+      "type": "number"
+    },
+    "eta": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Eta"
+    },
+    "excursion_min": {
+      "minimum": 0,
+      "title": "Excursion Min",
+      "type": "number"
+    },
+    "readiness_at": {
+      "format": "date-time",
+      "title": "Readiness At",
+      "type": "string"
+    },
+    "scenario_id": {
+      "minLength": 1,
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "seed": {
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "sources": {
+      "additionalProperties": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Sources",
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "arrived",
+        "suspended"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "steps": {
+      "items": {
+        "$ref": "#/$defs/TimelineStep"
+      },
+      "title": "Steps",
+      "type": "array"
+    },
+    "stock_after": {
+      "minimum": 0,
+      "title": "Stock After",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "seed",
+    "action",
+    "steps",
+    "eta",
+    "readiness_at",
+    "excursion_min",
+    "budget_used",
+    "status",
+    "stock_after",
+    "batch_delay_min",
+    "sources"
+  ],
+  "title": "Timeline",
+  "type": "object"
+}

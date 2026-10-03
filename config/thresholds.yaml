@@ -1,0 +1,27 @@
+# ASSUMED bands; TODO(verify): Port of Switzerland navigation thresholds.
+river_bands:
+  - {min_cm: 150, factor: 1.0}
+  - {min_cm: 80, factor: 1.2}
+  - {min_cm: 40, factor: 1.6}
+river_suspension_below_cm: 40
+# TODO(verify): actual Basel high-water navigation stop.
+basel_high_water_cm: null
+p_miss_slot_low: 0.10
+p_excursion_quarantine: 0.50
+budget_warning_fraction: 0.80
+monte_carlo_runs: 2000
+# ASSUMED; caps the delay metric for a route that cannot complete.
+suspension_delay_min: 10080
+expedite_wait_factor: 0.70
+expedite_truck_slot_wait_min: 0
+reroute_truck_min: 540
+reroute_truck_sd_min: 90
+reroute_extra_handover_min: 20
+traffic_default_factor: 1.0
+traffic_capacity_per_hour: 1200
+traffic_sensitivity: 0.5
+traffic_max_factor: 2.0
+# TODO(verify): select active stations near ports / A2.
+traffic_station_ids: []
+gauge_max_change_cm_per_hour: 100
+forecast_days: 5

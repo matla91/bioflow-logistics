@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "RUN_AS_PLANNED",
+        "EXPEDITE",
+        "BUFFER",
+        "REROUTE",
+        "QUARANTINE"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "EvidenceReason": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "n": {
+          "minimum": 1,
+          "title": "N",
+          "type": "integer"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "n",
+        "text",
+        "source",
+        "at"
+      ],
+      "title": "EvidenceReason",
+      "type": "object"
+    },
+    "Rejection": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/Action"
+        },
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "source": {
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "source",
+        "at"
+      ],
+      "title": "Rejection",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "decision_id": {
+      "minLength": 1,
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "explanation": {
+      "minLength": 1,
+      "title": "Explanation",
+      "type": "string"
+    },
+    "headline": {
+      "minLength": 1,
+      "title": "Headline",
+      "type": "string"
+    },
+    "lot": {
+      "minLength": 1,
+      "title": "Lot",
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "$ref": "#/$defs/EvidenceReason"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "recommended": {
+      "$ref": "#/$defs/Action"
+    },
+    "rejected": {
+      "items": {
+        "$ref": "#/$defs/Rejection"
+      },
+      "title": "Rejected",
+      "type": "array"
+    },
+    "requires_approval_by": {
+      "enum": [
+        "operator",
+        "logistics",
+        "QA"
+      ],
+      "title": "Requires Approval By",
+      "type": "string"
+    },
+    "scenario_id": {
+      "minLength": 1,
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "slot": {
+      "minLength": 1,
+      "title": "Slot",
+      "type": "string"
+    },
+    "sources": {
+      "additionalProperties": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Sources",
+      "type": "object"
+    },
+    "would_change_if": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Would Change If",
+      "type": "array"
+    }
+  },
+  "required": [
+    "decision_id",
+    "scenario_id",
+    "lot",
+    "slot",
+    "recommended",
+    "headline",
+    "rejected",
+    "reasons",
+    "would_change_if",
+    "requires_approval_by",
+    "explanation",
+    "sources"
+  ],
+  "title": "Decision",
+  "type": "object"
+}

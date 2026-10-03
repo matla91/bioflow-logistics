@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "All fields are SIMULATED. Transport minutes exclude handling minutes.\n\nProtection autonomy is remaining whole-journey time until packaging protection\nis assumed to expire. BUFFER covers the factory deadline from assumed stock.",
+  "properties": {
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "deadline_at": {
+      "format": "date-time",
+      "title": "Deadline At",
+      "type": "string"
+    },
+    "handling_min": {
+      "minimum": 0,
+      "title": "Handling Min",
+      "type": "number"
+    },
+    "planned_remaining_min": {
+      "exclusiveMinimum": 0,
+      "title": "Planned Remaining Min",
+      "type": "number"
+    },
+    "prior_exposure_degree_min": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Prior Exposure Degree Min",
+      "type": "number"
+    },
+    "protection_remaining_min": {
+      "minimum": 0,
+      "title": "Protection Remaining Min",
+      "type": "number"
+    },
+    "route_mode": {
+      "enum": [
+        "river",
+        "road"
+      ],
+      "title": "Route Mode",
+      "type": "string"
+    },
+    "shipment_id": {
+      "minLength": 1,
+      "title": "Shipment Id",
+      "type": "string"
+    },
+    "simulated": {
+      "const": true,
+      "default": true,
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "stock_available": {
+      "minimum": 0,
+      "title": "Stock Available",
+      "type": "integer"
+    },
+    "stock_required": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Stock Required",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "shipment_id",
+    "as_of",
+    "deadline_at",
+    "route_mode",
+    "planned_remaining_min",
+    "handling_min",
+    "protection_remaining_min",
+    "stock_available"
+  ],
+  "title": "ShipmentState",
+  "type": "object"
+}

@@ -1,0 +1,636 @@
+{
+  "$defs": {
+    "Ambient": {
+      "additionalProperties": false,
+      "properties": {
+        "basel": {
+          "items": {
+            "$ref": "#/$defs/TemperaturePoint"
+          },
+          "title": "Basel",
+          "type": "array"
+        },
+        "rotterdam": {
+          "items": {
+            "$ref": "#/$defs/TemperaturePoint"
+          },
+          "title": "Rotterdam",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rotterdam",
+        "basel"
+      ],
+      "title": "Ambient",
+      "type": "object"
+    },
+    "GaugePoint": {
+      "additionalProperties": false,
+      "properties": {
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        },
+        "v": {
+          "title": "V",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "v"
+      ],
+      "title": "GaugePoint",
+      "type": "object"
+    },
+    "Material": {
+      "additionalProperties": false,
+      "properties": {
+        "budget_min": {
+          "exclusiveMinimum": 0,
+          "title": "Budget Min",
+          "type": "number"
+        },
+        "range_c": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Range C",
+          "type": "array"
+        },
+        "recovery_horizon_min": {
+          "exclusiveMinimum": 0,
+          "title": "Recovery Horizon Min",
+          "type": "number"
+        },
+        "setpoint_c": {
+          "title": "Setpoint C",
+          "type": "number"
+        },
+        "tau_exposed_min": {
+          "exclusiveMinimum": 0,
+          "title": "Tau Exposed Min",
+          "type": "number"
+        },
+        "tau_reefer_min": {
+          "exclusiveMinimum": 0,
+          "title": "Tau Reefer Min",
+          "type": "number"
+        }
+      },
+      "required": [
+        "range_c",
+        "budget_min",
+        "setpoint_c",
+        "tau_reefer_min",
+        "tau_exposed_min",
+        "recovery_horizon_min"
+      ],
+      "title": "Material",
+      "type": "object"
+    },
+    "Position": {
+      "additionalProperties": false,
+      "properties": {
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "Position",
+      "type": "object"
+    },
+    "Rhine": {
+      "additionalProperties": false,
+      "properties": {
+        "basel_cm": {
+          "items": {
+            "$ref": "#/$defs/GaugePoint"
+          },
+          "title": "Basel Cm",
+          "type": "array"
+        },
+        "kaub_cm": {
+          "items": {
+            "$ref": "#/$defs/GaugePoint"
+          },
+          "title": "Kaub Cm",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kaub_cm",
+        "basel_cm"
+      ],
+      "title": "Rhine",
+      "type": "object"
+    },
+    "RiverBand": {
+      "additionalProperties": false,
+      "properties": {
+        "factor": {
+          "exclusiveMinimum": 0,
+          "title": "Factor",
+          "type": "number"
+        },
+        "min_cm": {
+          "title": "Min Cm",
+          "type": "number"
+        }
+      },
+      "required": [
+        "min_cm",
+        "factor"
+      ],
+      "title": "RiverBand",
+      "type": "object"
+    },
+    "RouteSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "distribution": {
+          "enum": [
+            "normal",
+            "triangular",
+            "fixed"
+          ],
+          "title": "Distribution",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "leg",
+            "handover"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "place": {
+          "enum": [
+            "rotterdam",
+            "basel"
+          ],
+          "title": "Place",
+          "type": "string"
+        },
+        "planned_min": {
+          "exclusiveMinimum": 0,
+          "title": "Planned Min",
+          "type": "number"
+        },
+        "position": {
+          "$ref": "#/$defs/Position"
+        },
+        "refrigerated": {
+          "title": "Refrigerated",
+          "type": "boolean"
+        },
+        "sd_min": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sd Min"
+        },
+        "triangular_min": {
+          "anyOf": [
+            {
+              "maxItems": 3,
+              "minItems": 3,
+              "prefixItems": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Triangular Min"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "refrigerated",
+        "planned_min",
+        "distribution",
+        "place",
+        "position"
+      ],
+      "title": "RouteSegment",
+      "type": "object"
+    },
+    "Site": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_stock_required": {
+          "minimum": 1,
+          "title": "Batch Stock Required",
+          "type": "integer"
+        },
+        "charge_hour": {
+          "maximum": 23,
+          "minimum": 0,
+          "title": "Charge Hour",
+          "type": "integer"
+        },
+        "lot": {
+          "minLength": 1,
+          "title": "Lot",
+          "type": "string"
+        },
+        "reactor": {
+          "minLength": 1,
+          "title": "Reactor",
+          "type": "string"
+        },
+        "reactor_drift_sd_min": {
+          "minimum": 0,
+          "title": "Reactor Drift Sd Min",
+          "type": "number"
+        },
+        "stock_batches": {
+          "minimum": 0,
+          "title": "Stock Batches",
+          "type": "integer"
+        },
+        "timezone": {
+          "minLength": 1,
+          "title": "Timezone",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reactor",
+        "charge_hour",
+        "timezone",
+        "reactor_drift_sd_min",
+        "stock_batches",
+        "batch_stock_required",
+        "lot"
+      ],
+      "title": "Site",
+      "type": "object"
+    },
+    "Slot": {
+      "additionalProperties": false,
+      "properties": {
+        "charge_at": {
+          "format": "date-time",
+          "title": "Charge At",
+          "type": "string"
+        },
+        "reactor": {
+          "minLength": 1,
+          "title": "Reactor",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reactor",
+        "charge_at"
+      ],
+      "title": "Slot",
+      "type": "object"
+    },
+    "TemperaturePoint": {
+      "additionalProperties": false,
+      "properties": {
+        "c": {
+          "title": "C",
+          "type": "number"
+        },
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        }
+      },
+      "required": [
+        "t",
+        "c"
+      ],
+      "title": "TemperaturePoint",
+      "type": "object"
+    },
+    "Thresholds": {
+      "additionalProperties": false,
+      "properties": {
+        "basel_high_water_cm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Basel High Water Cm"
+        },
+        "budget_warning_fraction": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Budget Warning Fraction",
+          "type": "number"
+        },
+        "expedite_truck_slot_wait_min": {
+          "minimum": 0,
+          "title": "Expedite Truck Slot Wait Min",
+          "type": "number"
+        },
+        "expedite_wait_factor": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Expedite Wait Factor",
+          "type": "number"
+        },
+        "forecast_days": {
+          "minimum": 1,
+          "title": "Forecast Days",
+          "type": "integer"
+        },
+        "gauge_max_change_cm_per_hour": {
+          "exclusiveMinimum": 0,
+          "title": "Gauge Max Change Cm Per Hour",
+          "type": "number"
+        },
+        "monte_carlo_runs": {
+          "minimum": 1,
+          "title": "Monte Carlo Runs",
+          "type": "integer"
+        },
+        "p_excursion_quarantine": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Excursion Quarantine",
+          "type": "number"
+        },
+        "p_miss_slot_low": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "P Miss Slot Low",
+          "type": "number"
+        },
+        "reroute_extra_handover_min": {
+          "minimum": 0,
+          "title": "Reroute Extra Handover Min",
+          "type": "number"
+        },
+        "reroute_truck_min": {
+          "exclusiveMinimum": 0,
+          "title": "Reroute Truck Min",
+          "type": "number"
+        },
+        "reroute_truck_sd_min": {
+          "minimum": 0,
+          "title": "Reroute Truck Sd Min",
+          "type": "number"
+        },
+        "river_bands": {
+          "items": {
+            "$ref": "#/$defs/RiverBand"
+          },
+          "title": "River Bands",
+          "type": "array"
+        },
+        "river_suspension_below_cm": {
+          "title": "River Suspension Below Cm",
+          "type": "number"
+        },
+        "suspension_delay_min": {
+          "exclusiveMinimum": 0,
+          "title": "Suspension Delay Min",
+          "type": "number"
+        },
+        "traffic_capacity_per_hour": {
+          "exclusiveMinimum": 0,
+          "title": "Traffic Capacity Per Hour",
+          "type": "number"
+        },
+        "traffic_default_factor": {
+          "minimum": 1,
+          "title": "Traffic Default Factor",
+          "type": "number"
+        },
+        "traffic_max_factor": {
+          "minimum": 1,
+          "title": "Traffic Max Factor",
+          "type": "number"
+        },
+        "traffic_sensitivity": {
+          "minimum": 0,
+          "title": "Traffic Sensitivity",
+          "type": "number"
+        },
+        "traffic_station_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Traffic Station Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "river_bands",
+        "river_suspension_below_cm",
+        "basel_high_water_cm",
+        "p_miss_slot_low",
+        "p_excursion_quarantine",
+        "budget_warning_fraction",
+        "monte_carlo_runs",
+        "suspension_delay_min",
+        "expedite_wait_factor",
+        "expedite_truck_slot_wait_min",
+        "reroute_truck_min",
+        "reroute_truck_sd_min",
+        "reroute_extra_handover_min",
+        "traffic_default_factor",
+        "traffic_capacity_per_hour",
+        "traffic_sensitivity",
+        "traffic_max_factor",
+        "traffic_station_ids",
+        "gauge_max_change_cm_per_hour",
+        "forecast_days"
+      ],
+      "title": "Thresholds",
+      "type": "object"
+    },
+    "Traffic": {
+      "additionalProperties": false,
+      "properties": {
+        "factor_by_hour": {
+          "additionalProperties": {
+            "minimum": 1,
+            "type": "number"
+          },
+          "title": "Factor By Hour",
+          "type": "object"
+        }
+      },
+      "required": [
+        "factor_by_hour"
+      ],
+      "title": "Traffic",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "ambient": {
+      "$ref": "#/$defs/Ambient"
+    },
+    "basel_unload_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Basel Unload At"
+    },
+    "material": {
+      "$ref": "#/$defs/Material"
+    },
+    "overrides": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Overrides",
+      "type": "object"
+    },
+    "rhine": {
+      "$ref": "#/$defs/Rhine"
+    },
+    "route": {
+      "items": {
+        "$ref": "#/$defs/RouteSegment"
+      },
+      "title": "Route",
+      "type": "array"
+    },
+    "scenario_id": {
+      "minLength": 1,
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "seed": {
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "simulated_kaub_cm": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Simulated Kaub Cm"
+    },
+    "site": {
+      "$ref": "#/$defs/Site"
+    },
+    "slot": {
+      "$ref": "#/$defs/Slot"
+    },
+    "sources": {
+      "additionalProperties": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Sources",
+      "type": "object"
+    },
+    "start_at": {
+      "format": "date-time",
+      "title": "Start At",
+      "type": "string"
+    },
+    "thresholds": {
+      "$ref": "#/$defs/Thresholds"
+    },
+    "traffic": {
+      "$ref": "#/$defs/Traffic"
+    },
+    "verification": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Verification",
+      "type": "array"
+    }
+  },
+  "required": [
+    "scenario_id",
+    "seed",
+    "start_at",
+    "slot",
+    "route",
+    "ambient",
+    "rhine",
+    "traffic",
+    "site",
+    "material",
+    "thresholds",
+    "overrides",
+    "simulated_kaub_cm",
+    "verification",
+    "sources"
+  ],
+  "title": "Scenario",
+  "type": "object"
+}

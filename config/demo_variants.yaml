@@ -1,0 +1,11 @@
+# ASSUMED sensitivity controls, each compared with baseline independently.
+controls:
+  - {id: ambient-cold, label: Ambient cooling offset, value: -2, unit: C, override: ambient_offset_c}
+  - {id: ambient, label: Ambient offset, value: 2, unit: C, override: ambient_offset_c}
+  - {id: handover, label: Extra dock delay, value: 30, unit: min, override: dock_extra_min}
+  - {id: river, label: Kaub sensitivity level, value: 80, unit: cm, field: simulated_kaub_cm}
+  - {id: drift, label: Reactor readiness drift SD, value: 60, unit: min, site_field: reactor_drift_sd_min}
+  - {id: stock, label: Safety stock, value: 1, unit: batches, site_field: stock_batches}
+# ASSUMED early-unload appointment sensitivity for the heat-day demonstration.
+early_unload_shift_hours: -7
+lowriver_sensitivity_cm: 30

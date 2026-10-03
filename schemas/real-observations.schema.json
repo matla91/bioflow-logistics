@@ -1,0 +1,252 @@
+{
+  "$defs": {
+    "ObservationSource": {
+      "additionalProperties": false,
+      "description": "Provenance for observed external data, never shipment/factory assumptions.",
+      "properties": {
+        "dataset": {
+          "minLength": 1,
+          "title": "Dataset",
+          "type": "string"
+        },
+        "licence": {
+          "minLength": 1,
+          "title": "Licence",
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "real_data": {
+          "const": true,
+          "default": true,
+          "title": "Real Data",
+          "type": "boolean"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sha256"
+        },
+        "url": {
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "dataset",
+        "url",
+        "retrieved_at",
+        "licence"
+      ],
+      "title": "ObservationSource",
+      "type": "object"
+    },
+    "RhineObservation": {
+      "additionalProperties": false,
+      "description": "Basel 100089: level in metres above sea level, discharge in m\u00b3/s.",
+      "properties": {
+        "discharge_m3_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Discharge M3 S"
+        },
+        "level_masl": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Level Masl"
+        },
+        "station_id": {
+          "default": "2289",
+          "minLength": 1,
+          "title": "Station Id",
+          "type": "string"
+        },
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        }
+      },
+      "required": [
+        "t"
+      ],
+      "title": "RhineObservation",
+      "type": "object"
+    },
+    "TrafficObservation": {
+      "additionalProperties": false,
+      "description": "Sum of distinct approved lanes at one station over one complete UTC hour.",
+      "properties": {
+        "interval_end": {
+          "format": "date-time",
+          "title": "Interval End",
+          "type": "string"
+        },
+        "interval_start": {
+          "format": "date-time",
+          "title": "Interval Start",
+          "type": "string"
+        },
+        "station_id": {
+          "minLength": 1,
+          "title": "Station Id",
+          "type": "string"
+        },
+        "vehicle_count": {
+          "minimum": 0,
+          "title": "Vehicle Count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "station_id",
+        "interval_start",
+        "interval_end",
+        "vehicle_count"
+      ],
+      "title": "TrafficObservation",
+      "type": "object"
+    },
+    "WeatherObservation": {
+      "additionalProperties": false,
+      "description": "MeteoSwiss BAS hourly observation; t is the UTC interval ending.",
+      "properties": {
+        "air_temperature_c": {
+          "title": "Air Temperature C",
+          "type": "number"
+        },
+        "precipitation_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Precipitation Mm"
+        },
+        "relative_humidity_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Relative Humidity Pct"
+        },
+        "station_id": {
+          "const": "BAS",
+          "default": "BAS",
+          "title": "Station Id",
+          "type": "string"
+        },
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        },
+        "wind_speed_m_s": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wind Speed M S"
+        }
+      },
+      "required": [
+        "t",
+        "air_temperature_c"
+      ],
+      "title": "WeatherObservation",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "rhine": {
+      "items": {
+        "$ref": "#/$defs/RhineObservation"
+      },
+      "title": "Rhine",
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/ObservationSource"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "traffic": {
+      "items": {
+        "$ref": "#/$defs/TrafficObservation"
+      },
+      "title": "Traffic",
+      "type": "array"
+    },
+    "weather": {
+      "items": {
+        "$ref": "#/$defs/WeatherObservation"
+      },
+      "title": "Weather",
+      "type": "array"
+    }
+  },
+  "required": [
+    "traffic",
+    "rhine",
+    "weather",
+    "sources"
+  ],
+  "title": "RealObservations",
+  "type": "object"
+}
