@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&amp;display=swap"><style>body{margin:0;background:#f0eee9;font-family:Kalam,cursive;color:#222}a{color:#2a78d6}a:hover{color:#1a4f91}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}</style></helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Operator console layouts · scene s3 low river (Kaub −6 cm, barge suspended, recommend BUFFER)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Answer first: the two questions answered in the first line</div>
+<div class="dv-card" style="width:760px;padding:22px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:14px"><span>Rhine → R2 · lot SIM-26-0814</span><span style="border:1.5px dashed #222;padding:2px 8px;border-radius:4px">SIMULATED SHIPMENT</span></div>
+<div style="font-size:15px;color:#666">Batch charges R2 at 06:00 Basel</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<div style="border:2.5px solid #222;border-radius:8px;padding:14px"><div style="font-size:15px">Will it be here?</div><div style="font-size:44px;font-weight:700;color:#c0392b;line-height:1.1">NO</div><div style="font-size:14px">Barge suspended at Kaub · ETA unknown</div></div>
+<div style="border:2.5px solid #222;border-radius:8px;padding:14px"><div style="font-size:15px">Still good to use?</div><div style="font-size:44px;font-weight:700;line-height:1.1">YES</div><div style="font-size:14px">0% of 120-min excursion budget used</div></div>
+</div>
+<div style="border:2.5px solid #2a78d6;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px">
+<div style="font-size:13px;color:#2a78d6">RECOMMENDATION · operator decides</div>
+<div style="font-size:30px;font-weight:700">Use cold-store safety stock</div>
+<div style="font-size:14px">1 Kaub −6 cm, route suspended · 2 100% slot miss if run as planned · 3 stock 2 → 1</div>
+<div style="display:flex;gap:10px"><span style="background:#2a78d6;color:#fff;padding:8px 18px;border-radius:6px;font-size:16px">Approve</span><span style="border:2px solid #222;padding:8px 18px;border-radius:6px;font-size:16px">Override…</span><span style="padding:8px 4px;font-size:14px;color:#666">why not the others? ▾</span></div>
+</div>
+<div style="border:1.5px dashed #999;border-radius:6px;padding:10px;font-size:14px;color:#666">Below the fold: journey strip · temperature trace · decision log</div>
+</div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Journey rail: route, temperature and decision share one time axis</div>
+<div class="dv-card" style="width:900px;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px">
+<div style="display:flex;flex-direction:column;gap:14px">
+<div style="font-size:20px;font-weight:700">Shipment journey</div>
+<svg viewBox="0 0 600 70" style="width:100%"><line x1="10" y1="35" x2="590" y2="35" stroke="#222" stroke-width="2"></line><line x1="300" y1="35" x2="590" y2="35" stroke="#fff" stroke-width="3" stroke-dasharray="6 6"></line><g font-family="Kalam" font-size="13" fill="#222"><circle cx="10" cy="35" r="6" fill="#fff" stroke="#222" stroke-width="2"></circle><text x="0" y="62">Rotterdam</text><circle cx="160" cy="35" r="6" fill="#fff" stroke="#222" stroke-width="2"></circle><text x="140" y="62">barge</text><circle cx="300" cy="35" r="9" fill="#c0392b"></circle><text x="280" y="16" fill="#c0392b">stuck · Kaub</text><circle cx="450" cy="35" r="6" fill="#fff" stroke="#222" stroke-width="2"></circle><text x="430" y="62">Basel</text><circle cx="590" cy="35" r="6" fill="#fff" stroke="#222" stroke-width="2"></circle><text x="565" y="62">R2</text></g></svg>
+<div style="font-size:14px;color:#666">Product temperature · 2–8 °C band · amber = exposed handover</div>
+<svg viewBox="0 0 600 130" style="width:100%;border:1.5px solid #222;border-radius:6px"><rect x="0" y="40" width="600" height="50" fill="#e8f1fb"></rect><rect x="150" y="0" width="22" height="130" fill="#f6e1b8"></rect><rect x="290" y="0" width="16" height="130" fill="#f6e1b8"></rect><polyline points="0,70 150,70 160,52 172,60 200,68 290,68 298,58 306,66 600,66" fill="none" stroke="#222" stroke-width="2.5" stroke-dasharray="0"></polyline><line x1="300" y1="0" x2="300" y2="130" stroke="#c0392b" stroke-width="2"></line><text x="306" y="16" font-family="Kalam" font-size="12" fill="#c0392b">now</text><text x="4" y="38" font-family="Kalam" font-size="11">8°</text><text x="4" y="102" font-family="Kalam" font-size="11">2°</text></svg>
+<div style="display:flex;align-items:center;gap:10px;font-size:14px"><span>scrub ◀</span><div style="flex:1;height:6px;border:1.5px solid #222;border-radius:4px;position:relative"><div style="position:absolute;left:50%;top:-6px;width:14px;height:14px;border-radius:50%;background:#222"></div></div><span>▶</span></div>
+<div style="display:flex;gap:8px;align-items:center;font-size:14px">Excursion budget<div style="flex:1;height:14px;border:1.5px solid #222;border-radius:4px"></div>0%</div>
+</div>
+<div style="border:2.5px solid #2a78d6;border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<div style="font-size:13px;color:#2a78d6">RECOMMENDATION</div><div style="font-size:24px;font-weight:700;line-height:1.1">Use safety stock</div>
+<div style="font-size:14px">Barge stuck → batch served from cold store. Lot continues, stock 2 → 1.</div>
+<div style="font-size:13px;color:#666">① Kaub −6 cm · 02:45<br>② 100% slot miss<br>③ 0% excursion</div>
+<div style="flex:1"></div>
+<span style="background:#2a78d6;color:#fff;padding:8px;border-radius:6px;text-align:center;font-size:16px">Approve</span><span style="border:2px solid #222;padding:8px;border-radius:6px;text-align:center;font-size:16px">Override…</span>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Options board: all five actions side by side, recommended one marked</div>
+<div class="dv-card" style="width:820px;padding:22px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:22px;font-weight:700">R2 charges at 06:00</span><span style="font-size:16px">in <b style="font-size:26px">2h 14m</b></span></div>
+<div style="font-size:14px;color:#666">2,000 simulated journeys per action</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px">
+<div style="border:2px solid #bbb;border-radius:8px;padding:10px;color:#888;display:flex;flex-direction:column;gap:6px"><b style="font-size:15px">Run as planned</b><span style="font-size:13px">miss slot 100%</span><span style="font-size:13px">delay 7 d</span><span style="font-size:13px">excursion 0%</span><span style="font-size:12px">✕ route suspended</span></div>
+<div style="border:2px solid #bbb;border-radius:8px;padding:10px;color:#888;display:flex;flex-direction:column;gap:6px"><b style="font-size:15px">Expedite</b><span style="font-size:13px">miss slot 100%</span><span style="font-size:13px">delay 7 d</span><span style="font-size:13px">excursion 0%</span><span style="font-size:12px">✕ not eligible</span></div>
+<div style="border:3px solid #2a78d6;border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px;background:#f2f7fd"><b style="font-size:15px;color:#2a78d6">★ Buffer</b><span style="font-size:13px">miss slot 0%</span><span style="font-size:13px">delay 0</span><span style="font-size:13px">excursion 0%</span><span style="font-size:12px">stock 2 → 1</span></div>
+<div style="border:2px solid #bbb;border-radius:8px;padding:10px;color:#888;display:flex;flex-direction:column;gap:6px"><b style="font-size:15px">Reroute</b><span style="font-size:13px">miss slot 100%</span><span style="font-size:13px">delay 11 h</span><span style="font-size:13px">excursion 2%</span><span style="font-size:12px">✕ still misses</span></div>
+<div style="border:2px solid #bbb;border-radius:8px;padding:10px;color:#888;display:flex;flex-direction:column;gap:6px"><b style="font-size:15px">Quarantine</b><span style="font-size:13px">miss slot 0%</span><span style="font-size:13px">delay 0</span><span style="font-size:13px">excursion 0%</span><span style="font-size:12px">✕ no excursion · QA only</span></div>
+</div>
+<div style="display:flex;gap:10px;align-items:center"><span style="flex:1;border:1.5px solid #222;border-radius:6px;padding:8px;font-size:14px;color:#888">Reason (required)…</span><span style="background:#2a78d6;color:#fff;padding:8px 18px;border-radius:6px;font-size:16px">Approve Buffer</span></div>
+<div style="font-size:13px;color:#666">Click any other column to override with it.</div>
+</div></div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Evidence ledger: numbered reasons link to the signal they come from</div>
+<div class="dv-card" style="width:860px;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:13px;color:#2a78d6">RECOMMENDATION · operator</div><div style="font-size:28px;font-weight:700;line-height:1.1">Use cold-store safety stock</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:6px">
+<div style="border:2px solid #222;border-radius:6px;padding:8px;font-size:14px;background:#f2f7fd"><b>1</b> Kaub −6 cm, route suspended<br><span style="font-size:12px;color:#666">REAL · PEGELONLINE · 02:45</span></div>
+<div style="border:1.5px solid #222;border-radius:6px;padding:8px;font-size:14px"><b>2</b> 100% chance of missing slot<br><span style="font-size:12px;color:#666">SIMULATED · 2,000 runs</span></div>
+<div style="border:1.5px solid #222;border-radius:6px;padding:8px;font-size:14px"><b>3</b> 0% excursion budget used<br><span style="font-size:12px;color:#666">SIMULATED · timeline</span></div>
+<div style="border:1.5px dashed #c0392b;border-radius:6px;padding:8px;font-size:14px;color:#c0392b"><b>4</b> 3 checks not yet verified</div>
+</div>
+<div style="font-size:14px">Would change if: stock changes · river rises · …</div>
+<div style="display:flex;gap:10px"><span style="background:#2a78d6;color:#fff;padding:8px 18px;border-radius:6px;font-size:16px">Approve</span><span style="border:2px solid #222;padding:8px 18px;border-radius:6px;font-size:16px">Override…</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:14px;color:#666">Signal for <b>1</b> · Kaub gauge, last 31 days</div>
+<svg viewBox="0 0 360 170" style="width:100%;border:1.5px solid #222;border-radius:6px"><line x1="0" y1="110" x2="360" y2="110" stroke="#c0392b" stroke-dasharray="5 4"></line><text x="6" y="104" font-family="Kalam" font-size="11" fill="#c0392b">assumed suspend band</text><polyline points="0,40 40,48 80,55 120,66 160,80 200,92 240,104 280,118 320,126 350,130" fill="none" stroke="#222" stroke-width="2.5"></polyline><circle cx="350" cy="130" r="6" fill="#2a78d6"></circle></svg>
+<div style="font-size:14px;color:#666">Rejected</div>
+<div style="font-size:13px;line-height:1.6">Run as planned: misses slot<br>Expedite: same suspended route<br>Reroute: still misses, +excursion risk<br>Quarantine: no excursion</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>5 a.m. glance: dark, one column, one big verdict, details on tap</div>
+<div class="dv-card" style="width:400px;background:#1d1f20;color:#eee;padding:22px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;font-size:13px;color:#aaa"><span>R2 · 06:00</span><span>04:12 Basel</span></div>
+<div style="display:flex;gap:8px"><span style="border:1.5px solid #e66;color:#e66;border-radius:20px;padding:2px 10px;font-size:13px">late · barge stuck</span><span style="border:1.5px solid #8c8;color:#8c8;border-radius:20px;padding:2px 10px;font-size:13px">cold · 0%</span></div>
+<div style="font-size:34px;font-weight:700;line-height:1.1">Charge from safety stock</div>
+<div style="font-size:15px;color:#ccc">The barge can't pass Kaub. The lot is fine; it just won't make 06:00. Stock drops to 1 batch.</div>
+<div style="border:1.5px solid #555;border-radius:8px;padding:12px;font-size:14px;color:#aaa">▸ Evidence (4)<br>▸ Other options (4)<br>▸ Journey &amp; temperature</div>
+<div style="background:#6fa8dc;color:#111;border-radius:8px;padding:14px;text-align:center;font-size:18px;font-weight:700">Hold to approve</div>
+<div style="text-align:center;font-size:14px;color:#aaa">Choose something else</div>
+</div></div>
+
+</div>
+
+</section>
+</x-dc>
+</body>
+</html>
