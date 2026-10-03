@@ -121,11 +121,28 @@ total sampled excursion below budget, retaining the requirement for human QA rev
 Offset-free cutoff queries return 422. Latest refers to analysis cutoff, not
 historical record availability or a guarantee of the latest deployed model.
 
-Laravel still needs stable external references, generated types, HTTP import/display
-of all three evidence dimensions and null values, and human traces tied to exact
-assessment ID/input digest/model version. Never map ambient proxy to product
-excursion or target engine SQLite with Laravel migrations. Pages/decision storage
-are unchanged in this slice.
+Laravel's authenticated `/integration/batches` view consumes the stored list and
+selected latest endpoint server-side and passes the existing generated contract
+unchanged to Vue. Three compact cards show production quantities, incoming
+milestones/timing and sampled product-temperature/QA evidence. Null excursion and
+timing remain unavailable; zero observed excursion remains paired with incomplete
+journey status. The corrected v2 batch 001 displays its recorded null action as
+no forward action, with the retrospective snapshot-history limitation visible.
+Audit details retain the immutable ID, digest, version, source metadata and
+limitations. No batch decision or QA release is written by this view.
+
+The observed product excursion duration comes directly from
+`ProductTemperatureEvidence.observed_excursion_min`: it estimates time outside
+the material range over usable sampled intervals. It is distinct from the sample
+window, bounded unobserved intervals and source-reported cumulative excursion.
+When no usable sampled interval exists, duration remains null, not zero; zero
+bounded gaps do not prove complete observation of an unfinished journey. The UI
+formats these supplied fields without calculating another duration or changing
+recommendations.
+
+Stable operational imports and human traces tied to exact assessment identity
+remain future work. Never map ambient proxy to product excursion or target engine
+SQLite with Laravel migrations. Pages/decision storage are unchanged in this slice.
 
 ## Limits and verification
 

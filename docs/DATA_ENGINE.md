@@ -67,8 +67,9 @@ observations = db.observations(datetime.fromisoformat("2026-09-30T12:00:00+00:00
 For ML consumers expecting JSON:
 
 ```sh
-pixi run python -m baselhack.data_engine export-observations --as-of 2026-09-30T12:00:00+00:00 --output .runtime/stored-observations.json
-pixi run python -m baselhack.logistics demo --observations .runtime/stored-observations.json --scenario normal
+OBSERVATIONS_JSON=.runtime/stored-observations.json
+pixi run python -m baselhack.data_engine export-observations --as-of 2026-09-30T12:00:00+00:00 --output $OBSERVATIONS_JSON
+pixi run python -m baselhack.logistics demo --observations $OBSERVATIONS_JSON --scenario normal
 ```
 
 This consumes SQLite without external calls and preserves the existing ML output contract. The additive [batch worker](BATCH_ASSESSMENTS.md) joins persisted batches, stock, shipments and readings through a separate immutable contract.

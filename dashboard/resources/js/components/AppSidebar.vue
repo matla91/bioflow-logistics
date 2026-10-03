@@ -20,6 +20,11 @@ import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
+        title: 'Batch assessment',
+        href: '/integration/batches',
+        icon: LayoutGrid,
+    },
+    {
         title: 'Logistics analysis',
         href: '/integration',
         icon: Ship,

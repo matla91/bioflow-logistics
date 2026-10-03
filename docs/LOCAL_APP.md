@@ -39,4 +39,4 @@ Do not reseed an existing demonstration database after recording decisions: the 
 
 ## Checked
 
-Laravel: 58 tests passed, two skipped. Vue type checks, production build and scoped PHP formatting passed. Browser login, overview and live integration page loaded without JavaScript errors. The integration shows three named logistics scenarios and the stored operations fixture; batch-linked assessment remains the next builder task.
+Laravel: 58 tests passed, two skipped on the original integration branch. Vue type checks, production build and scoped PHP formatting passed. Browser login, overview and live integration page loaded without JavaScript errors. The integration shows three named logistics scenarios and the stored operations fixture. The authenticated [batch assessment view](BATCH_ASSESSMENTS.md#read-api-and-laravel-handoff) now lives at `/integration/batches`; its review configuration, validation results and remaining limits are in [the batch dashboard handoff](../handoff/feat-batch-dashboard-integration.md).

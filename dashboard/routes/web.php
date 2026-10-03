@@ -13,6 +13,7 @@ Route::redirect('/', '/login')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('integration', IntegrationController::class)->name('integration');
+    Route::get('integration/batches', [IntegrationController::class, 'batches'])->name('integration.batches');
     Route::get('shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
     Route::post('shipments/{shipment}/decisions', [ShipmentDecisionController::class, 'store'])->name('shipments.decisions.store');

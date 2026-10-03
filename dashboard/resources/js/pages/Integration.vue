@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import type {
     OperationalDataset,
     StoredLogisticsAssessment,
@@ -23,6 +23,19 @@ const percent = (value: number) => `${(100 * value).toFixed(1)}%`;
     <Head title="Logistics analysis" />
     <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6">
         <h1 class="text-2xl font-bold">Logistics analysis</h1>
+        <nav aria-label="Assessment mode" class="flex gap-2 text-sm">
+            <Link
+                href="/integration"
+                aria-current="page"
+                class="rounded-lg border bg-muted px-4 py-2 font-semibold"
+                >Logistics scenarios</Link
+            >
+            <Link
+                href="/integration/batches"
+                class="rounded-lg border px-4 py-2 font-semibold hover:bg-accent"
+                >Batch assessment</Link
+            >
+        </nav>
         <p v-if="unavailable" role="status">
             Stored analysis is currently unavailable. Try again shortly.
         </p>
