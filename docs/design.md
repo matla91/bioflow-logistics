@@ -1,4 +1,4 @@
-# Current Affairs C4 design
+# Smartflow C4 design
 
 The team architecture centralizes provider collection and synthetic operations in SQLite; Laravel is the application and Python supplies analytics. The collector owns provider calls. Implementation and the provisional database boundary are documented in [DATA_ENGINE.md](DATA_ENGINE.md). Existing React/FastAPI code remains a reference demo during Laravel integration.
 

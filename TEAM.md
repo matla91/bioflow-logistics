@@ -1,4 +1,4 @@
-# Current Affairs
+# Smartflow
 
 Challenge 4: From a Rhine Signal to Action: Manufacturing in the BioValley.
 Repository: https://github.com/cfpramod/current-affairs

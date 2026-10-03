@@ -16,4 +16,4 @@ where = ["."]
 include = ["baselhack*"]
 
 [tool.setuptools.package-data]
-"baselhack.data_engine" = ["schema.sql"]
+"baselhack.data_engine" = ["schema.sql", "ml_fixture_templates/*"]

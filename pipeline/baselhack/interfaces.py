@@ -782,8 +782,19 @@ class LogisticsFrontendResult(Contract):
         return self
 
 
+class StoredLogisticsAssessment(Contract):
+    """Immutable named-scenario result; not an operational batch/QA assessment."""
+
+    assessment_id: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    input_sha256: Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+    scenario: Literal["normal", "disruption", "severe"]
+    model_version: Text
+    result: LogisticsFrontendResult
+
+
 # These have separate cache/output homes; legacy scenes do not require them.
 LOGISTICS_MODELS = {
+    "stored-logistics-assessment": StoredLogisticsAssessment,
     "logistics": LogisticsResult,
     "logistics-frontend": LogisticsFrontendResult,
     "real-observations": RealObservations,

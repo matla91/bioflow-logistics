@@ -73,6 +73,10 @@ def generated_files():
             types.append(f"export type {name} = {typescript(schema)};")
     types.append('export type Role = Decision["requires_approval_by"];')
     result[ROOT / "web" / "src" / "interfaces.ts"] = "\n".join(types) + "\n"
+    if (ROOT / "dashboard").exists():
+        result[ROOT / "dashboard/resources/js/types/integration.ts"] = (
+            "\n".join(types) + "\n"
+        )
     return result
 
 

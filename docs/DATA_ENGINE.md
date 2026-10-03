@@ -2,7 +2,7 @@
 
 The data engine is the only component that calls weather, Rhine and traffic providers. ML reads stored observations/operations and Laravel reads operations/results and records human decisions. Existing standalone provider-fetch commands remain development utilities; they must not be independently scheduled by the app or ML worker.
 
-This implementation extends `feat/basel-logistics-layer` and reuses its provider adapters. It adds persistence and synthetic operational fixtures. The database is provisional until its table contract is reconciled with the Laravel app's migrations. The engine currently initializes its own version-1 tables; agree one migration owner before integrating Laravel.
+This implementation extends `feat/basel-logistics-layer` and reuses its provider adapters. It adds persistence and synthetic operational fixtures. The database is provisional until its table contract is reconciled with the Laravel app's migrations. The engine currently initializes its own version-1 tables; Laravel currently uses a separate database and the local read API described in [BUILD_INTEGRATION.md](BUILD_INTEGRATION.md); agree one migration owner before sharing a database.
 
 ## Run locally
 
@@ -26,7 +26,7 @@ pixi run data-ingest
 pixi run data-watch
 ```
 
-`data-watch` runs one ingestion cycle at a time, then waits 60 minutes by default. Stop it with Ctrl-C. A process lock rejects overlapping CLI collectors for the same database and is released by the OS when a process exits. The worker runs independently of browser requests. Collection scheduling is implemented here; scheduling ML analysis and storing analysis/decision records is separate integration work.
+`data-watch` runs one ingestion cycle at a time, then waits 60 minutes by default. Stop it with Ctrl-C. A process lock rejects overlapping CLI collectors for the same database and is released by the OS when a process exits. The worker runs independently of browser requests. Collection scheduling is implemented here. The [integration worker](BUILD_INTEGRATION.md) schedules and stores named logistics scenario results separately. Batch-linked assessments and shared human-decision history remain follow-up work.
 
 The provider window/bootstrap, overlap, retry policy and selected traffic stations are in [config/data_engine.yaml](../config/data_engine.yaml). Default bootstrap is 24 hours, not sufficient to establish multi-week traffic baselines. For earlier weekday/hour history, request an explicit backfill. Basel API requests are chunked to stay within provider limits; MeteoSwiss assets are fetched once for the requested span. Coverage depends on provider availability; ingestion success does not certify complete measurement cadence.
 

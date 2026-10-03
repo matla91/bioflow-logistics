@@ -127,7 +127,12 @@ export default function App() {
     <main>
       <header>
         <div>
-          <p className="eyebrow">TEAM MANUX · CHALLENGE 4</p>
+          <img
+            className="brand-mark"
+            src="/brand/smartflow-mark.png"
+            alt="Smartflow"
+          />
+          <p className="eyebrow">SMARTFLOW · CHALLENGE 4</p>
           <h1>Rhine to reactor</h1>
           <p>Will the material arrive, and is it still good to use?</p>
         </div>

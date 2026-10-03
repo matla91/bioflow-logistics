@@ -1,4 +1,4 @@
-# Current Affairs C4 plan
+# Smartflow C4 plan
 
 ## ML priorities
 

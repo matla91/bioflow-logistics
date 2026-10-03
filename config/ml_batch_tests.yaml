@@ -1,0 +1,9 @@
+# Entirely synthetic test assumptions, not pharmaceutical release policy.
+dataset_id: ml-batch-tests-v1
+seed: 20261003
+groups: 600
+first_cutoff: "2025-02-11T12:00:00+00:00"
+reading_interval_min: 60
+stale_after_min: 120
+train_fraction: 0.7
+validation_fraction: 0.15

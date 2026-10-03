@@ -4,6 +4,22 @@ CREATE TABLE IF NOT EXISTS data_engine_schema (
     version INTEGER PRIMARY KEY CHECK (version = 1)
 );
 INSERT OR IGNORE INTO data_engine_schema VALUES (1);
+CREATE TABLE IF NOT EXISTS logistics_assessments (
+    assessment_id TEXT PRIMARY KEY,
+    scenario TEXT NOT NULL,
+    as_of TEXT NOT NULL,
+    stored_at TEXT NOT NULL,
+    payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+    evidence_json TEXT NOT NULL CHECK (json_valid(evidence_json))
+);
+CREATE TRIGGER IF NOT EXISTS immutable_logistics_assessments_update
+BEFORE UPDATE ON logistics_assessments BEGIN
+    SELECT RAISE(ABORT, 'Assessment evidence is immutable');
+END;
+CREATE TRIGGER IF NOT EXISTS immutable_logistics_assessments_delete
+BEFORE DELETE ON logistics_assessments BEGIN
+    SELECT RAISE(ABORT, 'Assessment evidence is immutable');
+END;
 CREATE TABLE IF NOT EXISTS ingestion_runs (
     id TEXT PRIMARY KEY,
     stream TEXT NOT NULL,

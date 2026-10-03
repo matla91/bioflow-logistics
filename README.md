@@ -1,4 +1,4 @@
-# Current Affairs · from a Rhine signal to a factory-floor decision
+# Smartflow · from a Rhine signal to a factory-floor decision
 
 The [central data engine](docs/DATA_ENGINE.md) stores external observations and generates linked synthetic shipments/batches in SQLite for Laravel and Python analytics. Use `pixi run data-import-cache` and `pixi run operations-seed` for the offline data demo; `pixi run data-watch` owns periodic collection.
 
@@ -156,3 +156,7 @@ JSON. The original project's unresolved verification gates remain separate from
 the passing model tests. `pixi run logistics-demo` preserves the original custom
 shipment entry point and writes the current primary contract to
 `output/logistics-demo.json`.
+
+## Build integration
+
+The Laravel dashboard and stored-data logistics bridge are assembled on `feat/build-integration`. See [BUILD_INTEGRATION.md](docs/BUILD_INTEGRATION.md) for run commands, validation limits and the next Laravel/ML builder inputs. Laravel keeps its own database until schema alignment is agreed.

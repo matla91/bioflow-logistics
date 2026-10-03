@@ -13,6 +13,10 @@ pip = "*"
 baselhack = { path = "pipeline", editable = true, extras = ["dev", "api"] }
 
 [tasks]
+ml-batch-data = "python -m baselhack.data_engine.ml_fixtures"
+integration-analyze = "python -m baselhack.integration analyze"
+integration-watch = "python -m baselhack.integration watch"
+integration-api = "python -m baselhack.integration serve"
 setup = { cmd = "npm ci --prefix web --cache .pixi/npm-cache && python -m baselhack.generate", description = "Install frontend lockfile and generate contracts; pixi installs Python environment" }
 data = "baselhack fetch"
 sim = { cmd = "python -m baselhack.tasks sim", description = "Scenario and timeline; optional SCENE=scene_id argument" }

@@ -1,5 +1,7 @@
 # Decisions
 
+- 2026-10-03: Assemble dashboard files from ec9a145 on the engine branch without merging unrelated histories. Add StoredLogisticsAssessment as an additive contract and a local read API; preserve ambient-exposure semantics, keep Laravel's database separate, and retain immutable model inputs/results. Operational batch assessment remains an explicit ML follow-up.
+
 One line per decision, newest at the bottom. Never edit an old line; add a new one that says what it replaces.
 
 Format: `- <date> · <decision> · @<github-username> · Affects: <tasks or areas> · Why: <short> · Instead of: <alternative, why not>`
@@ -26,3 +28,7 @@ Format: `- <date> · <decision> · @<github-username> · Affects: <tasks or area
 - 2026-10-03 · Use the maximum correlated Rhine level/discharge penalty and an ASSUMED navigation-state fallback; prepare a validity-bounded official adapter with separate status/delay provenance without adding a feed · @matla91 · Affects: navigation and source summaries · Why: avoid double-counting and invented official thresholds · Instead of: summing the same hydrological state or relabelling heuristic delay as official data.
 
 - 2026-10-03 · Centralize provider calls in SQLite; add OperationalDataset contracts for synthetic shipments, batches, stock and sensor histories; keep Laravel/ML as stored-data consumers · @cfpramod · Affects: ingestion, shared models and integration · Why: one collection owner and retained history; reconcile provisional schema with Laravel migrations before integration.
+
+- 2026-10-03: Name the product Smartflow; apply the new flow mark in Laravel and the demo shell. Repository URLs, package names and data IDs retain their existing technical identifiers. Provide separate Laravel and ML implementation briefs from the tested integration branch.
+
+- 2026-10-03: Publish generated batch ML fixtures on data/simulated-shipment-training and generator/config/tests plus builder briefs on feat/build-integration. Keep the 18-batch demo unchanged; separate observable snapshots/features from hidden synthetic outcomes and split chronologically by independent shared-resource group.

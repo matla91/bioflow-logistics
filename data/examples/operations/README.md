@@ -53,4 +53,4 @@ After generating the canonical fixture, export these files with:
 python scripts/export-operation-examples.py
 ```
 
-Run from the repository root. The exporter uses only the Python standard library. Download this folder from **feat/sqlite-data-engine**, or copy only this folder into the dashboard branch for its Laravel seeder. No branch merge is needed to use the examples.
+Run from the repository root. The exporter uses only the Python standard library. Download this folder from **feat/sqlite-data-engine-rebuilt**, or copy only this folder into the dashboard branch for its Laravel seeder. No branch merge is needed to use the examples.
