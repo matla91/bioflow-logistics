@@ -9,8 +9,8 @@ from enum import StrEnum
 from typing import Annotated, Literal, Protocol
 
 from pydantic import (
-    AliasChoices,
     AfterValidator,
+    AliasChoices,
     BaseModel,
     ConfigDict,
     Field,
@@ -810,3 +810,117 @@ class LogisticsSimulation(Protocol):
         assumptions: LogisticsAssumptions,
         sources: list[ObservationSource],
     ) -> LogisticsResult: ...
+
+
+class OperationalMaterial(Contract):
+    """Synthetic demo material; quantities are consistently expressed in kg."""
+
+    id: Text
+    name: Text
+    quantity_unit: Literal["kg"] = "kg"
+    range_c: tuple[Finite, Finite]
+    budget_min: Positive
+
+    @model_validator(mode="after")
+    def ordered_range(self):
+        if self.range_c[0] >= self.range_c[1]:
+            raise ValueError("Material temperature range must be increasing")
+        return self
+
+
+class OperationalShipment(Contract):
+    """Planned and observed milestones are separate; no future actuals."""
+
+    id: Text
+    material_id: Text
+    lot_id: Text
+    quantity_kg: Positive
+    route_mode: Literal["river", "road"]
+    origin: Text
+    destination: Text
+    planned_departure_at: Timestamp
+    planned_arrival_at: Timestamp
+    actual_departure_at: Timestamp | None
+    actual_arrival_at: Timestamp | None
+    status: Literal["planned", "in_transit", "arrived", "suspended"]
+    scenario: Literal["normal", "heat", "delay", "planned"]
+
+    @model_validator(mode="after")
+    def ordered_milestones(self):
+        if self.planned_arrival_at <= self.planned_departure_at:
+            raise ValueError("Planned arrival must follow departure")
+        if self.actual_arrival_at is not None and (
+            self.actual_departure_at is None
+            or self.actual_arrival_at < self.actual_departure_at
+        ):
+            raise ValueError("Actual arrival must follow actual departure")
+        if self.status == "planned" and self.actual_departure_at is not None:
+            raise ValueError("Planned shipments cannot have actual departure")
+        if self.status == "arrived" and self.actual_arrival_at is None:
+            raise ValueError("Arrived shipments require actual arrival")
+        return self
+
+
+class ProductionBatch(Contract):
+    """Synthetic demand for one material at one reactor charge slot."""
+
+    id: Text
+    reactor: Text
+    material_id: Text
+    required_quantity_kg: Positive
+    planned_charge_at: Timestamp
+    status: Literal["planned", "waiting_material"]
+
+
+class BatchSupplyPlan(Contract):
+    """Planned incoming supply; this does not reserve released inventory."""
+
+    batch_id: Text
+    shipment_id: Text
+    quantity_kg: Positive
+
+
+class InventoryLot(Contract):
+    """On-site stock; QA disposition is explicit synthetic fixture state."""
+
+    id: Text
+    material_id: Text
+    quantity_kg: Nonnegative
+    available_at: Timestamp
+    qa_status: Literal["released", "pending", "quarantined"]
+    shipment_id: Text | None = None
+
+
+class StockReservation(Contract):
+    batch_id: Text
+    inventory_lot_id: Text
+    quantity_kg: Positive
+
+
+class ShipmentReading(Contract):
+    shipment_id: Text
+    at: Timestamp
+    product_c: Finite
+    ambient_c: Finite
+    refrigerated: bool
+    excursion_min: Nonnegative
+
+
+class OperationalDataset(Contract):
+    """Reproducible operations fixture, separate from ML training feature CSVs."""
+
+    dataset_id: Text
+    simulated: Literal[True] = True
+    seed: Annotated[int, Field(ge=0)]
+    reference_at: Timestamp
+    materials: list[OperationalMaterial]
+    shipments: list[OperationalShipment]
+    batches: list[ProductionBatch]
+    supply_plans: list[BatchSupplyPlan]
+    inventory: list[InventoryLot]
+    reservations: list[StockReservation]
+    readings: list[ShipmentReading]
+    assumptions: dict[str, object]
+
+
+LOGISTICS_MODELS["operational-dataset"] = OperationalDataset

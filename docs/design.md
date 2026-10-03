@@ -1,5 +1,7 @@
 # Current Affairs C4 design
 
+The team architecture centralizes provider collection and synthetic operations in SQLite; Laravel is the application and Python supplies analytics. The collector owns provider calls. Implementation and the provisional database boundary are documented in [DATA_ENGINE.md](DATA_ENGINE.md). Existing React/FastAPI code remains a reference demo during Laravel integration.
+
 ## Concept and persona
 
 Hack am Rhein 2026, Challenge 4: **From a Rhine Signal to Action: Manufacturing in the BioValley**. A high-value 2–8 °C pharmaceutical intermediate travels from Shanghai to a production site near Basel. The night-shift operator for reactor R2 asks: “My next batch charges at 06:00. Will the material be here, and is it still good to use?”

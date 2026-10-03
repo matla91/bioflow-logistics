@@ -102,3 +102,7 @@ data/raw/
 .ruff_cache/
 snapshots/*/log.json
 snapshots/*/evidence/
+.runtime/
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3.ingest.lock

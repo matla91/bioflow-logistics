@@ -8,6 +8,8 @@ from baselhack.storage import ROOT
 
 
 def typescript(schema):
+    if isinstance(schema, bool):
+        return "unknown" if schema else "never"
     if "$ref" in schema:
         return schema["$ref"].rsplit("/", 1)[-1]
     if "enum" in schema:

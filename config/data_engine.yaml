@@ -1,0 +1,8 @@
+# Provider observations remain REAL; generated operations remain SIMULATED.
+poll_interval_min: 60
+bootstrap_hours: 24
+overlap_hours: 2
+chunk_hours: 24
+request_timeout_seconds: 30
+request_attempts: 3
+traffic_station_ids: ["402"]

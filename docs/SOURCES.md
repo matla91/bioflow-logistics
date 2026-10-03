@@ -1,5 +1,7 @@
 # Data sources and verification
 
+Central collection stores normalized observations and their source metadata in local SQLite; see [DATA_ENGINE.md](DATA_ENGINE.md). The operational fixture in `output/operations-demo.json` is entirely synthetic. Its schedules, quantities, thermal constants and QA states come from `config/operations_demo.yaml`; they are demonstration assumptions, not provider measurements or release policy.
+
 Retrieved 2–3 October 2026. Raw downloads stay in ignored data/raw/. Small scene evidence is in committed data/cache/. Real observations are never fabricated. Provider timestamps and values are preserved; sampling and simulated overrides are labelled.
 
 | Source | Endpoint / use | Caveat |

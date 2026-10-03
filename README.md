@@ -1,5 +1,7 @@
 # Current Affairs · from a Rhine signal to a factory-floor decision
 
+The [central data engine](docs/DATA_ENGINE.md) stores external observations and generates linked synthetic shipments/batches in SQLite for Laravel and Python analytics. Use `pixi run data-import-cache` and `pixi run operations-seed` for the offline data demo; `pixi run data-watch` owns periodic collection.
+
 Hack am Rhein 2026, Challenge 4: *From a Rhine Signal to Action: Manufacturing in the BioValley*.
 
 > **The operator's question:** "My next batch charges the reactor at 06:00. Will the material be here, and is it still good to use?"

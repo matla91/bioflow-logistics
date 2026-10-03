@@ -1,0 +1,466 @@
+{
+  "$defs": {
+    "BatchSupplyPlan": {
+      "additionalProperties": false,
+      "description": "Planned incoming supply; this does not reserve released inventory.",
+      "properties": {
+        "batch_id": {
+          "minLength": 1,
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "quantity_kg": {
+          "exclusiveMinimum": 0,
+          "title": "Quantity Kg",
+          "type": "number"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "batch_id",
+        "shipment_id",
+        "quantity_kg"
+      ],
+      "title": "BatchSupplyPlan",
+      "type": "object"
+    },
+    "InventoryLot": {
+      "additionalProperties": false,
+      "description": "On-site stock; QA disposition is explicit synthetic fixture state.",
+      "properties": {
+        "available_at": {
+          "format": "date-time",
+          "title": "Available At",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "material_id": {
+          "minLength": 1,
+          "title": "Material Id",
+          "type": "string"
+        },
+        "qa_status": {
+          "enum": [
+            "released",
+            "pending",
+            "quarantined"
+          ],
+          "title": "Qa Status",
+          "type": "string"
+        },
+        "quantity_kg": {
+          "minimum": 0,
+          "title": "Quantity Kg",
+          "type": "number"
+        },
+        "shipment_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shipment Id"
+        }
+      },
+      "required": [
+        "id",
+        "material_id",
+        "quantity_kg",
+        "available_at",
+        "qa_status"
+      ],
+      "title": "InventoryLot",
+      "type": "object"
+    },
+    "OperationalMaterial": {
+      "additionalProperties": false,
+      "description": "Synthetic demo material; quantities are consistently expressed in kg.",
+      "properties": {
+        "budget_min": {
+          "exclusiveMinimum": 0,
+          "title": "Budget Min",
+          "type": "number"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "quantity_unit": {
+          "const": "kg",
+          "default": "kg",
+          "title": "Quantity Unit",
+          "type": "string"
+        },
+        "range_c": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Range C",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "range_c",
+        "budget_min"
+      ],
+      "title": "OperationalMaterial",
+      "type": "object"
+    },
+    "OperationalShipment": {
+      "additionalProperties": false,
+      "description": "Planned and observed milestones are separate; no future actuals.",
+      "properties": {
+        "actual_arrival_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Actual Arrival At"
+        },
+        "actual_departure_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Actual Departure At"
+        },
+        "destination": {
+          "minLength": 1,
+          "title": "Destination",
+          "type": "string"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "lot_id": {
+          "minLength": 1,
+          "title": "Lot Id",
+          "type": "string"
+        },
+        "material_id": {
+          "minLength": 1,
+          "title": "Material Id",
+          "type": "string"
+        },
+        "origin": {
+          "minLength": 1,
+          "title": "Origin",
+          "type": "string"
+        },
+        "planned_arrival_at": {
+          "format": "date-time",
+          "title": "Planned Arrival At",
+          "type": "string"
+        },
+        "planned_departure_at": {
+          "format": "date-time",
+          "title": "Planned Departure At",
+          "type": "string"
+        },
+        "quantity_kg": {
+          "exclusiveMinimum": 0,
+          "title": "Quantity Kg",
+          "type": "number"
+        },
+        "route_mode": {
+          "enum": [
+            "river",
+            "road"
+          ],
+          "title": "Route Mode",
+          "type": "string"
+        },
+        "scenario": {
+          "enum": [
+            "normal",
+            "heat",
+            "delay",
+            "planned"
+          ],
+          "title": "Scenario",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "in_transit",
+            "arrived",
+            "suspended"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "material_id",
+        "lot_id",
+        "quantity_kg",
+        "route_mode",
+        "origin",
+        "destination",
+        "planned_departure_at",
+        "planned_arrival_at",
+        "actual_departure_at",
+        "actual_arrival_at",
+        "status",
+        "scenario"
+      ],
+      "title": "OperationalShipment",
+      "type": "object"
+    },
+    "ProductionBatch": {
+      "additionalProperties": false,
+      "description": "Synthetic demand for one material at one reactor charge slot.",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "material_id": {
+          "minLength": 1,
+          "title": "Material Id",
+          "type": "string"
+        },
+        "planned_charge_at": {
+          "format": "date-time",
+          "title": "Planned Charge At",
+          "type": "string"
+        },
+        "reactor": {
+          "minLength": 1,
+          "title": "Reactor",
+          "type": "string"
+        },
+        "required_quantity_kg": {
+          "exclusiveMinimum": 0,
+          "title": "Required Quantity Kg",
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "waiting_material"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "reactor",
+        "material_id",
+        "required_quantity_kg",
+        "planned_charge_at",
+        "status"
+      ],
+      "title": "ProductionBatch",
+      "type": "object"
+    },
+    "ShipmentReading": {
+      "additionalProperties": false,
+      "properties": {
+        "ambient_c": {
+          "title": "Ambient C",
+          "type": "number"
+        },
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "excursion_min": {
+          "minimum": 0,
+          "title": "Excursion Min",
+          "type": "number"
+        },
+        "product_c": {
+          "title": "Product C",
+          "type": "number"
+        },
+        "refrigerated": {
+          "title": "Refrigerated",
+          "type": "boolean"
+        },
+        "shipment_id": {
+          "minLength": 1,
+          "title": "Shipment Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "shipment_id",
+        "at",
+        "product_c",
+        "ambient_c",
+        "refrigerated",
+        "excursion_min"
+      ],
+      "title": "ShipmentReading",
+      "type": "object"
+    },
+    "StockReservation": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_id": {
+          "minLength": 1,
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "inventory_lot_id": {
+          "minLength": 1,
+          "title": "Inventory Lot Id",
+          "type": "string"
+        },
+        "quantity_kg": {
+          "exclusiveMinimum": 0,
+          "title": "Quantity Kg",
+          "type": "number"
+        }
+      },
+      "required": [
+        "batch_id",
+        "inventory_lot_id",
+        "quantity_kg"
+      ],
+      "title": "StockReservation",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Reproducible operations fixture, separate from ML training feature CSVs.",
+  "properties": {
+    "assumptions": {
+      "additionalProperties": true,
+      "title": "Assumptions",
+      "type": "object"
+    },
+    "batches": {
+      "items": {
+        "$ref": "#/$defs/ProductionBatch"
+      },
+      "title": "Batches",
+      "type": "array"
+    },
+    "dataset_id": {
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "inventory": {
+      "items": {
+        "$ref": "#/$defs/InventoryLot"
+      },
+      "title": "Inventory",
+      "type": "array"
+    },
+    "materials": {
+      "items": {
+        "$ref": "#/$defs/OperationalMaterial"
+      },
+      "title": "Materials",
+      "type": "array"
+    },
+    "readings": {
+      "items": {
+        "$ref": "#/$defs/ShipmentReading"
+      },
+      "title": "Readings",
+      "type": "array"
+    },
+    "reference_at": {
+      "format": "date-time",
+      "title": "Reference At",
+      "type": "string"
+    },
+    "reservations": {
+      "items": {
+        "$ref": "#/$defs/StockReservation"
+      },
+      "title": "Reservations",
+      "type": "array"
+    },
+    "seed": {
+      "minimum": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "shipments": {
+      "items": {
+        "$ref": "#/$defs/OperationalShipment"
+      },
+      "title": "Shipments",
+      "type": "array"
+    },
+    "simulated": {
+      "const": true,
+      "default": true,
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "supply_plans": {
+      "items": {
+        "$ref": "#/$defs/BatchSupplyPlan"
+      },
+      "title": "Supply Plans",
+      "type": "array"
+    }
+  },
+  "required": [
+    "dataset_id",
+    "seed",
+    "reference_at",
+    "materials",
+    "shipments",
+    "batches",
+    "supply_plans",
+    "inventory",
+    "reservations",
+    "readings",
+    "assumptions"
+  ],
+  "title": "OperationalDataset",
+  "type": "object"
+}

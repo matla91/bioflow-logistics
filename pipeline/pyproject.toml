@@ -14,3 +14,6 @@ baselhack = "baselhack.cli:app"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["baselhack*"]
+
+[tool.setuptools.package-data]
+"baselhack.data_engine" = ["schema.sql"]

@@ -1,0 +1,30 @@
+# ASSUMED operational fixtures, never real shipment/customer data or QA policy.
+dataset_id: operations-demo-v1
+seed: 20261003
+reference_at: "2026-10-03T12:00:00+00:00"
+shipments: 12
+batches: 18
+material_name: pharmaceutical intermediate
+quantity_unit: kg
+range_c: [2, 8]
+budget_min: 120
+setpoint_c: 5
+tau_reefer_min: 360
+tau_exposed_min: 360
+shipment_quantity_kg: 150
+batch_quantity_kg: 50
+released_stock_kg: 80
+pending_stock_kg: 100
+route_duration_hours: 18
+delay_hours: 24
+departure_offsets_hours: [-48, -12, 24]
+batch_first_offset_hours: -2
+batch_spacing_hours: 6
+reading_interval_min: 30
+exposure_final_hours: 3
+heat_exposure_final_hours: 9
+normal_ambient_c: 20
+heat_ambient_c: 40
+origin: Rotterdam
+destination: Basel production site
+reactors: [R1, R2, R3]
