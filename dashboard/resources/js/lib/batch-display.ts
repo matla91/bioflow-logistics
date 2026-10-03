@@ -135,6 +135,8 @@ type TemperaturePresentation = {
     statusLabel: string;
     tone: Tone;
     excursionLabel: string;
+    budgetLabel: string;
+    lastReadingLabel: string;
     journeyLabel: string;
     limitation: string;
 };
@@ -142,26 +144,36 @@ type TemperaturePresentation = {
 /** Relabel backend evidence states without testing a pharmaceutical release rule. */
 export function temperaturePresentation(
     evidence: ProductTemperatureEvidence,
+    qaReviewRequired = false,
 ): TemperaturePresentation {
     const incomplete = !evidence.complete_journey;
     const missingReadings = evidence.reading_count === 0;
     const exceeded = evidence.status === 'OBSERVED_BUDGET_EXCEEDED';
     const unavailable = evidence.status === 'UNAVAILABLE';
-    const statusLabel = exceeded
-        ? 'Observed demo budget exceeded'
-        : unavailable
-          ? missingReadings
-              ? 'Product-temperature evidence unavailable'
-              : 'Usable excursion duration unavailable'
-          : incomplete
-            ? 'Partial temperature evidence'
-            : 'Observed within demo budget';
+    const statusLabel = unavailable
+        ? missingReadings
+            ? 'Product-temperature evidence unavailable'
+            : 'Usable excursion duration unavailable'
+        : qaReviewRequired
+          ? 'Human QA review required'
+          : exceeded
+            ? 'Observed demo budget exceeded'
+            : evidence.last_product_outside_range
+              ? 'Last product reading outside range'
+              : incomplete
+                ? 'Partial temperature evidence'
+                : 'Sampled temperature evidence available';
+    const observed = evidence.observed_excursion_min;
+    const range = `${evidence.range_c[0]}–${evidence.range_c[1]} °C`;
 
     return {
         statusLabel,
         tone: exceeded
             ? 'alert'
-            : unavailable || incomplete
+            : qaReviewRequired ||
+                evidence.last_product_outside_range ||
+                unavailable ||
+                incomplete
               ? 'warning'
               : 'neutral',
         excursionLabel:
@@ -170,6 +182,14 @@ export function temperaturePresentation(
                     ? '—'
                     : 'Unavailable'
                 : `${formatMinutes(evidence.observed_excursion_min)} observed`,
+        budgetLabel:
+            observed === null
+                ? `${formatMinutes(evidence.budget_min)} demo excursion budget · comparison unavailable`
+                : `${observed < evidence.budget_min ? 'Below' : observed > evidence.budget_min ? 'Above' : 'At'} ${formatMinutes(evidence.budget_min)} demo excursion budget${incomplete ? ' · sampled intervals only' : ''}`,
+        lastReadingLabel:
+            evidence.last_product_c === null
+                ? 'Unavailable'
+                : `${evidence.last_product_c.toFixed(1)} °C — ${evidence.last_product_outside_range === null ? 'range comparison unavailable' : evidence.last_product_outside_range ? `outside ${range} range` : `within ${range} range`}`,
         journeyLabel: incomplete ? 'Journey incomplete' : 'Journey complete',
         limitation: unavailable
             ? missingReadings

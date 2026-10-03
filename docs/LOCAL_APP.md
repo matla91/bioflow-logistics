@@ -39,4 +39,6 @@ Do not reseed an existing demonstration database after recording decisions: the 
 
 ## Checked
 
+The uncommitted presentation polish on `feat/demo-polish` has a separate local review configuration containing both existing stored scenarios and v2 batch assessments. See [the demo polish handoff](../handoff/feat-demo-polish.md) for its exact startup commands and current checks.
+
 Laravel: 58 tests passed, two skipped on the original integration branch. Vue type checks, production build and scoped PHP formatting passed. Browser login, overview and live integration page loaded without JavaScript errors. The integration shows three named logistics scenarios and the stored operations fixture. The authenticated [batch assessment view](BATCH_ASSESSMENTS.md#read-api-and-laravel-handoff) now lives at `/integration/batches`; its review configuration, validation results and remaining limits are in [the batch dashboard handoff](../handoff/feat-batch-dashboard-integration.md).

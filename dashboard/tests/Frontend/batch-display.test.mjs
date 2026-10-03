@@ -283,7 +283,7 @@ void test('temperature and production labels use backend states rather than new 
     within.observed_excursion_min = 999;
     assert.equal(
         temperaturePresentation(within).statusLabel,
-        'Observed within demo budget',
+        'Last product reading outside range',
     );
     const record = structuredClone(assessments[1]);
     record.production_readiness.reservation_shortfall_kg = 0;
@@ -292,6 +292,80 @@ void test('temperature and production labels use backend states rather than new 
     assert.equal(
         productionStatusLabel('INSUFFICIENT_SUPPLY'),
         'Supply does not cover demand',
+    );
+});
+
+void test('QA review is primary even when observed excursion is below the demo budget', () => {
+    const evidence = freezeEvidence(
+        structuredClone(assessments[0].product_temperature[0]),
+    );
+    const before = JSON.stringify(evidence);
+    const display = temperaturePresentation(evidence, true);
+    assert.equal(display.statusLabel, 'Human QA review required');
+    assert.equal(display.tone, 'warning');
+    assert.equal(display.excursionLabel, '99.5 min observed');
+    assert.equal(display.budgetLabel, 'Below 120 min demo excursion budget');
+    assert.equal(display.lastReadingLabel, '10.9 °C — outside 2–8 °C range');
+    assert.equal(display.journeyLabel, 'Journey complete');
+    assert.equal(JSON.stringify(evidence), before);
+    const relabeled = {
+        ...evidence,
+        shipment_id: 'another-shipment',
+        budget_min: 99.49666380275252,
+    };
+    assert.equal(
+        temperaturePresentation(relabeled, true).budgetLabel,
+        'At 99.5 min demo excursion budget',
+    );
+    assert.equal(
+        temperaturePresentation({ ...evidence, budget_min: 90 }, true)
+            .budgetLabel,
+        'Above 90 min demo excursion budget',
+    );
+});
+
+void test('partial and missing temperature evidence cannot imply QA clearance', () => {
+    const partial = temperaturePresentation(
+        assessments[2].product_temperature[0],
+        true,
+    );
+    assert.equal(partial.statusLabel, 'Human QA review required');
+    assert.equal(partial.excursionLabel, '0 min observed');
+    assert.equal(
+        partial.budgetLabel,
+        'Below 120 min demo excursion budget · sampled intervals only',
+    );
+    assert.equal(partial.journeyLabel, 'Journey incomplete');
+    assert.match(
+        partial.limitation,
+        /does not establish whole-journey compliance/,
+    );
+    const absent = temperaturePresentation(
+        assessments[3].product_temperature[0],
+        true,
+    );
+    assert.equal(
+        absent.statusLabel,
+        'Product-temperature evidence unavailable',
+    );
+    assert.equal(absent.excursionLabel, '—');
+    assert.equal(absent.lastReadingLabel, 'Unavailable');
+    assert.match(absent.budgetLabel, /comparison unavailable/);
+    const unknownRange = {
+        ...assessments[2].product_temperature[0],
+        last_product_outside_range: null,
+    };
+    assert.equal(
+        temperaturePresentation(unknownRange).lastReadingLabel,
+        '5.0 °C — range comparison unavailable',
+    );
+    const complete = {
+        ...assessments[2].product_temperature[0],
+        complete_journey: true,
+    };
+    assert.equal(
+        temperaturePresentation(complete, false).statusLabel,
+        'Sampled temperature evidence available',
     );
 });
 

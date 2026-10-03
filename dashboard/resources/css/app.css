@@ -90,6 +90,22 @@
 }
 
 :root {
+    /* Shared stored-assessment surfaces; preserve the established demo palette. */
+    --assessment-bg: #0c1421;
+    --assessment-text: #f2f6fc;
+    --assessment-muted: #b7c5d5;
+    --assessment-surface: #111d2e;
+    --assessment-raised: #122238;
+    --assessment-border: #354259;
+    --assessment-accent: #89c9f7;
+    --assessment-selected: #183f60;
+    --assessment-selected-text: #d5efff;
+    --assessment-focus: #8ad4ff;
+    --assessment-warning: #f4bc65;
+    --assessment-alert: #ff8b91;
+    --assessment-alert-bg: #291e2b;
+    --assessment-positive: #9ed7bc;
+    --assessment-violet: #cbb7f5;
     --background: hsl(0 0% 100%);
     --foreground: hsl(0 0% 3.9%);
     --card: hsl(0 0% 100%);

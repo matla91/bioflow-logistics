@@ -37,7 +37,7 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Smartflow') }}</title>
+            <title>Smartflow</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

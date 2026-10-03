@@ -41,7 +41,10 @@ const readiness = computed(() => props.assessment?.production_readiness);
 const temperatures = computed(() =>
     (props.assessment?.product_temperature ?? []).map((evidence) => ({
         evidence,
-        display: temperaturePresentation(evidence),
+        display: temperaturePresentation(
+            evidence,
+            props.assessment?.recommendation.qa_review_required,
+        ),
     })),
 );
 const approvalRoles = {
@@ -58,6 +61,9 @@ const approvalRoles = {
             <div>
                 <p class="batch-eyebrow">SMARTFLOW · RHINE TO REACTOR</p>
                 <h1>Batch assessment</h1>
+                <p class="batch-subtitle">
+                    Stored operational evidence for a manufacturing batch
+                </p>
             </div>
             <nav aria-label="Assessment mode" class="batch-mode">
                 <Link href="/integration">Logistics scenarios</Link>
@@ -480,11 +486,7 @@ const approvalRoles = {
                             :data-tone="display.tone"
                         >
                             <strong>{{ display.excursionLabel }}</strong>
-                            <span
-                                >sampled product excursion ·
-                                {{ formatMinutes(evidence.budget_min) }}
-                                budget</span
-                            >
+                            <span>{{ display.budgetLabel }}</span>
                         </div>
                         <div class="batch-status-row">
                             <span
@@ -501,25 +503,6 @@ const approvalRoles = {
                             >
                         </div>
                         <dl class="batch-metrics">
-                            <div>
-                                <dt>Material range</dt>
-                                <dd>
-                                    {{ evidence.range_c[0] }}–{{
-                                        evidence.range_c[1]
-                                    }}
-                                    °C
-                                </dd>
-                            </div>
-                            <div>
-                                <dt>Last product temperature</dt>
-                                <dd>
-                                    {{
-                                        evidence.last_product_c === null
-                                            ? 'Unavailable'
-                                            : `${evidence.last_product_c.toFixed(1)} °C`
-                                    }}
-                                </dd>
-                            </div>
                             <div
                                 :class="{
                                     'batch-shortage':
@@ -527,16 +510,9 @@ const approvalRoles = {
                                         true,
                                 }"
                             >
-                                <dt>Last reading outside range</dt>
+                                <dt>Last product temperature</dt>
                                 <dd>
-                                    {{
-                                        evidence.last_product_outside_range ===
-                                        null
-                                            ? 'Unavailable'
-                                            : evidence.last_product_outside_range
-                                              ? 'Yes'
-                                              : 'No'
-                                    }}
+                                    {{ display.lastReadingLabel }}
                                 </dd>
                             </div>
                         </dl>
@@ -745,15 +721,15 @@ const approvalRoles = {
 <style scoped>
 /* Selectively reuse the reference dashboard's hierarchy, cards and restrained badges. */
 .batch-dashboard {
-    --batch-muted: #b7c5d5;
+    --batch-muted: var(--assessment-muted);
     display: flex;
     flex: 1;
     min-width: 0;
     flex-direction: column;
     gap: 12px;
     padding: 16px 22px;
-    background: #0c1421;
-    color: #f2f6fc;
+    background: var(--assessment-bg);
+    color: var(--assessment-text);
     font-size: 14px;
 }
 .batch-header,
@@ -769,7 +745,7 @@ const approvalRoles = {
     justify-content: space-between;
 }
 .batch-eyebrow {
-    color: #89c9f7;
+    color: var(--assessment-accent);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -780,10 +756,23 @@ h1 {
     font-weight: 700;
     letter-spacing: -0.03em;
 }
+.batch-subtitle {
+    color: var(--batch-muted);
+    font-size: 14px;
+    margin-top: 3px;
+}
+.batch-temperature .batch-shortage {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+.batch-temperature .batch-shortage dd {
+    text-align: left;
+}
 .batch-mode {
     gap: 3px;
     padding: 4px;
-    border: 1px solid #354259;
+    border: 1px solid var(--assessment-border);
     border-radius: 9px;
     font-size: 13px;
 }
@@ -795,8 +784,8 @@ h1 {
 }
 .batch-mode [aria-current],
 .batch-selector [aria-current] {
-    background: #183f60;
-    color: #d5efff;
+    background: var(--assessment-selected);
+    color: var(--assessment-selected-text);
     box-shadow: inset 0 0 0 1px #5baddb;
 }
 a:hover {
@@ -804,7 +793,7 @@ a:hover {
 }
 a:focus-visible,
 summary:focus-visible {
-    outline: 2px solid #8ad4ff;
+    outline: 2px solid var(--assessment-focus);
     outline-offset: 4px;
 }
 .batch-selector a {
@@ -828,14 +817,14 @@ summary:focus-visible {
     border: 1px solid #476684;
     border-left: 4px solid #75c7f8;
     border-radius: 11px;
-    background: #122238;
+    background: var(--assessment-raised);
 }
 .batch-summary[data-tone='warning'] {
-    border-left-color: #f4bc65;
+    border-left-color: var(--assessment-warning);
 }
 .batch-summary[data-tone='alert'] {
-    border-left-color: #ff8b91;
-    background: #291e2b;
+    border-left-color: var(--assessment-alert);
+    background: var(--assessment-alert-bg);
 }
 .batch-summary h2 {
     font-size: 25px;
@@ -878,7 +867,7 @@ dt {
 .batch-card {
     min-width: 0;
     padding: 14px;
-    border: 1px solid #354259;
+    border: 1px solid var(--assessment-border);
     border-radius: 11px;
     background: #141f30;
 }
@@ -1087,7 +1076,7 @@ summary {
     color: var(--batch-muted);
 }
 .batch-empty a {
-    color: #89c9f7;
+    color: var(--assessment-accent);
     text-decoration: underline;
 }
 .batch-shipment + .batch-shipment,

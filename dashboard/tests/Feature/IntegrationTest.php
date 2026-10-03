@@ -12,6 +12,23 @@ beforeEach(function (): void {
     Http::preventStrayRequests();
 });
 
+test('integration branding stays Smartflow with a legacy local application name', function (): void {
+    config(['app.name' => 'BioFlow']);
+    Http::fake([
+        '*/api/integration/assessments' => Http::response([], 200),
+        '*/api/integration/operations' => Http::response([], 200),
+    ]);
+
+    $this->actingAs(User::factory()->create())
+        ->get('/integration')
+        ->assertOk()
+        ->assertSee('<title>Smartflow</title>', false)
+        ->assertDontSee('BioFlow')
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Integration')
+            ->where('name', 'Smartflow'));
+});
+
 test('integration page reads stored results without changing shipment decisions', function (): void {
     Http::fake([
         '*/api/integration/assessments' => Http::response([], 200),

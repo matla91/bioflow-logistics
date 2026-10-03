@@ -39,7 +39,7 @@ final class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => 'Smartflow',
             'auth' => [
                 'user' => $request->user(),
             ],

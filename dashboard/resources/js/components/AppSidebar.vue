@@ -25,7 +25,7 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Logistics analysis',
+        title: 'Logistics scenarios',
         href: '/integration',
         icon: Ship,
     },
