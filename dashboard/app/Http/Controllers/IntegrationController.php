@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Data\HumanDecisionData;
+use App\Enums\ShipmentAction;
+use App\Models\IntegrationDecision;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
@@ -18,6 +21,7 @@ final class IntegrationController extends Controller
     {
         try {
             $base = mb_rtrim((string) config('integration.url'), '/');
+            /** @var list<array{assessment_id: string}> $assessments */
             $assessments = Http::acceptJson()->timeout(5)
                 ->get($base.'/api/integration/assessments')->throw()->json();
             $operations = Http::acceptJson()->timeout(5)
@@ -26,12 +30,24 @@ final class IntegrationController extends Controller
             return Inertia::render('Integration', [
                 'assessments' => $assessments,
                 'operations' => $operations,
+                'decisions' => IntegrationDecision::query()->with('user')
+                    ->whereIn('assessment_id', array_column($assessments, 'assessment_id'))->get()
+                    ->mapWithKeys(fn (IntegrationDecision $decision): array => [
+                        $decision->assessment_id => HumanDecisionData::fromModel($decision),
+                    ])->all(),
+                'actionRoles' => collect(ShipmentAction::cases())->mapWithKeys(fn (ShipmentAction $action): array => [
+                    $action->value => $action->approver()->value,
+                ])->all(),
+                'demoShipments' => config('integration.demo_shipments'),
                 'unavailable' => false,
             ]);
         } catch (ConnectionException|RequestException) {
             return Inertia::render('Integration', [
                 'assessments' => [],
                 'operations' => [],
+                'decisions' => [],
+                'actionRoles' => [],
+                'demoShipments' => [],
                 'unavailable' => true,
             ]);
         }

@@ -18,6 +18,7 @@ Read [BUILD_INTEGRATION.md](BUILD_INTEGRATION.md) and [LOCAL_APP.md](LOCAL_APP.m
 - Laravel owns its app migrations/database. Keep it separate from the engine database: current shipment tables conflict. Never run Laravel migrations against the engine database.
 - Collection and analysis scheduling stay in Python workers. Page loads read stored results through `DATA_ENGINE_URL`, default port 8002.
 - Named logistics scenarios are not operational batch assessments. Never attach them by guessed IDs.
+- `feat/demo-polish` supports [human decisions on named logistics assessments](INTEGRATION_DECISIONS.md) by external immutable hash in a separate Laravel table; this does not implement operational imports or batch decisions.
 - Ambient exposure proxy risk is not product-temperature excursion probability; do not insert it into `p_excursion` or authorize QA release from it.
 - Supply plans are prospective coverage, not released inventory. Pending-QA stock and released stock reserved to another batch cannot cover this batch.
 - Display retrospective assessments explicitly, preserving null action and the limitation on historical reservation/QA state. A sufficient snapshot quantity does not establish readiness at a past charge time. Null sampled excursion with retained readings means no usable interpolation interval, not zero excursion.

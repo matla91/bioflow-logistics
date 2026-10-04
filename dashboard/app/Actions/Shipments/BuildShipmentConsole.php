@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions\Shipments;
 
+use App\Data\HumanDecisionData;
 use App\Data\RecommendationData;
 use App\Data\ShipmentConsoleData;
-use App\Data\ShipmentDecisionData;
 use App\Enums\ShipmentStatus;
 use App\Models\Assessment;
 use App\Models\Shipment;
@@ -72,7 +72,7 @@ final class BuildShipmentConsole
             ],
             budget: ['usedFraction' => $assessment->budget_used, 'budgetMin' => self::EXCURSION_BUDGET_MIN],
             signals: $assessment->signals ?? [],
-            log: array_values($shipment->decisions->map(ShipmentDecisionData::fromModel(...))->all()),
+            log: array_values($shipment->decisions->map(HumanDecisionData::fromModel(...))->all()),
         );
     }
 

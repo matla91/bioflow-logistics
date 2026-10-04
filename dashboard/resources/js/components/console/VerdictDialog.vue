@@ -9,14 +9,15 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import type { ActionKey, ActionOption } from '@/types/console';
-import { actionLabels } from './format';
+import type { ActionKey, DecisionOption, Role } from '@/types/console';
+import { actionLabels, roleLabels } from './format';
 
 const props = defineProps<{
     open: boolean;
     verdict: 'APPROVE' | 'OVERRIDE';
     action: ActionKey;
-    options: ActionOption[];
+    options: DecisionOption[];
+    actingAs?: Role;
     error?: string;
     processing?: boolean;
 }>();
@@ -43,7 +44,26 @@ const alternatives = computed(() =>
     props.options.filter((o) => !o.recommended),
 );
 
-const valid = computed(() => reason.value.trim().length > 0);
+function canChoose(option: DecisionOption): boolean {
+    return (
+        !props.actingAs ||
+        !option.requiredRole ||
+        props.actingAs === option.requiredRole
+    );
+}
+
+const valid = computed(
+    () =>
+        reason.value.trim().length > 0 &&
+        props.options.some(
+            (option) =>
+                option.action === chosen.value &&
+                canChoose(option) &&
+                (props.verdict === 'APPROVE'
+                    ? option.recommended
+                    : !option.recommended),
+        ),
+);
 
 function submit(): void {
     if (valid.value) {
@@ -74,7 +94,8 @@ function submit(): void {
                     v-for="option in alternatives"
                     :key="option.action"
                     type="button"
-                    class="rounded-md border px-3 py-1.5 text-sm"
+                    class="rounded-md border px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+                    :disabled="!canChoose(option) || processing"
                     :class="
                         chosen === option.action
                             ? 'border-foreground bg-accent font-semibold'
@@ -83,6 +104,12 @@ function submit(): void {
                     @click="chosen = option.action"
                 >
                     {{ option.label }}
+                    <span
+                        v-if="!canChoose(option) && option.requiredRole"
+                        class="block text-xs"
+                    >
+                        Needs {{ roleLabels[option.requiredRole] }} approval
+                    </span>
                 </button>
             </div>
 
@@ -92,6 +119,8 @@ function submit(): void {
                     v-model="reason"
                     v-focus
                     rows="3"
+                    maxlength="1000"
+                    :disabled="processing"
                     class="rounded-md border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                     placeholder="Why are you making this call?"
                 />

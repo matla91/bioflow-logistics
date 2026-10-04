@@ -25,7 +25,7 @@ final class ShipmentListItemData extends Data
         public ?ShipmentAction $recommendedAction,
         public ?UserRole $approverRole,
         public ?AnswersData $answers,
-        public ?ShipmentDecisionData $decision,
+        public ?HumanDecisionData $decision,
     ) {}
 
     public static function fromModel(Shipment $shipment): self
@@ -45,7 +45,7 @@ final class ShipmentListItemData extends Data
             recommendedAction: $assessment?->recommended_action,
             approverRole: $assessment?->approver_role,
             answers: $assessment?->answers,
-            decision: $shipment->decision === null ? null : ShipmentDecisionData::fromModel($shipment->decision),
+            decision: $shipment->decision === null ? null : HumanDecisionData::fromModel($shipment->decision),
         );
     }
 }

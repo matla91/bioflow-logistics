@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import IntegrationDecisionPanel from '@/components/console/IntegrationDecisionPanel.vue';
+import { decisionForAssessment } from '@/lib/integration-decisions';
 import {
     formatBaselTime,
     formatBaselTimeShort,
@@ -19,12 +21,22 @@ import type {
     OperationalDataset,
     StoredLogisticsAssessment,
 } from '@/types/integration';
+import type {
+    IntegrationActionRoles,
+    IntegrationDecisions,
+    IntegrationDemoShipments,
+} from '@/types/integration-decisions';
 
 const props = defineProps<{
     assessments: StoredLogisticsAssessment[];
     operations: OperationalDataset[];
+    decisions: IntegrationDecisions;
+    actionRoles: IntegrationActionRoles;
+    demoShipments: IntegrationDemoShipments;
     unavailable: boolean;
 }>();
+
+const page = usePage();
 
 defineOptions({
     layout: {
@@ -189,6 +201,14 @@ const signalCards = computed(() => {
             decision policy → operator recommendation
         </p>
 
+        <p
+            v-if="(unavailable || !assessment) && page.props.errors.decision"
+            role="alert"
+            class="text-sm text-destructive"
+        >
+            {{ page.props.errors.decision }}
+        </p>
+
         <section v-if="unavailable" class="logistics-empty" role="status">
             <h2>Stored analysis unavailable</h2>
             <p>The analysis service could not be reached. Try again shortly.</p>
@@ -244,10 +264,13 @@ const signalCards = computed(() => {
                         logistics.recommendation.action ?? 'Reassess'
                     }}</strong>
                     <p class="logistics-summary">{{ summary }}</p>
-                    <p class="logistics-operator">
-                        Operator remains responsible for the operational
-                        decision.
-                    </p>
+                    <IntegrationDecisionPanel
+                        :key="assessment.assessment_id"
+                        :assessment="assessment"
+                        :decision="decisionForAssessment(assessment, decisions)"
+                        :action-roles="actionRoles"
+                        :demo-shipments="demoShipments"
+                    />
                 </article>
                 <article
                     v-for="kpi in operationalKpis"
@@ -854,11 +877,6 @@ summary:focus-visible {
 .logistics-summary {
     margin-top: 8px;
     line-height: 1.5;
-}
-.logistics-operator {
-    margin-top: 9px;
-    font-size: 12px;
-    color: var(--assessment-muted);
 }
 .logistics-kpi {
     display: flex;

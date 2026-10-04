@@ -8,9 +8,10 @@ use App\Enums\ShipmentAction;
 use App\Enums\UserRole;
 use App\Enums\Verdict;
 use App\Models\Decision;
+use App\Models\IntegrationDecision;
 use Spatie\LaravelData\Data;
 
-final class ShipmentDecisionData extends Data
+final class HumanDecisionData extends Data
 {
     public function __construct(
         public Verdict $verdict,
@@ -21,11 +22,11 @@ final class ShipmentDecisionData extends Data
         public string $decidedAt,
     ) {}
 
-    public static function fromModel(Decision $decision): self
+    public static function fromModel(Decision|IntegrationDecision $decision): self
     {
         return new self(
             verdict: $decision->verdict,
-            action: $decision->action,
+            action: $decision instanceof IntegrationDecision ? $decision->selected_action : $decision->action,
             role: $decision->role,
             by: $decision->user->name,
             reason: $decision->reason,

@@ -8,6 +8,8 @@ See the [data flow diagrams](DATA_FLOW.md) for the product flow, ERP stand-in an
 
 Stored provider observations → scheduled logistics analysis → immutable SQLite assessment/evidence → local read API → Laravel `/integration` page. The page also shows stored operational dataset counts. Existing Laravel shipment decisions remain in Laravel's own database. Do not point Laravel migrations at the engine database: both currently define incompatible `shipments` tables.
 
+On `feat/demo-polish`, the [named-scenario human decision step](INTEGRATION_DECISIONS.md) records approval or override directly against the external Python assessment hash in Laravel's separate `integration_decisions` table. It revalidates the source record and eligibility on submission; it never maps named scenarios to Laravel shipment-console records.
+
 ```sh
 pixi run data-init
 pixi run data-import-cache
@@ -20,7 +22,7 @@ The API listens on localhost port 8002. The dashboard now has a project-local Pi
 
 The read API exposes `/api/integration/operations`, `/api/integration/assessments` and `/api/integration/assessments/{assessment_id}`. Contracts are generated from [interfaces.py](../pipeline/baselhack/interfaces.py), including [the assessment schema](../schemas/stored-logistics-assessment.schema.json). The worker preserves full normalized observations, scenario, assumptions, station selection, model version and detailed result in immutable evidence. Repeated identical analysis is idempotent; new inputs produce a new assessment ID. Bump the model version when calculation behavior changes.
 
-The three named retrospective logistics scenarios remain available. The additive [batch worker and read API](BATCH_ASSESSMENTS.md) now join stored operations and expose stock, timing and product evidence separately. The authenticated `/integration/batches` operator view reads the existing batch list and selected latest record through Laravel HTTP, passes the generated `StoredBatchAssessment` contract to Vue, and keeps these three dimensions separate. It is reachable from Logistics analysis and the sidebar; `/integration` and the shipment console retain their existing behavior. Empty storage, missing selected records and an unavailable engine have distinct states. They remain probabilities under simulation assumptions. Ambient exposure is not a measured product-temperature excursion. Do not map it into the shipment console's `p_excursion` field or authorize QA release from it. The model has missing-data/proxy warnings and seven existing verification gates remain open.
+The three named retrospective logistics scenarios remain available. The additive [batch worker and read API](BATCH_ASSESSMENTS.md) now join stored operations and expose stock, timing and product evidence separately. The authenticated `/integration/batches` operator view reads the existing batch list and selected latest record through Laravel HTTP, passes the generated `StoredBatchAssessment` contract to Vue, and keeps these three dimensions separate. It is reachable from Logistics analysis and the sidebar; the shipment console retains its existing behavior. Empty storage, missing selected records and an unavailable engine have distinct states. They remain probabilities under simulation assumptions. Ambient exposure is not a measured product-temperature excursion. Do not map it into the shipment console's `p_excursion` field or authorize QA release from it. The model has missing-data/proxy warnings and seven existing verification gates remain open.
 
 ## Builder implementation briefs
 

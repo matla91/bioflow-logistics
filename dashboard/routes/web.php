@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IntegrationController;
+use App\Http\Controllers\IntegrationDecisionController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\ShipmentDecisionController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('integration', IntegrationController::class)->name('integration');
     Route::get('integration/batches', [IntegrationController::class, 'batches'])->name('integration.batches');
+    Route::post('integration/assessments/{assessmentId}/decisions', [IntegrationDecisionController::class, 'store'])
+        ->where('assessmentId', '[0-9a-f]{64}')->name('integration.decisions.store');
+    Route::delete('integration/assessments/{assessmentId}/decisions', [IntegrationDecisionController::class, 'destroy'])
+        ->where('assessmentId', '[0-9a-f]{64}')->name('integration.decisions.destroy');
     Route::get('shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
     Route::post('shipments/{shipment}/decisions', [ShipmentDecisionController::class, 'store'])->name('shipments.decisions.store');

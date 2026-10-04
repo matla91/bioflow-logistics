@@ -21,7 +21,7 @@ final class ShipmentConsoleData extends Data
      * @param  array{band: array{0: int, 1: int}, points: list<array{at: string, c: float}>, exposures: list<array{from: string, to: string, label: string}>}  $temperature
      * @param  array{usedFraction: float, budgetMin: int}  $budget
      * @param  array<string, mixed>  $signals
-     * @param  list<ShipmentDecisionData>  $log
+     * @param  list<HumanDecisionData>  $log
      */
     public function __construct(
         public int $id,

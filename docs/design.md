@@ -80,3 +80,5 @@ current examples use an ASSUMED fallback: correlated level/discharge trend
 penalties contribute their maximum rather than their sum. No official threshold
 is invented. Named normal/disruption/severe demos retain identical real evidence
 and vary only transparent simulated shipment state and assumption overrides.
+
+The Laravel [named-scenario human decision step](INTEGRATION_DECISIONS.md) preserves this layer's immutable external assessment identity and records approval/override separately from the Python recommendation. It does not reuse unrelated Laravel shipment IDs or change model evidence.

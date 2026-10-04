@@ -37,6 +37,12 @@ export type ActionOption = {
     note: string;
 };
 
+// The verdict dialog needs presentation and authorization, not simulation metrics.
+export type DecisionOption = Pick<
+    ActionOption,
+    'action' | 'label' | 'recommended'
+> & { requiredRole?: Role };
+
 export type JourneyStop = {
     id: string;
     label: string;
@@ -64,7 +70,7 @@ export type Signal = {
 
 export type ShipmentStatus = 'in_transit' | 'suspended' | 'arrived' | 'closed';
 
-export type ShipmentDecision = {
+export type HumanDecision = {
     verdict: 'APPROVE' | 'OVERRIDE';
     action: ActionKey;
     role: Role;
@@ -72,6 +78,8 @@ export type ShipmentDecision = {
     reason: string;
     decidedAt: string;
 };
+
+export type ShipmentDecision = HumanDecision;
 
 export type ShipmentListItem = {
     id: number;

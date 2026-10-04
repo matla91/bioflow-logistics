@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import type { ShipmentDecision } from '@/types/console';
+import type { HumanDecision } from '@/types/console';
 import { actionLabels, formatDateTime, roleLabels } from './format';
 
-defineProps<{ entries: ShipmentDecision[]; timezone: string }>();
+withDefaults(
+    defineProps<{
+        entries: HumanDecision[];
+        timezone: string;
+        emptyMessage?: string;
+    }>(),
+    { emptyMessage: 'No decisions recorded for this lot yet.' },
+);
 </script>
 
 <template>
     <section class="flex flex-col gap-3 rounded-xl border bg-card p-5">
         <h3 class="text-lg font-semibold">Decision log</h3>
         <p v-if="entries.length === 0" class="text-sm text-muted-foreground">
-            No decisions recorded for this lot yet.
+            {{ emptyMessage }}
         </p>
         <ul v-else class="flex flex-col divide-y">
             <li
